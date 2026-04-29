@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { STORAGE_KEY, WARNINGS_KEY } from "@/lib/constants";
-import type { AppState, AssessmentScores, FeedbackPayload, Level, Message, Mode, Scenario } from "@/types";
+import type { AppState, AssessmentScores, FeedbackPayload, Level, Message, Mode, Scenario, SessionRecord } from "@/types";
 
 const initialState: AppState = {
   level: null,
@@ -12,6 +12,7 @@ const initialState: AppState = {
   selectedScenario: null,
   conversationHistory: [],
   lastFeedback: null,
+  sessions: [],
   warningCount: 0,
   cooldownUntil: null,
 };
@@ -24,6 +25,8 @@ interface AppStateContextValue {
   setScenario: (scenario: Scenario) => void;
   setConversationHistory: (messages: Message[]) => void;
   setLastFeedback: (feedback: FeedbackPayload | null) => void;
+  addSession: (session: SessionRecord) => void;
+  restoreSession: (session: SessionRecord) => void;
   setWarnings: (warningCount: number, cooldownUntil: number | null) => void;
   resetDemo: () => void;
 }
@@ -58,6 +61,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setScenario: (selectedScenario) => patch({ selectedScenario }),
       setConversationHistory: (conversationHistory) => patch({ conversationHistory }),
       setLastFeedback: (lastFeedback) => patch({ lastFeedback }),
+      addSession: (session) =>
+        setState((current) => {
+          if (current.sessions.some((item) => item.id === session.id)) return current;
+          return { ...current, sessions: [session, ...current.sessions].slice(0, 20) };
+        }),
+      restoreSession: (session) => patch({ lastFeedback: session.feedback, conversationHistory: session.messages }),
       setWarnings: (warningCount, cooldownUntil) => patch({ warningCount, cooldownUntil }),
       resetDemo: () => {
         window.localStorage.removeItem(STORAGE_KEY);

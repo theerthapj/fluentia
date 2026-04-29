@@ -5,7 +5,10 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ChatBubble } from "@/components/chat/ChatBubble";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { CulturalNote } from "@/components/chat/CulturalNote";
+import { InlineCoachingTip } from "@/components/chat/InlineCoachingTip";
 import { ScenarioHeader } from "@/components/chat/ScenarioHeader";
+import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { Button } from "@/components/shared/Button";
 import { SafetyBanner } from "@/components/shared/SafetyBanner";
@@ -18,21 +21,25 @@ import type { ConversationResponse, Message } from "@/types";
 function ChatContent() {
   const router = useRouter();
   const params = useSearchParams();
-  const { state, setConversationHistory, setLastFeedback, setWarnings } = useAppState();
+  const { state, setConversationHistory, setLastFeedback, setScenario, setWarnings } = useAppState();
   const scenario = useMemo(() => getScenario(params.get("scenario") ?? state.selectedScenario?.id), [params, state.selectedScenario]);
   const mode = state.selectedMode ?? "formal";
   const level = state.level ?? "beginner";
+  const advanced = state.sessions.some((session) => session.scenarioId === scenario.id);
+  const historyBelongsToScenario = state.selectedScenario?.id === scenario.id;
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [safety, setSafety] = useState<string | null>(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const [tipVisible, setTipVisible] = useState(true);
 
-  const messages = state.conversationHistory.length
+  const messages = historyBelongsToScenario && state.conversationHistory.length
     ? state.conversationHistory
-    : [{ id: uid("ai"), role: "ai" as const, content: scenario.openingPrompt, createdAt: new Date().toISOString() }];
+    : [{ id: uid("ai"), role: "ai" as const, content: advanced ? scenario.openingPromptAdvanced : scenario.openingPrompt, createdAt: new Date().toISOString() }];
 
   useEffect(() => {
-    if (!state.conversationHistory.length) setConversationHistory(messages);
+    setScenario(scenario);
+    if (!historyBelongsToScenario || !state.conversationHistory.length) setConversationHistory(messages);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -74,6 +81,7 @@ function ChatContent() {
         return;
       }
       setLastFeedback(data.feedback);
+      setTipVisible(true);
       setConversationHistory([...nextMessages, data.aiMessage]);
     } catch {
       toast.error("Could not analyze this turn. Try again.");
@@ -87,11 +95,14 @@ function ChatContent() {
 
   return (
     <main className="flex min-h-screen flex-col bg-bg-primary">
-      <ScenarioHeader scenario={scenario} mode={mode} />
+      <ScenarioHeader scenario={scenario} mode={mode} advanced={advanced} />
       <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 px-4 py-6 pb-32">
+        <Breadcrumb current="Chat" />
+        <CulturalNote note={scenario.culturalNote} />
         {safety ? <SafetyBanner message={cooldownRemaining ? `${safety} ${cooldownRemaining}s remaining.` : safety} onDismiss={() => setSafety(null)} /> : null}
         {messages.map((message) => <ChatBubble key={message.id} message={message} />)}
         {loading ? <ChatBubble message={{ id: "loading", role: "ai", content: "Analyzing tone, fluency, and confidence...", createdAt: new Date().toISOString() }} loading /> : null}
+        {state.lastFeedback?.quickTip && tipVisible ? <InlineCoachingTip tip={state.lastFeedback.quickTip} onDismiss={() => setTipVisible(false)} /> : null}
         {userTurns >= 2 && state.lastFeedback ? (
           <Button id="chat-feedback-button" className="mx-auto mt-2" onClick={() => router.push("/feedback")}>Get Detailed Feedback</Button>
         ) : null}
@@ -101,7 +112,8 @@ function ChatContent() {
           value={input}
           onChange={setInput}
           onSend={send}
-          onVoice={() => setInput(voiceSamples[scenario.id] ?? voiceSamples["daily-communication"])}
+          onVoice={(text) => setInput(text)}
+          voiceFallback={voiceSamples[scenario.id] ?? voiceSamples["daily-communication"]}
           disabled={Boolean(cooldownRemaining)}
           loading={loading}
         />

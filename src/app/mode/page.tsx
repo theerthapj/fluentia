@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { modeCards } from "@/lib/constants";
 import type { Mode } from "@/types";
@@ -23,6 +24,7 @@ export default function ModePage() {
   return (
     <main className="mesh-gradient min-h-screen px-5 py-10">
       <div className="mx-auto max-w-5xl">
+        <Breadcrumb current="Choose Mode" />
         <h1 className="gradient-text text-4xl font-bold">Choose Your Practice Mode</h1>
         <p className="mt-3 text-text-secondary">Match your coaching tone to the real-world situation.</p>
         <div className="mt-8 grid gap-5 md:grid-cols-2">

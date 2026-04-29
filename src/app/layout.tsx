@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
 import { AppStateProvider } from "@/components/providers/AppStateProvider";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 
@@ -20,7 +22,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className="dark">
       <body suppressHydrationWarning className={`${inter.variable} font-sans antialiased`}>
         <SmoothScrollProvider>
-          <AppStateProvider>{children}</AppStateProvider>
+          <AppStateProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <div className="flex-1">{children}</div>
+              <Footer />
+            </div>
+          </AppStateProvider>
         </SmoothScrollProvider>
         <Toaster theme="dark" richColors position="top-center" />
       </body>

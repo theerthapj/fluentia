@@ -20,6 +20,8 @@ export interface Scenario {
   modes: Array<Mode | "both">;
   iconName: string;
   openingPrompt: string;
+  openingPromptAdvanced: string;
+  culturalNote: string;
 }
 
 export interface ScenarioWithIcon extends Scenario {
@@ -53,6 +55,7 @@ export interface VocabularySuggestion {
 }
 
 export interface FeedbackPayload {
+  quickTip: string;
   fluencyScore: number;
   confidenceLevel: ConfidenceLevel;
   confidencePercent: number;
@@ -66,6 +69,17 @@ export interface FeedbackPayload {
   advancedRewrite: string;
   encouragementMessage: string;
   safetyStatus: "safe" | "blocked";
+}
+
+export interface SessionRecord {
+  id: string;
+  scenarioId: string;
+  mode: Mode;
+  level: Level;
+  fluencyScore: number;
+  feedback: FeedbackPayload;
+  messages: Message[];
+  completedAt: string;
 }
 
 export interface ModerationResult {
@@ -98,6 +112,7 @@ export interface AppState {
   selectedScenario: Scenario | null;
   conversationHistory: Message[];
   lastFeedback: FeedbackPayload | null;
+  sessions: SessionRecord[];
   warningCount: number;
   cooldownUntil: number | null;
 }

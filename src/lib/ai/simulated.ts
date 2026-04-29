@@ -122,8 +122,10 @@ export function generateFeedback(request: ConversationRequest): FeedbackPayload 
   const seed = request.message.length + request.history.length + scenario.title.length;
   const vocab = scenarioVocabulary[scenario.id] ?? scenarioVocabulary.default;
   const rewrites = rewrite(request.message, request.mode, request.level);
+  const topTip = grammar(request.message)[0]?.explanation ?? "Add one specific example to make your answer stronger.";
 
   return {
+    quickTip: `Tip: ${topTip}`,
     fluencyScore,
     ...confidenceResult,
     toneLabel: request.mode === "formal" ? "Polite and Professional" : "Friendly and Natural",

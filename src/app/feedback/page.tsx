@@ -1,7 +1,9 @@
 "use client";
 
 import { ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ToneIndicator } from "@/components/feedback/ToneIndicator";
 import { RewriteCard } from "@/components/feedback/RewriteCard";
 import { useAppState } from "@/components/providers/AppStateProvider";
@@ -12,8 +14,22 @@ import { ScoreRing } from "@/components/shared/ScoreRing";
 
 export default function FeedbackPage() {
   const router = useRouter();
-  const { state } = useAppState();
+  const { state, addSession } = useAppState();
   const feedback = state.lastFeedback;
+
+  useEffect(() => {
+    if (!feedback || !state.selectedScenario || !state.level || !state.selectedMode || !state.conversationHistory.length) return;
+    addSession({
+      id: `${state.selectedScenario.id}-${feedback.fluencyScore}-${state.conversationHistory.length}`,
+      scenarioId: state.selectedScenario.id,
+      mode: state.selectedMode,
+      level: state.level,
+      fluencyScore: feedback.fluencyScore,
+      feedback,
+      messages: state.conversationHistory,
+      completedAt: new Date().toISOString(),
+    });
+  }, [addSession, feedback, state.conversationHistory, state.level, state.selectedMode, state.selectedScenario]);
 
   if (!feedback) {
     return (
@@ -30,6 +46,7 @@ export default function FeedbackPage() {
   return (
     <main className="mesh-gradient min-h-screen px-5 py-10">
       <div className="mx-auto max-w-6xl">
+        <Breadcrumb current="Feedback" />
         <h1 className="gradient-text text-4xl font-bold">Detailed Feedback</h1>
         <div className="mt-8 grid gap-5 lg:grid-cols-[320px_1fr]">
           <GlassCard className="grid place-items-center p-7">

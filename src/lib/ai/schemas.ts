@@ -44,6 +44,7 @@ export const AssessmentResponseSchema = z.object({
 });
 
 export const FeedbackPayloadSchema = z.object({
+  quickTip: z.string().min(1),
   fluencyScore: z.number().min(0).max(10),
   confidenceLevel: z.enum(["low", "medium", "high"]),
   confidencePercent: z.number().min(0).max(100),

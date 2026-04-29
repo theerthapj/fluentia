@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ScenarioCard } from "@/components/scenarios/ScenarioCard";
 import { scenarios } from "@/lib/constants";
 
@@ -18,6 +19,7 @@ export default function ScenariosPage() {
   return (
     <main className="mesh-gradient min-h-screen px-5 py-10">
       <div className="mx-auto max-w-6xl">
+        <Breadcrumb current="Pick Scenario" />
         <h1 className="text-4xl font-bold">Choose a Scenario</h1>
         <p className="mt-3 text-text-secondary">Practice a situation that feels useful today.</p>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

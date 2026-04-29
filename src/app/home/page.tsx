@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { AmbientBackground } from "@/components/home/AmbientBackground";
+import { OnboardingBanner } from "@/components/onboarding/OnboardingBanner";
 import { LevelBadge } from "@/components/assessment/LevelBadge";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
@@ -15,6 +16,7 @@ export default function HomePage() {
     <main className="mesh-gradient relative min-h-screen overflow-hidden px-5 py-10">
       <AmbientBackground />
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-80px)] max-w-4xl flex-col justify-center">
+        {!state.assessmentCompleted ? <OnboardingBanner /> : null}
         <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}>
           <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
             <GlassCard className="p-7 sm:p-10">

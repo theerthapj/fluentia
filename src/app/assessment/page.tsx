@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { LevelBadge } from "@/components/assessment/LevelBadge";
+import { LearningPlanModal } from "@/components/onboarding/LearningPlanModal";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
@@ -19,6 +20,7 @@ export default function AssessmentPage() {
   const [answers, setAnswers] = useState<AssessmentAnswer[]>([]);
   const [textValue, setTextValue] = useState("");
   const [result, setResult] = useState<{ level: Level; total: number } | null>(null);
+  const [showPlan, setShowPlan] = useState(false);
   const question = assessmentQuestions[step];
 
   const saveAnswer = async (value: string) => {
@@ -33,6 +35,7 @@ export default function AssessmentPage() {
     const scored = response.ok ? await response.json() : scoreAssessment(next);
     setAssessment(scored.level, scored.scores);
     setResult({ level: scored.level, total: scored.scores.total });
+    setShowPlan(true);
   };
 
   if (result) {
@@ -45,6 +48,7 @@ export default function AssessmentPage() {
           <p className="mt-4 text-text-secondary">{levelCopy[result.level]} Your score was {result.total}/10.</p>
           <Button id="assessment-continue" className="mt-8 w-full" size="lg" onClick={() => router.push("/mode")}>Continue to Practice</Button>
         </GlassCard>
+        {showPlan ? <LearningPlanModal level={result.level} onBegin={() => router.push("/mode")} /> : null}
       </main>
     );
   }

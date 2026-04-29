@@ -66,6 +66,8 @@ export const scenarios: ScenarioWithIcon[] = [
     difficulty: "Intermediate",
     modes: ["formal"],
     openingPrompt: "Welcome. I am your interviewer today. Please tell me about yourself and one strength you would bring to the role.",
+    openingPromptAdvanced: "Welcome back. This time, answer like you are interviewing for a competitive role: connect your experience to measurable impact.",
+    culturalNote: "In many professional English interviews, 'I am passionate about' can sound overused. Try 'I find this work genuinely engaging.'",
   },
   {
     id: "classroom-answer",
@@ -75,6 +77,8 @@ export const scenarios: ScenarioWithIcon[] = [
     difficulty: "Beginner",
     modes: ["formal"],
     openingPrompt: "Imagine your teacher has asked you to explain an idea from today's class. Share your answer clearly.",
+    openingPromptAdvanced: "Your teacher asks a follow-up question. Explain your answer with one example and one reason.",
+    culturalNote: "In classrooms, English speakers often signal uncertainty politely with phrases like 'I think' or 'From my understanding.'",
   },
   {
     id: "daily-communication",
@@ -84,6 +88,8 @@ export const scenarios: ScenarioWithIcon[] = [
     difficulty: "Beginner",
     modes: ["both"],
     openingPrompt: "Let's practice a daily conversation. Tell me about something you need to do today.",
+    openingPromptAdvanced: "Let's make this more natural. Describe your day, then ask one follow-up question to keep the conversation moving.",
+    culturalNote: "Everyday English often uses short connectors like 'then', 'after that', and 'so' to make simple plans sound smooth.",
   },
   {
     id: "friends-chat",
@@ -93,6 +99,8 @@ export const scenarios: ScenarioWithIcon[] = [
     difficulty: "Beginner",
     modes: ["casual"],
     openingPrompt: "Hey, good to see you. Tell me what you have been up to lately.",
+    openingPromptAdvanced: "Hey, good to see you again. Share a quick update and add a relaxed question back to your friend.",
+    culturalNote: "English native speakers often use softeners like 'kind of', 'sort of', and 'I guess' to sound relaxed and informal.",
   },
   {
     id: "ordering-food",
@@ -102,6 +110,8 @@ export const scenarios: ScenarioWithIcon[] = [
     difficulty: "Beginner",
     modes: ["casual"],
     openingPrompt: "Hi, welcome in. What would you like to order today?",
+    openingPromptAdvanced: "Hi again. Order clearly, ask one polite question about the menu, and confirm one preference.",
+    culturalNote: "In the UK and US, 'Could I have...' is preferred over 'Give me...' because it sounds natural and polite.",
   },
   {
     id: "asking-for-help",
@@ -111,6 +121,8 @@ export const scenarios: ScenarioWithIcon[] = [
     difficulty: "Beginner",
     modes: ["both"],
     openingPrompt: "You need help with a task. Explain what you need and ask politely.",
+    openingPromptAdvanced: "Ask for help with more detail: explain what you tried, where you got stuck, and what you need next.",
+    culturalNote: "When asking for help in English, saying 'Could you help me with...' sounds more respectful than a direct command.",
   },
   {
     id: "self-introduction",
@@ -120,6 +132,8 @@ export const scenarios: ScenarioWithIcon[] = [
     difficulty: "Intermediate",
     modes: ["both"],
     openingPrompt: "Please introduce yourself in a confident and natural way.",
+    openingPromptAdvanced: "Introduce yourself with a stronger personal angle: include your background, interest, and what you hope to contribute.",
+    culturalNote: "A strong English self-introduction often balances confidence with modesty: clear facts, not exaggerated claims.",
   },
   {
     id: "presentation-practice",
@@ -129,6 +143,8 @@ export const scenarios: ScenarioWithIcon[] = [
     difficulty: "Advanced",
     modes: ["formal"],
     openingPrompt: "You are opening a short presentation. Introduce your topic and why it matters.",
+    openingPromptAdvanced: "Open your presentation with a sharper hook, state the audience benefit, and preview your structure.",
+    culturalNote: "In English presentations, audiences expect a clear preview such as 'I'll cover three points today.'",
   },
 ];
 

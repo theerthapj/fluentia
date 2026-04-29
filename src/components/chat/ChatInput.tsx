@@ -9,13 +9,15 @@ export function ChatInput({
   onChange,
   onSend,
   onVoice,
+  voiceFallback,
   disabled,
   loading,
 }: {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
-  onVoice: () => void;
+  onVoice: (text: string) => void;
+  voiceFallback: string;
   disabled?: boolean;
   loading?: boolean;
 }) {
@@ -37,7 +39,7 @@ export function ChatInput({
           placeholder={disabled ? "Input paused briefly..." : "Type your response..."}
           className="min-h-12 flex-1 rounded-full border border-border bg-surface px-5 text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-accent-primary"
         />
-        <VoiceSimButton id="chat-voice-button" onCapture={onVoice} />
+        <VoiceSimButton id="chat-voice-button" fallbackText={voiceFallback} onCapture={onVoice} />
         <Button id="chat-send-button" aria-label="Send response" loading={loading} disabled={disabled || !value.trim()} onClick={onSend} className="h-12 w-12 px-0">
           <Send aria-hidden className="h-5 w-5" />
         </Button>
