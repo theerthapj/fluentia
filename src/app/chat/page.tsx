@@ -21,7 +21,7 @@ import type { ConversationResponse, Message } from "@/types";
 function ChatContent() {
   const router = useRouter();
   const params = useSearchParams();
-  const { state, setConversationHistory, setLastFeedback, setScenario, setWarnings } = useAppState();
+  const { state, hydrated, setConversationHistory, setLastFeedback, setScenario, setWarnings } = useAppState();
   const scenario = useMemo(() => getScenario(params.get("scenario") ?? state.selectedScenario?.id), [params, state.selectedScenario]);
   const mode = state.selectedMode ?? "formal";
   const level = state.level ?? "beginner";
@@ -38,10 +38,11 @@ function ChatContent() {
     : [{ id: uid("ai"), role: "ai" as const, content: advanced ? scenario.openingPromptAdvanced : scenario.openingPrompt, createdAt: new Date().toISOString() }];
 
   useEffect(() => {
+    if (!hydrated) return;
     setScenario(scenario);
     if (!historyBelongsToScenario || !state.conversationHistory.length) setConversationHistory(messages);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hydrated]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -92,6 +93,8 @@ function ChatContent() {
   };
 
   const userTurns = messages.filter((message) => message.role === "user").length;
+
+  if (!hydrated) return null;
 
   return (
     <main className="flex min-h-screen flex-col bg-bg-primary">

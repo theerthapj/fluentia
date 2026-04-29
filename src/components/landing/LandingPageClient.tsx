@@ -59,27 +59,29 @@ export function LandingPageClient() {
       </section>
 
       <section className="bg-surface px-5 py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="max-w-3xl text-3xl font-bold sm:text-4xl">You studied English for years. But you still freeze when it&apos;s time to speak.</h2>
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-100px" }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }} className="mx-auto max-w-6xl">
+          <motion.h2 variants={fadeUp} className="max-w-3xl text-3xl font-bold sm:text-4xl">You studied English for years. But you still freeze when it&apos;s time to speak.</motion.h2>
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {[
               ["Grammar apps taught rules.", "Nobody taught you how to sound confident."],
               ["You understand everything.", "Speaking is where you go blank."],
               ["Language apps gave you streaks.", "They never gave you a real conversation."],
             ].map(([title, copy], index) => (
-              <GlassCard key={title} className="p-6">
-                <div className="text-3xl">{["😰", "🔇", "📖"][index]}</div>
-                <h3 className="mt-5 text-xl font-semibold">{title}</h3>
-                <p className="mt-3 leading-7 text-text-secondary">{copy}</p>
-              </GlassCard>
+              <motion.div variants={fadeUp} key={title}>
+                <GlassCard className="h-full p-6">
+                  <div className="text-3xl">{["😰", "🔇", "📖"][index]}</div>
+                  <h3 className="mt-5 text-xl font-semibold">{title}</h3>
+                  <p className="mt-3 leading-7 text-text-secondary">{copy}</p>
+                </GlassCard>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       <section id="how-it-works" className="px-5 py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold sm:text-4xl">How It Works</h2>
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-100px" }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }} className="mx-auto max-w-6xl">
+          <motion.h2 variants={fadeUp} className="text-3xl font-bold sm:text-4xl">How It Works</motion.h2>
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {[
               [Target, "Tell us your level", "Take the quick assessment so Fluentia can personalize your practice."],
@@ -88,21 +90,21 @@ export function LandingPageClient() {
             ].map(([Icon, title, copy], index) => {
               const StepIcon = Icon as typeof Target;
               return (
-                <div key={title as string} className="rounded-2xl border border-border bg-surface/50 p-6">
+                <motion.div variants={fadeUp} key={title as string} className="rounded-2xl border border-border bg-surface/50 p-6">
                   <span className="inline-flex rounded-full bg-accent-primary/15 px-3 py-1 text-sm font-bold text-accent-primary">Step {index + 1}</span>
                   <StepIcon aria-hidden className="mt-6 h-8 w-8 text-accent-primary" />
                   <h3 className="mt-5 text-xl font-semibold">{title as string}</h3>
                   <p className="mt-3 leading-7 text-text-secondary">{copy as string}</p>
-                </div>
+                </motion.div>
               );
             })}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       <section className="bg-bg-secondary px-5 py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold sm:text-4xl">Built for Confident Practice</h2>
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-100px" }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }} className="mx-auto max-w-6xl">
+          <motion.h2 variants={fadeUp} className="text-3xl font-bold sm:text-4xl">Built for Confident Practice</motion.h2>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             {[
               [Mic, "Voice + Text Input", "Speak or type. Both modes keep the practice moving."],
@@ -112,25 +114,27 @@ export function LandingPageClient() {
             ].map(([Icon, title, copy]) => {
               const FeatureIcon = Icon as typeof Mic;
               return (
-                <GlassCard key={title as string} className="p-6">
-                  <FeatureIcon aria-hidden className="h-8 w-8 text-accent-primary" />
-                  <h3 className="mt-5 text-xl font-semibold">{title as string}</h3>
-                  <p className="mt-3 leading-7 text-text-secondary">{copy as string}</p>
-                </GlassCard>
+                <motion.div variants={fadeUp} key={title as string}>
+                  <GlassCard className="h-full p-6">
+                    <FeatureIcon aria-hidden className="h-8 w-8 text-accent-primary" />
+                    <h3 className="mt-5 text-xl font-semibold">{title as string}</h3>
+                    <p className="mt-3 leading-7 text-text-secondary">{copy as string}</p>
+                  </GlassCard>
+                </motion.div>
               );
             })}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       <section className="px-5 py-20">
-        <div className="mx-auto max-w-6xl rounded-3xl bg-gradient-to-r from-accent-primary to-accent-secondary p-8 text-bg-primary sm:p-12">
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} className="mx-auto max-w-6xl rounded-3xl bg-gradient-to-r from-accent-primary to-accent-secondary p-8 text-bg-primary sm:p-12">
           <CheckCircle2 aria-hidden className="h-9 w-9" />
           <h2 className="mt-5 max-w-3xl text-3xl font-bold sm:text-4xl">Ready to stop hesitating and start speaking?</h2>
           <Link id="landing-final-cta" href="/assessment" className="mt-7 inline-flex rounded-full bg-bg-primary px-6 py-4 font-semibold text-text-primary transition hover:bg-surface">
             Start for Free
           </Link>
-        </div>
+        </motion.div>
       </section>
     </main>
   );

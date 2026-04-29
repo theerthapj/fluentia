@@ -124,7 +124,16 @@ export function generateFeedback(request: ConversationRequest): FeedbackPayload 
   const rewrites = rewrite(request.message, request.mode, request.level);
   const topTip = grammar(request.message)[0]?.explanation ?? "Add one specific example to make your answer stronger.";
 
+  // Simulated simple contextual response
+  let aiReply = "I understand. Let's explore that further. Could you give me another example?";
+  const lowerMsg = request.message.toLowerCase();
+  if (lowerMsg.includes("specials") || lowerMsg.includes("menu")) aiReply = "Our specials today are the grilled salmon and the vegetarian pasta. Does either of those sound good?";
+  else if (lowerMsg.includes("price") || lowerMsg.includes("cost")) aiReply = "The price depends on the specific options you choose, but it generally ranges from $15 to $25.";
+  else if (scenario.id === "job-interview" && lowerMsg.includes("experience")) aiReply = "That sounds like relevant experience. How did you handle any challenges during that time?";
+  else if (scenario.id === "friends-chat") aiReply = "Oh wow, that sounds really interesting! Tell me more about how that went.";
+
   return {
+    aiReply,
     quickTip: `Tip: ${topTip}`,
     fluencyScore,
     ...confidenceResult,

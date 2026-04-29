@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   const aiMessage = {
     id: uid("ai"),
     role: "ai" as const,
-    content: `Good attempt. Your tone is ${feedback.toneLabel.toLowerCase()}, and your fluency score is ${feedback.fluencyScore.toFixed(1)} out of 10. ${feedback.improvements[0]}`,
+    content: feedback.aiReply,
     createdAt: new Date().toISOString(),
   };
 

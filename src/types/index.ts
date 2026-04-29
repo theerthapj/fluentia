@@ -55,6 +55,7 @@ export interface VocabularySuggestion {
 }
 
 export interface FeedbackPayload {
+  aiReply: string;
   quickTip: string;
   fluencyScore: number;
   confidenceLevel: ConfidenceLevel;

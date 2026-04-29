@@ -39,7 +39,7 @@
 html {
   background: var(--bg-primary);
   color: var(--text-primary);
-  scroll-behavior: smooth;
+  /* scroll-behavior is handled by Lenis — do not set it here */
 }
 
 body {
@@ -69,17 +69,22 @@ a {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(203, 213, 225, 0.22);
+  background: rgba(20, 184, 166, 0.28);
   border-radius: 999px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 184, 166, 0.55);
 }
 
 .glass-card {
