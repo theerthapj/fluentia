@@ -11,10 +11,13 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
   const chunksRef = useRef<Blob[]>([]);
   const timeoutRef = useRef<number | null>(null);
 
-  const useFallback = () => {
-    onCapture(fallbackText);
-    toast.info("Voice simulation used.");
-    setStatus("idle");
+  const isSimulated = process.env.NEXT_PUBLIC_AI_MODE === "simulated";
+
+  const showComingSoon = () => {
+    toast.info("🎙️ Voice Input — Coming Soon!", {
+      id: "voice-coming-soon",
+      description: "Voice recording is not yet available. Please type your response for now.",
+    });
   };
 
   const transcribe = async (blob: Blob) => {
@@ -28,10 +31,10 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
         onCapture(data.transcript);
         toast.success("Voice captured ✓");
       } else {
-        useFallback();
+        toast.error("Could not transcribe audio. Please type your response.");
       }
     } catch {
-      useFallback();
+      toast.error("Voice transcription unavailable. Please type your response.");
     } finally {
       setStatus("idle");
     }
@@ -43,8 +46,8 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
   };
 
   const startRecording = async () => {
-    if (process.env.NEXT_PUBLIC_AI_MODE === "simulated" || !navigator.mediaDevices?.getUserMedia) {
-      useFallback();
+    if (isSimulated || !navigator.mediaDevices?.getUserMedia) {
+      showComingSoon();
       return;
     }
     try {
@@ -63,7 +66,7 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
       setStatus("recording");
       timeoutRef.current = window.setTimeout(stopRecording, 30_000);
     } catch {
-      useFallback();
+      toast.error("Microphone access denied. Please type your response.");
     }
   };
 
@@ -71,18 +74,28 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
     <div className="flex items-center gap-2">
       <button
         id={id}
-        aria-label={status === "recording" ? "Stop voice recording" : "Start voice recording"}
+        aria-label={isSimulated ? "Voice input coming soon" : status === "recording" ? "Stop voice recording" : "Start voice recording"}
         type="button"
         onClick={() => (status === "recording" ? stopRecording() : startRecording())}
         disabled={status === "analyzing"}
         className={cn(
-          "grid h-12 w-12 shrink-0 place-items-center rounded-full text-bg-primary transition disabled:opacity-70",
-          status === "recording" ? "pulse-teal bg-error text-white" : "bg-accent-primary hover:bg-teal-300",
+          "relative grid h-12 w-12 shrink-0 place-items-center rounded-full transition disabled:opacity-70",
+          isSimulated
+            ? "bg-white/10 text-text-secondary hover:bg-white/15"
+            : status === "recording"
+              ? "pulse-teal bg-error text-white"
+              : "bg-accent-primary text-bg-primary hover:bg-teal-300",
         )}
       >
         {status === "analyzing" ? <Loader2 aria-hidden className="h-5 w-5 animate-spin" /> : status === "recording" ? <Square aria-hidden className="h-5 w-5" /> : <Mic aria-hidden className="h-5 w-5" />}
+        {isSimulated ? (
+          <span className="absolute -right-1 -top-1 rounded-full bg-accent-secondary px-1.5 py-0.5 text-[9px] font-bold leading-none text-white">
+            SOON
+          </span>
+        ) : null}
       </button>
       {status !== "idle" ? <span className="hidden text-xs text-text-secondary sm:inline">{status === "recording" ? "Recording... tap to stop" : "Analyzing..."}</span> : null}
     </div>
   );
 }
+

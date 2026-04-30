@@ -187,10 +187,16 @@ export function levelFromScore(total: number): Level {
 }
 
 export function scoreText(text: string) {
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
-  if (words > 20) return 2;
-  if (words > 10) return 1;
-  return 0;
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const total = words.length;
+  if (total < 5) return 0;
+
+  const uniqueRatio = new Set(words.map((w) => w.toLowerCase())).size / total;
+  if (uniqueRatio < 0.3) return 0; // hard fail for repetitive input
+
+  const lengthScore = total > 20 ? 1.0 : total > 10 ? 0.5 : 0.0;
+  const varietyScore = uniqueRatio > 0.7 ? 1.0 : uniqueRatio > 0.4 ? 0.5 : 0.0;
+  return Math.round(lengthScore + varietyScore); // 0, 1, or 2
 }
 
 export function scoreAssessment(answers: AssessmentAnswer[]) {

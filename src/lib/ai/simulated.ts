@@ -93,6 +93,8 @@ function confidence(scoreValue: number, text: string) {
 
 function grammar(text: string) {
   const lower = text.toLowerCase();
+
+  // --- Existing patterns (verified correct) ---
   if (/\bi am go\b/.test(lower)) {
     return [{ original: "I am go", corrected: "I am going", explanation: "Use the -ing form after 'am' for present continuous actions." }];
   }
@@ -102,7 +104,40 @@ function grammar(text: string) {
   if (/\bi want\b/.test(lower)) {
     return [{ original: "I want", corrected: "I would like", explanation: "In polite or service situations, 'I would like' sounds softer and more natural." }];
   }
-  return [{ original: text.split(/[.!?]/)[0]?.slice(0, 70) || "My answer is good", corrected: "My answer is clear and relevant.", explanation: "Use a complete sentence with a clear subject, verb, and idea." }];
+
+  // --- New patterns (common ESL learner errors) ---
+  if (/\b(they|we)\s+is\b/.test(lower)) {
+    const subject = lower.match(/\b(they|we)\s+is\b/)?.[1] ?? "they";
+    return [{ original: `${subject} is`, corrected: `${subject} are`, explanation: `Use 'are' with plural pronouns like '${subject}'.` }];
+  }
+  if (/\b(he|she|it)\s+don'?t\b/.test(lower)) {
+    const subject = lower.match(/\b(he|she|it)\s+don'?t\b/)?.[1] ?? "he";
+    return [{ original: `${subject} don't`, corrected: `${subject} doesn't`, explanation: `Use 'doesn't' (not 'don't') with ${subject} in present tense negatives.` }];
+  }
+  if (/\bi has\b/.test(lower)) {
+    return [{ original: "I has", corrected: "I have", explanation: "Use 'have' with I, you, we, and they. 'Has' is only for he, she, it." }];
+  }
+  if (/\b(he|she|it)\s+have\b/.test(lower)) {
+    const subject = lower.match(/\b(he|she|it)\s+have\b/)?.[1] ?? "he";
+    return [{ original: `${subject} have`, corrected: `${subject} has`, explanation: `Use 'has' with ${subject} in the present tense.` }];
+  }
+  if (/\bmore (better|bigger|smaller|faster|slower|easier|harder|worse)\b/.test(lower)) {
+    const adj = lower.match(/\bmore (better|bigger|smaller|faster|slower|easier|harder|worse)\b/)?.[1] ?? "better";
+    return [{ original: `more ${adj}`, corrected: adj, explanation: `'${adj}' is already a comparative form. Don't add 'more' before it.` }];
+  }
+  if (/\byesterday i go\b/.test(lower)) {
+    return [{ original: "yesterday I go", corrected: "yesterday I went", explanation: "Use past tense ('went') when talking about actions that already happened." }];
+  }
+  if (/\bthere is many\b/.test(lower)) {
+    return [{ original: "there is many", corrected: "there are many", explanation: "Use 'there are' before plural nouns ('many' indicates plural)." }];
+  }
+  if (/\bi am agree\b/.test(lower)) {
+    return [{ original: "I am agree", corrected: "I agree", explanation: "'Agree' is a verb, not an adjective. Say 'I agree' directly without 'am'." }];
+  }
+
+  // Generic fallback — extract actual first sentence for a structural tip
+  const firstSentence = text.split(/[.!?]/)[0]?.trim().slice(0, 70) || "My answer is good";
+  return [{ original: firstSentence, corrected: `${firstSentence}.`, explanation: "Make sure every sentence has a clear subject, verb, and ends with proper punctuation." }];
 }
 
 function rewrite(text: string, mode: Mode, level: Level) {

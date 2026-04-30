@@ -62,4 +62,36 @@ export function checkModeration(text: string): ModerationResult {
   return { safe: true };
 }
 
+export interface RelevanceResult {
+  relevant: boolean;
+  warning?: string;
+}
+
+/**
+ * Softer than moderation — returns coaching nudges for low-effort input
+ * rather than hard-blocking. Used in assessment and chat.
+ */
+export function checkRelevance(text: string): RelevanceResult {
+  const trimmed = text.trim();
+  const words = trimmed.split(/\s+/).filter(Boolean);
+
+  if (words.length < 3) {
+    return { relevant: false, warning: "Try writing a complete sentence so I can give you better feedback." };
+  }
+
+  // Check for minimal sentence structure (at least one punctuation mark or 6+ words)
+  const hasPunctuation = /[.!?]/.test(trimmed);
+  if (!hasPunctuation && words.length < 6) {
+    return { relevant: false, warning: "Add a bit more detail — try ending with a period to form a complete thought." };
+  }
+
+  // Check for very low word variety
+  const uniqueRatio = new Set(words.map((w) => w.toLowerCase())).size / words.length;
+  if (words.length >= 5 && uniqueRatio < 0.3) {
+    return { relevant: false, warning: "Try using more varied words to express your idea clearly." };
+  }
+
+  return { relevant: true };
+}
+
 export { blocklist };
