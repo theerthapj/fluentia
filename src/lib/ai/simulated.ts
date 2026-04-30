@@ -122,15 +122,40 @@ export function generateFeedback(request: ConversationRequest): FeedbackPayload 
   const seed = request.message.length + request.history.length + scenario.title.length;
   const vocab = scenarioVocabulary[scenario.id] ?? scenarioVocabulary.default;
   const rewrites = rewrite(request.message, request.mode, request.level);
-  const topTip = grammar(request.message)[0]?.explanation ?? "Add one specific example to make your answer stronger.";
+  
+  const grammarCorrectionsList = grammar(request.message);
+  const isGenericGrammar = grammarCorrectionsList[0]?.explanation === "Use a complete sentence with a clear subject, verb, and idea.";
+  const hasGrammarIssue = !isGenericGrammar;
+  const topTip = grammarCorrectionsList[0]?.explanation ?? "Add one specific example to make your answer stronger.";
+
+  // Detect if previous AI message was a coaching request
+  const aiMessages = request.history.filter(m => m.role === "ai");
+  const lastAiMessage = aiMessages[aiMessages.length - 1];
+  const isRetryTurn = lastAiMessage?.content.includes("try rephrasing") || lastAiMessage?.content.includes("try again");
 
   // Simulated simple contextual response
-  let aiReply = "I understand. Let's explore that further. Could you give me another example?";
+  let nextQuestion = "I understand. Let's explore that further. Could you give me another example?";
   const lowerMsg = request.message.toLowerCase();
-  if (lowerMsg.includes("specials") || lowerMsg.includes("menu")) aiReply = "Our specials today are the grilled salmon and the vegetarian pasta. Does either of those sound good?";
-  else if (lowerMsg.includes("price") || lowerMsg.includes("cost")) aiReply = "The price depends on the specific options you choose, but it generally ranges from $15 to $25.";
-  else if (scenario.id === "job-interview" && lowerMsg.includes("experience")) aiReply = "That sounds like relevant experience. How did you handle any challenges during that time?";
-  else if (scenario.id === "friends-chat") aiReply = "Oh wow, that sounds really interesting! Tell me more about how that went.";
+  if (lowerMsg.includes("specials") || lowerMsg.includes("menu")) nextQuestion = "Our specials today are the grilled salmon and the vegetarian pasta. Does either of those sound good?";
+  else if (lowerMsg.includes("price") || lowerMsg.includes("cost")) nextQuestion = "The price depends on the specific options you choose, but it generally ranges from $15 to $25.";
+  else if (scenario.id === "job-interview" && lowerMsg.includes("experience")) nextQuestion = "That sounds like relevant experience. How did you handle any challenges during that time?";
+  else if (scenario.id === "friends-chat") nextQuestion = "Oh wow, that sounds really interesting! Tell me more about how that went.";
+
+  let aiReply = nextQuestion;
+
+  if (isRetryTurn) {
+    const previousUserMessages = request.history.filter(m => m.role === "user");
+    const previousUserMessage = previousUserMessages[previousUserMessages.length - 1];
+    const prevScore = previousUserMessage ? score(previousUserMessage.content) : 0;
+    
+    if (fluencyScore > prevScore || !hasGrammarIssue) {
+       aiReply = `Excellent improvement! Your response sounds much more ${request.mode === "formal" ? "professional" : "natural"} now. ${nextQuestion}`;
+    } else {
+       aiReply = `Good effort! You're getting closer. Let's keep practicing. ${nextQuestion}`;
+    }
+  } else if (fluencyScore < 6.5 || hasGrammarIssue) {
+     aiReply = `I understand. I've shared a quick tip above. Would you like to try rephrasing your response to see how it sounds, or should we continue?`;
+  }
 
   return {
     aiReply,
@@ -140,7 +165,7 @@ export function generateFeedback(request: ConversationRequest): FeedbackPayload 
     toneLabel: request.mode === "formal" ? "Polite and Professional" : "Friendly and Natural",
     strengths: pick(strengths.map((item) => `${item} (${scenario.title})`), seed, 3),
     improvements: pick(improvements, seed + 3, 3),
-    grammarCorrections: grammar(request.message),
+    grammarCorrections: grammarCorrectionsList,
     pronunciationNotes: [
       "Slow down slightly on important nouns so your listener catches the key idea.",
       request.mode === "formal" ? "Keep a steady pace and lower your tone at the end of confident statements." : "Use natural stress on friendly words so the sentence sounds relaxed.",
