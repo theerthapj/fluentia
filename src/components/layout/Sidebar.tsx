@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart2, Home, LayoutDashboard, MessageSquare, Settings, Volume2, Waves } from "lucide-react";
+import { BarChart2, Brain, Home, LayoutDashboard, MessageSquare, Settings, Waves } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
@@ -13,7 +13,7 @@ const items = [
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { href: "/mode", label: "Practice", Icon: MessageSquare },
   { href: "/free-chat", label: "Free Chat", Icon: Waves },
-  { href: "/pronunciation", label: "Pronunciation", Icon: Volume2 },
+  { href: "/pronunciation", label: "BrainBoost", Icon: Brain },
   { href: "/dashboard#progress", label: "Progress", Icon: BarChart2 },
   { href: "/settings", label: "Settings", Icon: Settings },
 ];
