@@ -75,7 +75,7 @@ export const assessmentQuestions = [
   {
     id: "pronunciation",
     kind: "choice",
-    category: "Pronunciation Confidence",
+    category: "Speaking Confidence",
     prompt: "How confident are you speaking English aloud?",
     options: ["Not very", "Somewhat", "Very confident"],
   },

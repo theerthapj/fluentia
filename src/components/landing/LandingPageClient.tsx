@@ -34,7 +34,7 @@ export function LandingPageClient() {
           <motion.h1 variants={fadeUp} className="mt-6 max-w-4xl text-4xl font-bold leading-tight sm:text-6xl">
             Master your next <br />
             <FluentiaTextCycle
-              words={["Job Interview", "Business Pitch", "Global Travel", "Daily Chat", "Pronunciation Drill"]}
+              words={["Job Interview", "Business Pitch", "Global Travel", "Daily Chat", "BrainBoost Zone"]}
               interval={3500}
             />{" "}
             with confidence.
@@ -55,7 +55,7 @@ export function LandingPageClient() {
             </a>
           </motion.div>
           <motion.div variants={fadeUp} className="mt-8 flex flex-wrap justify-center gap-3">
-            {["60 Structured Scenarios", "Free Chat + Pronunciation", "Voice + Text Support"].map((item) => (
+            {["60 Structured Scenarios", "Free Chat + BrainBoost", "Voice + Text Support"].map((item) => (
               <span key={item} className="rounded-full border border-border bg-surface/70 px-4 py-2 text-sm text-text-secondary">
                 {item}
               </span>
@@ -90,7 +90,7 @@ export function LandingPageClient() {
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {[
               [Target, "Tell us your level", "Take the quick assessment so Fluentia can personalize your practice."],
-              [MessageCircle, "Pick a real scenario", "Choose from formal, casual, free chat, or pronunciation practice."],
+              [MessageCircle, "Pick a real scenario", "Choose from formal, casual, free chat, or BrainBoost practice."],
               [Sparkles, "Practice, get coached, improve", "Get supportive feedback on fluency, tone, grammar, and vocabulary."],
             ].map(([Icon, title, copy], index) => {
               const StepIcon = Icon as typeof Target;
@@ -117,7 +117,7 @@ export function LandingPageClient() {
               [BarChart3, "Your Progress Dashboard", "Track fluency, scenarios, and recent feedback over time."],
               [ShieldCheck, "Respectful by Design", "Moderation and cooldown protection keep practice safe."],
               [Volume2, "Listening Controls", "Global read-aloud settings let you practice at your pace."],
-              [Waves, "Pronunciation Practice", "Work on minimal pairs, fluency lines, and tongue twisters."],
+              [Waves, "BrainBoost Practice", "Work on minimal pairs, fluency lines, and tongue twisters."],
             ].map(([Icon, title, copy]) => {
               const FeatureIcon = Icon as typeof Mic;
               return (

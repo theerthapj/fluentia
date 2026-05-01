@@ -4,10 +4,18 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { Briefcase, Coffee, Brain, Type, MessageCircle } from "lucide-react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { GlassCard } from "@/components/shared/GlassCard";
-import { modeCards } from "@/lib/constants";
 import type { Mode } from "@/types";
+
+const practiceOptions = [
+  { id: "formal", title: "Formal", description: "Interviews, presentations, client calls, workplace meetings", Icon: Briefcase },
+  { id: "casual", title: "Casual", description: "Friends, travel, shopping, everyday conversations", Icon: Coffee },
+  { id: "odd-word", title: "Find the Odd Word", description: "Three words share a meaning — one is the odd one out. Can you spot it?", Icon: Brain },
+  { id: "spelling", title: "Spot the Correct Spelling", description: "Four spellings, only one is right. Choose wisely!", Icon: Type },
+  { id: "fix-idiom", title: "Fix the Idiom", description: "Rearrange the word tiles to rebuild the famous English phrase.", Icon: MessageCircle },
+];
 
 export default function ModePage() {
   const router = useRouter();
@@ -19,10 +27,14 @@ export default function ModePage() {
 
   if (!hydrated) return null;
 
-  const choose = (mode: Mode) => {
-    setMode(mode);
-    setConversationKind("scenario");
-    router.push("/scenarios");
+  const choose = (id: string) => {
+    if (id === "formal" || id === "casual") {
+      setMode(id as Mode);
+      setConversationKind("scenario");
+      router.push("/scenarios");
+    } else {
+      router.push(`/pronunciation/quiz?type=${id}`);
+    }
   };
 
   return (
@@ -35,14 +47,14 @@ export default function ModePage() {
           Your current level is <strong className="text-text-primary">{state.level ?? "beginner"}</strong>, so you will see 10 scenarios for each selected mode.
         </div>
         <div className="mt-8 grid gap-5 md:grid-cols-2">
-          {modeCards.map(({ id, title, examples, Icon }) => (
+          {practiceOptions.map(({ id, title, description, Icon }) => (
             <GlassCard key={id} hover className="p-6">
               <motion.button id={`mode-${id}`} onClick={() => choose(id)} className="block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-accent-primary">
                 <span className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-accent-primary to-accent-secondary text-bg-primary">
                   <Icon aria-hidden="true" className="h-7 w-7" />
                 </span>
-                <h2 className="mt-6 text-3xl font-semibold">{title}</h2>
-                <p className="mt-3 text-text-secondary">{examples}</p>
+                <h2 className="mt-6 text-2xl font-semibold">{title}</h2>
+                <p className="mt-3 text-text-secondary">{description}</p>
               </motion.button>
             </GlassCard>
           ))}

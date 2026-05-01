@@ -12,7 +12,6 @@ const links = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/mode", label: "Practice" },
   { href: "/free-chat", label: "Free Chat" },
-  { href: "/pronunciation", label: "Pronunciation" },
   { href: "/settings", label: "Settings" },
 ];
 

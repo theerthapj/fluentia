@@ -35,7 +35,7 @@ export function ScenarioHeader({
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-lg font-semibold">{title}</h1>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.18em] text-accent-primary">
-            <span>{kind.replace("-", " ")}</span>
+            <span>{kind === "pronunciation" ? "BrainBoost Zone" : kind.replace("-", " ")}</span>
             {mode ? <span>{mode} mode</span> : null}
             {scenario ? <span>{scenario.level}</span> : null}
           </div>

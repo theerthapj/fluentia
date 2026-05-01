@@ -13,7 +13,6 @@ const items = [
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { href: "/mode", label: "Practice", Icon: MessageSquare },
   { href: "/free-chat", label: "Free Chat", Icon: Waves },
-  { href: "/pronunciation", label: "BrainBoost", Icon: Brain },
   { href: "/dashboard#progress", label: "Progress", Icon: BarChart2 },
   { href: "/settings", label: "Settings", Icon: Settings },
 ];
