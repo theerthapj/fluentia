@@ -3,6 +3,7 @@
 import { ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ToneIndicator } from "@/components/feedback/ToneIndicator";
 import { RewriteCard } from "@/components/feedback/RewriteCard";
@@ -11,6 +12,7 @@ import { Button } from "@/components/shared/Button";
 import { ConfidenceMeter } from "@/components/shared/ConfidenceMeter";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { ScoreRing } from "@/components/shared/ScoreRing";
+import { getPronunciationExercise } from "@/lib/constants";
 
 export default function FeedbackPage() {
   const router = useRouter();
@@ -18,18 +20,26 @@ export default function FeedbackPage() {
   const feedback = state.lastFeedback;
 
   useEffect(() => {
-    if (!feedback || !state.selectedScenario || !state.level || !state.selectedMode || !state.conversationHistory.length) return;
-    addSession({
-      id: `${state.selectedScenario.id}-${feedback.fluencyScore}-${state.conversationHistory.length}`,
-      scenarioId: state.selectedScenario.id,
+    if (!feedback || !state.level || !state.conversationHistory.length) return;
+    const scenarioTitle =
+      state.activeConversationKind === "pronunciation"
+        ? getPronunciationExercise(state.selectedExerciseId).title
+        : state.selectedScenario?.title ?? "Free Chat";
+    const sessionId = `${state.activeConversationKind}-${state.selectedScenario?.id ?? state.selectedExerciseId ?? "free"}-${feedback.fluencyScore}-${state.conversationHistory.length}`;
+    const added = addSession({
+      id: sessionId,
+      scenarioId: state.selectedScenario?.id ?? state.selectedExerciseId ?? null,
+      scenarioTitle,
       mode: state.selectedMode,
       level: state.level,
+      kind: state.activeConversationKind,
       fluencyScore: feedback.fluencyScore,
       feedback,
       messages: state.conversationHistory,
       completedAt: new Date().toISOString(),
     });
-  }, [addSession, feedback, state.conversationHistory, state.level, state.selectedMode, state.selectedScenario]);
+    if (added) toast.success("Session saved to your dashboard.");
+  }, [addSession, feedback, state.activeConversationKind, state.conversationHistory, state.level, state.selectedExerciseId, state.selectedMode, state.selectedScenario]);
 
   if (!feedback) {
     return (
@@ -37,11 +47,18 @@ export default function FeedbackPage() {
         <GlassCard className="max-w-md p-7 text-center">
           <h1 className="text-3xl font-bold">No feedback yet</h1>
           <p className="mt-3 text-text-secondary">Complete a practice response first.</p>
-          <Button id="feedback-no-data-scenarios" className="mt-6" onClick={() => router.push("/scenarios")}>Choose Scenario</Button>
+          <Button id="feedback-no-data-scenarios" className="mt-6" onClick={() => router.push("/mode")}>Choose Practice</Button>
         </GlassCard>
       </main>
     );
   }
+
+  const retryHref =
+    state.activeConversationKind === "pronunciation"
+      ? `/chat?kind=pronunciation&exercise=${state.selectedExerciseId ?? ""}`
+      : state.activeConversationKind === "free-chat"
+        ? "/chat?kind=free-chat"
+        : `/chat?kind=scenario&scenario=${state.selectedScenario?.id ?? ""}`;
 
   return (
     <main className="mesh-gradient min-h-screen px-5 py-10">
@@ -59,7 +76,7 @@ export default function FeedbackPage() {
               <h2 className="text-2xl font-semibold">What You Did Well</h2>
               <ul className="mt-4 grid gap-3">
                 {feedback.strengths.map((item) => (
-                  <li key={item} className="flex gap-3 text-text-secondary"><CheckCircle2 className="h-5 w-5 shrink-0 text-success" />{item}</li>
+                  <li key={item} className="flex gap-3 text-text-secondary"><CheckCircle2 aria-hidden="true" className="h-5 w-5 shrink-0 text-success" />{item}</li>
                 ))}
               </ul>
             </GlassCard>
@@ -67,7 +84,7 @@ export default function FeedbackPage() {
               <h2 className="text-2xl font-semibold">Areas to Improve</h2>
               <ul className="mt-4 grid gap-3">
                 {feedback.improvements.map((item) => (
-                  <li key={item} className="flex gap-3 text-text-secondary"><ArrowUpRight className="h-5 w-5 shrink-0 text-warning" />{item}</li>
+                  <li key={item} className="flex gap-3 text-text-secondary"><ArrowUpRight aria-hidden="true" className="h-5 w-5 shrink-0 text-warning" />{item}</li>
                 ))}
               </ul>
             </GlassCard>
@@ -96,7 +113,7 @@ export default function FeedbackPage() {
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {feedback.vocabularySuggestions.map((item) => (
               <div key={item.word} className="rounded-2xl bg-white/5 p-4">
-                <p><span className="text-text-secondary">{item.word}</span> → <strong>{item.alternative}</strong></p>
+                <p><span className="text-text-secondary">{item.word}</span> to <strong>{item.alternative}</strong></p>
                 <p className="mt-2 text-sm text-text-secondary">{item.context}</p>
               </div>
             ))}
@@ -109,8 +126,8 @@ export default function FeedbackPage() {
         <GlassCard className="mt-5 p-6 text-center">
           <p className="text-lg text-text-secondary">{feedback.encouragementMessage}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button id="feedback-try-another" onClick={() => router.push(`/chat?scenario=${state.selectedScenario?.id ?? "daily-communication"}`)}>Try Another Response</Button>
-            <Button id="feedback-new-scenario" variant="secondary" onClick={() => router.push("/scenarios")}>New Scenario</Button>
+            <Button id="feedback-try-another" onClick={() => router.push(retryHref)}>Try Another Response</Button>
+            <Button id="feedback-new-scenario" variant="secondary" onClick={() => router.push("/mode")}>New Practice</Button>
             <Button id="feedback-home" variant="tertiary" onClick={() => router.push("/home")}>Home</Button>
           </div>
         </GlassCard>

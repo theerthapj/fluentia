@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { LevelBadge } from "@/components/assessment/LevelBadge";
@@ -28,66 +28,66 @@ function loadProgress(): SavedProgress | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as SavedProgress;
     if (typeof parsed.step === "number" && Array.isArray(parsed.answers)) return parsed;
-  } catch { /* corrupted data — start fresh */ }
+  } catch {}
   return null;
 }
 
 function saveProgress(step: number, answers: AssessmentAnswer[]) {
   try {
     window.localStorage.setItem(PROGRESS_KEY, JSON.stringify({ step, answers }));
-  } catch { /* localStorage full — silently continue */ }
+  } catch {}
 }
 
 function clearProgress() {
   try {
     window.localStorage.removeItem(PROGRESS_KEY);
-  } catch { /* ignore */ }
+  } catch {}
 }
 
 export default function AssessmentPage() {
   const router = useRouter();
+  const params = useSearchParams();
   const { setAssessment } = useAppState();
 
-  // Restore progress from localStorage on mount
   const restored = useMemo(() => {
     if (typeof window === "undefined") return null;
     return loadProgress();
   }, []);
+  const initialQuestion = assessmentQuestions[restored?.step ?? 0];
+  const initialAnswer = restored?.answers.find((answer) => answer.questionId === initialQuestion.id);
 
   const [step, setStep] = useState(restored?.step ?? 0);
   const [answers, setAnswers] = useState<AssessmentAnswer[]>(restored?.answers ?? []);
-  const [textValue, setTextValue] = useState("");
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
+  const [textValue, setTextValue] = useState("options" in initialQuestion ? "" : (initialAnswer?.value ?? ""));
+  const [selectedOption, setSelectedOption] = useState<string | null>("options" in initialQuestion ? (initialAnswer?.value ?? null) : null);
+  const [direction, setDirection] = useState(1);
   const [result, setResult] = useState<{ level: Level; total: number } | null>(null);
   const [showPlan, setShowPlan] = useState(false);
   const [moderationWarning, setModerationWarning] = useState<string | null>(null);
 
   const question = assessmentQuestions[step];
+  const bannerMessage = params.get("message");
 
-  // Compute text validation live
-  const textValidation = useMemo(() => {
-    if (!("options" in question)) return validateTextInput(textValue);
-    return { valid: true };
-  }, [textValue, question]);
-
-  // Persist progress on every meaningful change
-  useEffect(() => {
-    saveProgress(step, answers);
-  }, [step, answers]);
-
-  // Restore text/option when navigating back to a previously-answered question
-  useEffect(() => {
-    const existing = answers.find((a) => a.questionId === question.id);
-    if ("options" in question) {
+  const syncDraftForStep = useCallback((nextStep: number, nextAnswers: AssessmentAnswer[]) => {
+    const nextQuestion = assessmentQuestions[nextStep];
+    const existing = nextAnswers.find((answer) => answer.questionId === nextQuestion.id);
+    if ("options" in nextQuestion) {
       setSelectedOption(existing?.value ?? null);
       setTextValue("");
     } else {
       setTextValue(existing?.value ?? "");
       setSelectedOption(null);
     }
-    setModerationWarning(null);
-  }, [step, question, answers]);
+  }, []);
+
+  const textValidation = useMemo(() => {
+    if (!("options" in question)) return validateTextInput(textValue);
+    return { valid: true, checklist: { hasEnoughWords: true, hasEnoughDetail: true, hasSentenceShape: true } };
+  }, [textValue, question]);
+
+  useEffect(() => {
+    saveProgress(step, answers);
+  }, [step, answers]);
 
   const saveAnswer = useCallback(
     async (value: string) => {
@@ -98,32 +98,40 @@ export default function AssessmentPage() {
       setModerationWarning(null);
 
       if (step < assessmentQuestions.length - 1) {
+        const nextStep = step + 1;
         setDirection(1);
-        setStep((current) => current + 1);
+        setStep(nextStep);
+        syncDraftForStep(nextStep, next);
         return;
       }
 
-      // Final step — score and complete
       clearProgress();
-      const response = await fetch("/api/assessment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ answers: next }) });
+      const response = await fetch("/api/assessment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: next }),
+      });
       const scored = response.ok ? await response.json() : scoreAssessment(next);
       setAssessment(scored.level, scored.scores);
       setResult({ level: scored.level, total: scored.scores.total });
       setShowPlan(true);
     },
-    [answers, question, step, setAssessment],
+    [answers, question.id, step, setAssessment, syncDraftForStep],
   );
 
   const handleTextSubmit = useCallback(() => {
-    // Run moderation check on text answers
     const modResult = checkModeration(textValue);
     if (!modResult.safe) {
       setModerationWarning(modResult.warning ?? "Please rephrase your response.");
       return;
     }
+    if (!textValidation.valid) {
+      setModerationWarning(textValidation.reason ?? "Please write a clearer response.");
+      return;
+    }
     setModerationWarning(null);
     void saveAnswer(textValue);
-  }, [textValue, saveAnswer]);
+  }, [textValue, saveAnswer, textValidation]);
 
   const handleMcqConfirm = useCallback(() => {
     if (!selectedOption) return;
@@ -133,31 +141,32 @@ export default function AssessmentPage() {
 
   const goBack = useCallback(() => {
     if (step <= 0) return;
-    // Save current text as draft so it's restored when returning
+    let nextAnswers = answers;
     if (!("options" in question) && textValue.trim()) {
-      setAnswers((prev) => [...prev.filter((a) => a.questionId !== question.id), { questionId: question.id, value: textValue }]);
+      nextAnswers = [...answers.filter((answer) => answer.questionId !== question.id), { questionId: question.id, value: textValue }];
+      setAnswers(nextAnswers);
     }
+    const nextStep = step - 1;
     setDirection(-1);
     setModerationWarning(null);
-    setStep((current) => current - 1);
-  }, [step, question, textValue]);
+    setStep(nextStep);
+    syncDraftForStep(nextStep, nextAnswers);
+  }, [answers, question, step, syncDraftForStep, textValue]);
 
   const handleStartOver = useCallback(() => {
     clearProgress();
     setStep(0);
     setAnswers([]);
-    setTextValue("");
-    setSelectedOption(null);
+    syncDraftForStep(0, []);
     setDirection(1);
     setModerationWarning(null);
-  }, []);
+  }, [syncDraftForStep]);
 
-  // --- Result screen ---
   if (result) {
     return (
       <main className="mesh-gradient grid min-h-screen place-items-center px-5 py-10">
         <GlassCard className="max-w-xl p-7 text-center sm:p-10">
-          <CheckCircle2 aria-hidden className="mx-auto h-12 w-12 text-success" />
+          <CheckCircle2 aria-hidden="true" className="mx-auto h-12 w-12 text-success" />
           <h1 className="mt-5 text-4xl font-bold">Assessment Complete</h1>
           <div className="mt-5"><LevelBadge level={result.level} /></div>
           <p className="mt-4 text-text-secondary">{levelCopy[result.level]} Your score was {result.total}/10.</p>
@@ -168,11 +177,13 @@ export default function AssessmentPage() {
     );
   }
 
-  // --- Assessment flow ---
   return (
     <main className="mesh-gradient min-h-screen px-5 py-10">
       <div className="mx-auto max-w-2xl">
         <ProgressStepper total={assessmentQuestions.length} current={step} />
+        {bannerMessage ? (
+          <div className="mt-5 rounded-2xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">{bannerMessage}</div>
+        ) : null}
 
         <AnimatePresence mode="wait" custom={direction}>
           <motion.section
@@ -188,8 +199,8 @@ export default function AssessmentPage() {
               <h1 className="mt-3 text-3xl font-semibold">{question.prompt}</h1>
 
               {"options" in question ? (
-                /* --- MCQ with Confirm step --- */
-                <div className="mt-6">
+                <fieldset className="mt-6">
+                  <legend className="sr-only">{question.prompt}</legend>
                   <div className="grid gap-3">
                     {question.options.map((option, index) => (
                       <button
@@ -210,15 +221,17 @@ export default function AssessmentPage() {
                     {selectedOption ? (
                       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.2 }}>
                         <Button id={`assessment-confirm-${step}`} className="mt-4 w-full" onClick={handleMcqConfirm}>
-                          Confirm Selection →
+                          Confirm Selection
                         </Button>
                       </motion.div>
                     ) : null}
                   </AnimatePresence>
-                </div>
+                </fieldset>
               ) : (
-                /* --- Text input with validation --- */
                 <div className="mt-6">
+                  <div className="rounded-2xl border border-border bg-surface/50 p-4 text-sm text-text-secondary">
+                    Write 1-3 clear sentences. We look for enough detail, at least 5 words, and one complete thought.
+                  </div>
                   <textarea
                     id={`assessment-text-${question.id}`}
                     value={textValue}
@@ -227,45 +240,31 @@ export default function AssessmentPage() {
                       setModerationWarning(null);
                     }}
                     rows={6}
-                    className="w-full rounded-2xl border border-border bg-surface p-4 text-text-primary outline-none transition focus:border-accent-primary"
-                    placeholder="Write 2–3 clear sentences..."
+                    className="mt-4 w-full rounded-2xl border border-border bg-surface p-4 text-text-primary outline-none transition focus:border-accent-primary"
+                    placeholder="Write your answer here..."
                   />
-
-                  {/* Validation helper text */}
+                  <div className="mt-3 grid gap-2 text-sm text-text-secondary sm:grid-cols-3">
+                    <span className={textValidation.checklist.hasEnoughWords ? "text-success" : ""}>At least 5 words</span>
+                    <span className={textValidation.checklist.hasEnoughDetail ? "text-success" : ""}>Enough detail</span>
+                    <span className={textValidation.checklist.hasSentenceShape ? "text-success" : ""}>Complete sentence</span>
+                  </div>
                   {textValue.trim().length > 0 && !textValidation.valid ? (
-                    <motion.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-2 text-sm text-amber-400"
-                    >
+                    <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-amber-400">
                       {textValidation.reason}
                     </motion.p>
                   ) : null}
-
-                  {/* Moderation warning */}
                   {moderationWarning ? (
-                    <motion.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-2 text-sm text-error"
-                    >
+                    <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-error">
                       {moderationWarning}
                     </motion.p>
                   ) : null}
-
-                  <Button
-                    id={`assessment-next-${question.id}`}
-                    disabled={!textValidation.valid}
-                    className="mt-4 w-full"
-                    onClick={handleTextSubmit}
-                  >
+                  <Button id={`assessment-next-${question.id}`} className="mt-4 w-full" onClick={handleTextSubmit}>
                     Next
                   </Button>
                 </div>
               )}
             </GlassCard>
 
-            {/* Back button + Start Over */}
             <div className="mt-4 flex items-center justify-between">
               {step > 0 ? (
                 <button
@@ -273,14 +272,14 @@ export default function AssessmentPage() {
                   onClick={goBack}
                   className="flex items-center gap-1.5 text-sm text-text-secondary transition hover:text-accent-primary"
                 >
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft aria-hidden="true" className="h-4 w-4" />
                   Back
                 </button>
               ) : <span />}
               <button
                 id="assessment-start-over"
                 onClick={handleStartOver}
-                className="text-sm text-text-secondary/60 transition hover:text-text-secondary"
+                className="text-sm text-text-secondary/80 transition hover:text-text-secondary"
               >
                 Start Over
               </button>

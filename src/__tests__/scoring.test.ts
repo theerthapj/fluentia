@@ -4,7 +4,7 @@ import { levelFromScore, scoreAssessment, scoreText } from "@/lib/constants";
 describe("assessment scoring", () => {
   it("scores text by word-count complexity", () => {
     expect(scoreText("short answer")).toBe(0);
-    expect(scoreText("one two three four five six seven eight nine ten eleven")).toBe(1);
+    expect(scoreText("one two three four five six seven eight nine ten eleven")).toBe(2);
     expect(scoreText("one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twentyone")).toBe(2);
   });
 

@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return NextResponse.json({ transcript: null, fallback: true });
+  if (!apiKey) {
+    return NextResponse.json({ 
+      transcript: "This is a simulated response. To enable real voice transcription, please add your OPENAI_API_KEY to the environment variables.", 
+      fallback: true 
+    });
+  }
 
   const formData = await request.formData();
   const audio = formData.get("audio");

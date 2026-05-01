@@ -23,9 +23,11 @@ export function DashboardClient() {
     }
   }, [hydrated, router, state.assessmentCompleted]);
 
+  if (!hydrated) return null;
+
   const sessions = state.sessions ?? [];
   const average = sessions.length ? sessions.reduce((sum, session) => sum + session.fluencyScore, 0) / sessions.length : 0;
-  const uniqueScenarios = new Set(sessions.map((session) => session.scenarioId)).size;
+  const uniqueScenarios = new Set(sessions.map((session) => session.scenarioTitle)).size;
   const lastPracticed = sessions[0]?.completedAt;
 
   return (
@@ -42,14 +44,21 @@ export function DashboardClient() {
                   <span className="text-sm text-text-secondary">Last practiced: {relativeTime(lastPracticed)}</span>
                 </div>
               </div>
-              <Button id="dashboard-start-session" size="lg" onClick={() => router.push("/mode")}>Start New Session</Button>
+              <div className="flex flex-wrap gap-3">
+                <Button id="dashboard-start-session" size="lg" onClick={() => router.push("/mode")}>
+                  Start New Session
+                </Button>
+                <Button id="dashboard-free-chat" size="lg" variant="secondary" onClick={() => router.push("/free-chat")}>
+                  Open Free Chat
+                </Button>
+              </div>
             </div>
           </GlassCard>
 
           <section id="progress" className="mt-6 grid gap-5 md:grid-cols-3">
             <StatCard id="dashboard-sessions-count" value={sessions.length} label="Sessions Completed" />
             <StatCard id="dashboard-average-score" value={sessions.length ? average.toFixed(1) : "0.0"} label="Average Fluency Score" />
-            <StatCard id="dashboard-scenarios-tried" value={uniqueScenarios} label="Scenarios Tried" />
+            <StatCard id="dashboard-scenarios-tried" value={uniqueScenarios} label="Practice Tracks Tried" />
           </section>
 
           <GlassCard className="mt-6 p-6">
@@ -68,7 +77,7 @@ export function DashboardClient() {
                 ))
               ) : (
                 <div className="grid place-items-center rounded-2xl border border-dashed border-border p-10 text-center">
-                  <MessageSquare aria-hidden className="h-12 w-12 text-accent-primary" />
+                  <MessageSquare aria-hidden="true" className="h-12 w-12 text-accent-primary" />
                   <p className="mt-4 text-text-secondary">No sessions yet. Start your first practice.</p>
                 </div>
               )}

@@ -1,42 +1,55 @@
-import { wordCount } from "@/lib/utils";
-
 export interface ValidationResult {
   valid: boolean;
   reason?: string;
+  checklist: {
+    hasEnoughWords: boolean;
+    hasEnoughDetail: boolean;
+    hasSentenceShape: boolean;
+  };
 }
 
-/**
- * Validates text input for assessment and practice prompts.
- * Enforces minimum quality thresholds to prevent gaming.
- */
 export function validateTextInput(text: string): ValidationResult {
   const trimmed = text.trim();
-
-  if (trimmed.length < 40) {
-    return { valid: false, reason: "Please write at least 2–3 complete sentences (minimum 40 characters)." };
-  }
-
   const words = trimmed.split(/\s+/).filter(Boolean);
-  if (words.length < 5) {
-    return { valid: false, reason: "Please use at least 5 words in your response." };
+  const hasEnoughWords = words.length >= 5;
+  const hasEnoughDetail = trimmed.length >= 24;
+  const hasSentenceShape = /[.!?]/.test(trimmed) || words.length >= 8;
+
+  if (!trimmed) {
+    return {
+      valid: false,
+      reason: "Write 1-3 clear sentences so Fluentia can assess your English.",
+      checklist: { hasEnoughWords, hasEnoughDetail, hasSentenceShape },
+    };
   }
 
-  // Block strings with high single-character repetition (e.g. "aaaaa", "!!!!!")
   if (/([a-z!?])\1{3,}/i.test(trimmed)) {
-    return { valid: false, reason: "Please avoid repeated characters and write a clear sentence." };
+    return {
+      valid: false,
+      reason: "Please avoid repeated characters and write a clear sentence.",
+      checklist: { hasEnoughWords, hasEnoughDetail, hasSentenceShape },
+    };
   }
 
-  // Require at least one English vowel (catches non-Latin gibberish)
   const letters = trimmed.replace(/[^a-zA-Z]/g, "");
   if (letters.length > 0 && !/[aeiouAEIOU]/.test(letters)) {
-    return { valid: false, reason: "Please write your response in English." };
+    return {
+      valid: false,
+      reason: "Please write your response in English.",
+      checklist: { hasEnoughWords, hasEnoughDetail, hasSentenceShape },
+    };
   }
 
-  // Block low word variety (catches "banana banana banana…")
-  const uniqueRatio = new Set(words.map((w) => w.toLowerCase())).size / words.length;
-  if (uniqueRatio < 0.3) {
-    return { valid: false, reason: "Please use more varied words in your response." };
+  const uniqueRatio = words.length ? new Set(words.map((word) => word.toLowerCase())).size / words.length : 0;
+  if (words.length >= 5 && uniqueRatio < 0.3) {
+    return {
+      valid: false,
+      reason: "Please use more varied words in your response.",
+      checklist: { hasEnoughWords, hasEnoughDetail, hasSentenceShape },
+    };
   }
 
-  return { valid: true };
+  const valid = hasEnoughWords && hasEnoughDetail && hasSentenceShape;
+  const reason = valid ? undefined : "Aim for at least 5 words, a little detail, and one complete sentence.";
+  return { valid, reason, checklist: { hasEnoughWords, hasEnoughDetail, hasSentenceShape } };
 }

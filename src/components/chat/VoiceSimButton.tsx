@@ -5,20 +5,19 @@ import { Loader2, Mic, Square } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fallbackText: string; onCapture: (text: string) => void }) {
+export function VoiceSimButton({
+  id,
+  onCapture,
+  disabled,
+}: {
+  id: string;
+  onCapture: (text: string) => void;
+  disabled?: boolean;
+}) {
   const [status, setStatus] = useState<"idle" | "recording" | "analyzing">("idle");
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timeoutRef = useRef<number | null>(null);
-
-  const isSimulated = process.env.NEXT_PUBLIC_AI_MODE === "simulated";
-
-  const showComingSoon = () => {
-    toast.info("🎙️ Voice Input — Coming Soon!", {
-      id: "voice-coming-soon",
-      description: "Voice recording is not yet available. Please type your response for now.",
-    });
-  };
 
   const transcribe = async (blob: Blob) => {
     setStatus("analyzing");
@@ -29,12 +28,12 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
       const data = (await response.json()) as { transcript?: string | null; fallback?: boolean };
       if (data.transcript) {
         onCapture(data.transcript);
-        toast.success("Voice captured ✓");
+        toast.success("Voice captured.");
       } else {
-        toast.error("Could not transcribe audio. Please type your response.");
+        toast.error("Voice transcription is unavailable right now. Please type your response.");
       }
     } catch {
-      toast.error("Voice transcription unavailable. Please type your response.");
+      toast.error("Voice transcription is unavailable right now. Please type your response.");
     } finally {
       setStatus("idle");
     }
@@ -46,8 +45,8 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
   };
 
   const startRecording = async () => {
-    if (isSimulated || !navigator.mediaDevices?.getUserMedia) {
-      showComingSoon();
+    if (!navigator.mediaDevices?.getUserMedia) {
+      toast.error("This browser does not support voice capture. Please type your response.");
       return;
     }
     try {
@@ -65,8 +64,18 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
       recorder.start();
       setStatus("recording");
       timeoutRef.current = window.setTimeout(stopRecording, 30_000);
-    } catch {
-      toast.error("Microphone access denied. Please type your response.");
+    } catch (error) {
+      console.error("Voice capture error:", error);
+      let errorMessage = "Microphone access denied.";
+      if (error instanceof DOMException) {
+        if (error.name === "NotFoundError") errorMessage = "No microphone found. Please connect a mic.";
+        else if (error.name === "NotReadableError") errorMessage = "Microphone is already in use by another app.";
+        else if (error.name === "NotAllowedError") errorMessage = "Microphone access blocked by browser or OS.";
+        else errorMessage = `Microphone error: ${error.message}`;
+      } else if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      toast.error(`${errorMessage} Please type your response.`);
     }
   };
 
@@ -74,28 +83,18 @@ export function VoiceSimButton({ id, fallbackText, onCapture }: { id: string; fa
     <div className="flex items-center gap-2">
       <button
         id={id}
-        aria-label={isSimulated ? "Voice input coming soon" : status === "recording" ? "Stop voice recording" : "Start voice recording"}
+        aria-label={status === "recording" ? "Stop voice recording" : "Start voice recording"}
         type="button"
         onClick={() => (status === "recording" ? stopRecording() : startRecording())}
-        disabled={status === "analyzing"}
+        disabled={disabled || status === "analyzing"}
         className={cn(
           "relative grid h-12 w-12 shrink-0 place-items-center rounded-full transition disabled:opacity-70",
-          isSimulated
-            ? "bg-white/10 text-text-secondary hover:bg-white/15"
-            : status === "recording"
-              ? "pulse-teal bg-error text-white"
-              : "bg-accent-primary text-bg-primary hover:bg-teal-300",
+          status === "recording" ? "pulse-teal bg-error text-white" : "bg-accent-primary text-bg-primary hover:bg-teal-300",
         )}
       >
-        {status === "analyzing" ? <Loader2 aria-hidden className="h-5 w-5 animate-spin" /> : status === "recording" ? <Square aria-hidden className="h-5 w-5" /> : <Mic aria-hidden className="h-5 w-5" />}
-        {isSimulated ? (
-          <span className="absolute -right-1 -top-1 rounded-full bg-accent-secondary px-1.5 py-0.5 text-[9px] font-bold leading-none text-white">
-            SOON
-          </span>
-        ) : null}
+        {status === "analyzing" ? <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" /> : status === "recording" ? <Square aria-hidden="true" className="h-5 w-5" /> : <Mic aria-hidden="true" className="h-5 w-5" />}
       </button>
       {status !== "idle" ? <span className="hidden text-xs text-text-secondary sm:inline">{status === "recording" ? "Recording... tap to stop" : "Analyzing..."}</span> : null}
     </div>
   );
 }
-

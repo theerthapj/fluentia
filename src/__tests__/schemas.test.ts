@@ -13,4 +13,17 @@ describe("schemas", () => {
   it("rejects incomplete conversation requests", () => {
     expect(ConversationRequestSchema.safeParse({ message: "hello" }).success).toBe(false);
   });
+
+  it("accepts structured conversation requests", () => {
+    expect(
+      ConversationRequestSchema.safeParse({
+        message: "I would like to introduce myself clearly.",
+        kind: "scenario",
+        scenarioId: "formal-beginner-job-intro",
+        mode: "formal",
+        level: "beginner",
+        history: [],
+      }).success,
+    ).toBe(true);
+  });
 });

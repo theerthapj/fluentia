@@ -2,6 +2,9 @@ import { z } from "zod";
 
 export const LevelSchema = z.enum(["beginner", "intermediate", "advanced"]);
 export const ModeSchema = z.enum(["formal", "casual"]);
+export const ConversationKindSchema = z.enum(["scenario", "free-chat", "pronunciation"]);
+export const PlaybackSpeedSchema = z.enum(["slow", "normal", "fast"]);
+export const PreferredInputModeSchema = z.enum(["text", "voice"]);
 
 export const MessageSchema = z.object({
   id: z.string(),
@@ -44,6 +47,7 @@ export const AssessmentResponseSchema = z.object({
 });
 
 export const FeedbackPayloadSchema = z.object({
+  aiReply: z.string().min(1),
   quickTip: z.string().min(1),
   fluencyScore: z.number().min(0).max(10),
   confidenceLevel: z.enum(["low", "medium", "high"]),
@@ -76,12 +80,21 @@ export const FeedbackPayloadSchema = z.object({
   safetyStatus: z.enum(["safe", "blocked"]),
 });
 
+export const AppPreferencesSchema = z.object({
+  listeningEnabled: z.boolean(),
+  playbackSpeed: PlaybackSpeedSchema,
+  preferredInputMode: PreferredInputModeSchema,
+});
+
 export const ConversationRequestSchema = z.object({
   message: z.string().min(1).max(1200),
-  scenarioId: z.string().min(1),
-  mode: ModeSchema,
+  kind: ConversationKindSchema,
+  scenarioId: z.string().optional().nullable(),
+  exerciseId: z.string().optional().nullable(),
+  mode: ModeSchema.nullable(),
   level: LevelSchema,
   history: z.array(MessageSchema),
+  requestWrapUp: z.boolean().optional(),
 });
 
 export const ConversationResponseSchema = z.object({
@@ -90,6 +103,7 @@ export const ConversationResponseSchema = z.object({
   feedback: FeedbackPayloadSchema.optional(),
   warning: z.string().optional(),
   category: z.string().optional(),
+  provider: z.enum(["live", "simulated"]).optional(),
 });
 
 export type ConversationRequestInput = z.infer<typeof ConversationRequestSchema>;

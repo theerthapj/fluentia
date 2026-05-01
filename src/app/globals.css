@@ -16,6 +16,10 @@
   --border: rgba(255,255,255,0.08);
 }
 
+.dark {
+  --background: oklch(0.14 0.02 257);
+}
+
 @theme inline {
   --color-bg-primary: var(--bg-primary);
   --color-bg-secondary: var(--bg-secondary);
@@ -108,6 +112,31 @@ a {
     radial-gradient(circle at 82% 28%, rgba(59, 130, 246, 0.24), transparent 36%),
     radial-gradient(circle at 50% 90%, rgba(20, 184, 166, 0.14), transparent 28%),
     var(--bg-primary);
+}
+
+.lab-bg::before,
+.lab-bg::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+  height: 18rem;
+  width: 18rem;
+  border-radius: 999px;
+  filter: blur(100px);
+  opacity: 0.1;
+}
+
+.lab-bg::before {
+  background: var(--accent-primary);
+  left: 12%;
+  top: -30%;
+}
+
+.lab-bg::after {
+  background: var(--accent-secondary);
+  bottom: -30%;
+  right: 12%;
 }
 
 .pulse-teal {

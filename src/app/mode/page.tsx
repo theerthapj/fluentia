@@ -11,13 +11,17 @@ import type { Mode } from "@/types";
 
 export default function ModePage() {
   const router = useRouter();
-  const { state, hydrated, setMode } = useAppState();
+  const { state, hydrated, setConversationKind, setMode } = useAppState();
+
   useEffect(() => {
     if (hydrated && !state.assessmentCompleted) router.replace("/assessment");
   }, [hydrated, router, state.assessmentCompleted]);
 
+  if (!hydrated) return null;
+
   const choose = (mode: Mode) => {
     setMode(mode);
+    setConversationKind("scenario");
     router.push("/scenarios");
   };
 
@@ -27,12 +31,15 @@ export default function ModePage() {
         <Breadcrumb current="Choose Mode" />
         <h1 className="gradient-text text-4xl font-bold">Choose Your Practice Mode</h1>
         <p className="mt-3 text-text-secondary">Match your coaching tone to the real-world situation.</p>
+        <div className="mt-4 rounded-2xl border border-border bg-surface/40 p-4 text-sm text-text-secondary">
+          Your current level is <strong className="text-text-primary">{state.level ?? "beginner"}</strong>, so you will see 10 scenarios for each selected mode.
+        </div>
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           {modeCards.map(({ id, title, examples, Icon }) => (
             <GlassCard key={id} hover className="p-6">
               <motion.button id={`mode-${id}`} onClick={() => choose(id)} className="block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-accent-primary">
                 <span className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-accent-primary to-accent-secondary text-bg-primary">
-                  <Icon aria-hidden className="h-7 w-7" />
+                  <Icon aria-hidden="true" className="h-7 w-7" />
                 </span>
                 <h2 className="mt-6 text-3xl font-semibold">{title}</h2>
                 <p className="mt-3 text-text-secondary">{examples}</p>

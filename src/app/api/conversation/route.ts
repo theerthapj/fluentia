@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
+import { getConversationProvider } from "@/lib/ai/provider";
 import { ConversationRequestSchema } from "@/lib/ai/schemas";
-import { simulatedProvider } from "@/lib/ai/simulated";
 import { checkModeration } from "@/lib/moderation/checker";
 import { uid } from "@/lib/utils";
 
@@ -13,14 +13,30 @@ export async function POST(request: Request) {
   const moderation = checkModeration(parsed.data.message);
   if (!moderation.safe) return NextResponse.json(moderation);
 
-  const provider = simulatedProvider;
-  const feedback = await provider.analyzeTurn(parsed.data);
-  const aiMessage = {
-    id: uid("ai"),
-    role: "ai" as const,
-    content: feedback.aiReply,
-    createdAt: new Date().toISOString(),
-  };
+  const { provider, kind } = getConversationProvider();
 
-  return NextResponse.json({ safe: true, aiMessage, feedback });
+  try {
+    const feedback = await provider.analyzeTurn(parsed.data);
+    const aiMessage = {
+      id: uid("ai"),
+      role: "ai" as const,
+      content: feedback.aiReply,
+      createdAt: new Date().toISOString(),
+    };
+
+    return NextResponse.json({ safe: true, aiMessage, feedback, provider: kind });
+  } catch {
+    if (kind === "simulated") {
+      return NextResponse.json({ safe: false, category: "provider", warning: "The conversation provider is temporarily unavailable." }, { status: 503 });
+    }
+
+    const fallback = await (await import("@/lib/ai/simulated")).simulatedProvider.analyzeTurn(parsed.data);
+    const aiMessage = {
+      id: uid("ai"),
+      role: "ai" as const,
+      content: fallback.aiReply,
+      createdAt: new Date().toISOString(),
+    };
+    return NextResponse.json({ safe: true, aiMessage, feedback: fallback, provider: "simulated" });
+  }
 }

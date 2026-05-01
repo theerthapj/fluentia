@@ -1,5 +1,4 @@
-import type { AiProvider } from "@/lib/ai/provider";
-import { getScenario } from "@/lib/constants";
+import { getPronunciationExercise, getScenario } from "@/lib/constants";
 import { sentenceCount, wordCount } from "@/lib/utils";
 import type { ConversationRequest, FeedbackPayload, Level, Mode } from "@/types";
 
@@ -10,8 +9,8 @@ const strengths = [
   "Your sentence order was easy to follow.",
   "You gave enough context for the listener to understand you.",
   "You used polite phrasing that creates a positive impression.",
-  "Your answer sounded natural for the scenario.",
-  "You stayed focused on the question.",
+  "Your answer sounded natural for the situation.",
+  "You stayed focused on the prompt.",
   "You included a clear reason or example.",
   "Your tone felt calm and respectful.",
   "You showed good awareness of the listener.",
@@ -24,14 +23,14 @@ const strengths = [
 const improvements = [
   "Add one specific example to make the answer more memorable.",
   "Use a smoother transition between ideas.",
-  "Try replacing repeated simple words with precise alternatives.",
+  "Try replacing repeated simple words with more precise alternatives.",
   "End with a confident closing sentence.",
   "Keep verb tense consistent throughout the response.",
   "Use a short pause after important phrases when speaking aloud.",
   "Make the first sentence more direct.",
   "Add a polite phrase to soften the request.",
   "Use fewer filler words and move straight to the key point.",
-  "Connect your reason to the scenario more explicitly.",
+  "Connect your reason to the situation more explicitly.",
   "Try one compound sentence to sound more fluent.",
   "Use active verbs to make the answer stronger.",
   "Avoid translating word-for-word from your first language.",
@@ -40,11 +39,11 @@ const improvements = [
 ];
 
 const encouragement = [
-  "Nice work. You are building the kind of confidence that comes from steady practice.",
+  "Nice work. You are building confidence through steady practice.",
   "That was a solid response. A little more structure will make it sound even more natural.",
   "You are on the right track. Keep practicing one clear idea at a time.",
   "Good progress. Your message is understandable, and now we can polish the delivery.",
-  "You handled the scenario well. Small vocabulary upgrades will make a big difference.",
+  "You handled the situation well. Small vocabulary upgrades will make a big difference.",
   "This is exactly the kind of practice that improves real speaking confidence.",
   "Your effort is visible. Keep your tone calm and your sentences complete.",
   "Strong attempt. Try saying the improved version aloud once or twice.",
@@ -53,15 +52,25 @@ const encouragement = [
 ];
 
 const scenarioVocabulary: Record<string, Array<[string, string, string]>> = {
-  "job-interview": [
-    ["good", "well-suited", "Use this when explaining why you fit a role."],
-    ["work", "contribute", "A stronger verb for professional impact."],
-    ["help", "support", "Sounds polished in formal workplace contexts."],
+  "formal-beginner-job-intro": [
+    ["good", "reliable", "Useful for describing a professional strength."],
+    ["work", "role", "A more specific word in workplace contexts."],
+    ["help", "support", "Sounds natural and collaborative in formal settings."],
   ],
-  "ordering-food": [
-    ["want", "would like", "More polite when ordering."],
-    ["give me", "could I have", "Softer and more natural with service staff."],
-    ["less hot", "mild", "A concise food-ordering word."],
+  "casual-beginner-ordering-food": [
+    ["want", "would like", "More polite when ordering food."],
+    ["give me", "could I have", "Sounds softer and more natural with service staff."],
+    ["less hot", "mild", "A concise word for spice preference."],
+  ],
+  pronunciation: [
+    ["say", "stress", "Useful when talking about pronunciation focus."],
+    ["sound", "syllable", "Helps explain where to pay attention in a word."],
+    ["slow", "pace", "A more coaching-friendly word for speaking speed."],
+  ],
+  freeChat: [
+    ["good", "thoughtful", "A more expressive adjective in open conversation."],
+    ["tell", "explain", "Useful when expanding a point with more clarity."],
+    ["very", "really", "A small upgrade that often sounds more natural in speech."],
   ],
   default: [
     ["very good", "excellent", "A concise upgrade for positive descriptions."],
@@ -94,7 +103,6 @@ function confidence(scoreValue: number, text: string) {
 function grammar(text: string) {
   const lower = text.toLowerCase();
 
-  // --- Existing patterns (verified correct) ---
   if (/\bi am go\b/.test(lower)) {
     return [{ original: "I am go", corrected: "I am going", explanation: "Use the -ing form after 'am' for present continuous actions." }];
   }
@@ -104,8 +112,6 @@ function grammar(text: string) {
   if (/\bi want\b/.test(lower)) {
     return [{ original: "I want", corrected: "I would like", explanation: "In polite or service situations, 'I would like' sounds softer and more natural." }];
   }
-
-  // --- New patterns (common ESL learner errors) ---
   if (/\b(they|we)\s+is\b/.test(lower)) {
     const subject = lower.match(/\b(they|we)\s+is\b/)?.[1] ?? "they";
     return [{ original: `${subject} is`, corrected: `${subject} are`, explanation: `Use 'are' with plural pronouns like '${subject}'.` }];
@@ -122,74 +128,92 @@ function grammar(text: string) {
     return [{ original: `${subject} have`, corrected: `${subject} has`, explanation: `Use 'has' with ${subject} in the present tense.` }];
   }
   if (/\bmore (better|bigger|smaller|faster|slower|easier|harder|worse)\b/.test(lower)) {
-    const adj = lower.match(/\bmore (better|bigger|smaller|faster|slower|easier|harder|worse)\b/)?.[1] ?? "better";
-    return [{ original: `more ${adj}`, corrected: adj, explanation: `'${adj}' is already a comparative form. Don't add 'more' before it.` }];
+    const adjective = lower.match(/\bmore (better|bigger|smaller|faster|slower|easier|harder|worse)\b/)?.[1] ?? "better";
+    return [{ original: `more ${adjective}`, corrected: adjective, explanation: `'${adjective}' is already a comparative form. Do not add 'more' before it.` }];
   }
   if (/\byesterday i go\b/.test(lower)) {
-    return [{ original: "yesterday I go", corrected: "yesterday I went", explanation: "Use past tense ('went') when talking about actions that already happened." }];
+    return [{ original: "yesterday I go", corrected: "yesterday I went", explanation: "Use the past tense ('went') for actions that already happened." }];
   }
   if (/\bthere is many\b/.test(lower)) {
-    return [{ original: "there is many", corrected: "there are many", explanation: "Use 'there are' before plural nouns ('many' indicates plural)." }];
+    return [{ original: "there is many", corrected: "there are many", explanation: "Use 'there are' before plural nouns." }];
   }
   if (/\bi am agree\b/.test(lower)) {
-    return [{ original: "I am agree", corrected: "I agree", explanation: "'Agree' is a verb, not an adjective. Say 'I agree' directly without 'am'." }];
+    return [{ original: "I am agree", corrected: "I agree", explanation: "'Agree' is a verb, so say 'I agree' directly." }];
   }
 
-  // Generic fallback — extract actual first sentence for a structural tip
   const firstSentence = text.split(/[.!?]/)[0]?.trim().slice(0, 70) || "My answer is good";
-  return [{ original: firstSentence, corrected: `${firstSentence}.`, explanation: "Make sure every sentence has a clear subject, verb, and ends with proper punctuation." }];
+  return [{ original: firstSentence, corrected: `${firstSentence}.`, explanation: "Make sure every sentence has a clear subject, verb, and ending punctuation." }];
 }
 
-function rewrite(text: string, mode: Mode, level: Level) {
-  const scenarioPhrase = mode === "formal" ? "Thank you for the opportunity." : "Thanks for asking.";
-  const simple = `${scenarioPhrase} ${text.trim().replace(/\s+/g, " ")}${/[.!?]$/.test(text.trim()) ? "" : "."}`;
+function rewrite(text: string, mode: Mode | null, level: Level, kind: ConversationRequest["kind"]) {
+  const intro =
+    kind === "pronunciation"
+      ? "Try this spoken version:"
+      : mode === "formal"
+        ? "Thank you for the opportunity."
+        : "Thanks for asking.";
+  const cleaned = text.trim().replace(/\s+/g, " ");
+  const simple = `${intro} ${cleaned}${/[.!?]$/.test(cleaned) ? "" : "."}`;
   const advanced =
     level === "advanced"
-      ? `${scenarioPhrase} I would be glad to share my perspective clearly and confidently: ${text.trim().replace(/\s+/g, " ")}`
-      : `${scenarioPhrase} I want to explain this clearly: ${text.trim().replace(/\s+/g, " ")}`;
+      ? `${intro} I would express it this way: ${cleaned}`
+      : `${intro} I want to say this more clearly: ${cleaned}`;
   return { simple, advanced: /[.!?]$/.test(advanced) ? advanced : `${advanced}.` };
 }
 
+function getContextLabel(request: ConversationRequest) {
+  if (request.kind === "free-chat") return "Free Chat";
+  if (request.kind === "pronunciation") return getPronunciationExercise(request.exerciseId).title;
+  return getScenario(request.scenarioId).title;
+}
+
+function getVocabularySet(request: ConversationRequest) {
+  if (request.kind === "pronunciation") return scenarioVocabulary.pronunciation;
+  if (request.kind === "free-chat") return scenarioVocabulary.freeChat;
+  return scenarioVocabulary[request.scenarioId ?? ""] ?? scenarioVocabulary.default;
+}
+
+function nextQuestion(request: ConversationRequest) {
+  const lowerMsg = request.message.toLowerCase();
+  if (request.kind === "pronunciation") {
+    const exercise = getPronunciationExercise(request.exerciseId);
+    return `Nice. Try it once more and give extra stress to these focus words: ${exercise.targetWords.slice(0, 3).join(", ")}.`;
+  }
+  if (request.kind === "free-chat") {
+    return "That is a thoughtful answer. What part of that experience feels most important to you now?";
+  }
+  if (lowerMsg.includes("specials") || lowerMsg.includes("menu")) {
+    return "Our specials today are grilled salmon and vegetarian pasta. Does either of those sound good?";
+  }
+  if (lowerMsg.includes("price") || lowerMsg.includes("cost")) {
+    return "The price depends on the option you choose, but it usually falls within a moderate range.";
+  }
+  return "I understand. Could you give me one more detail or example so we can make your answer even stronger?";
+}
+
 export function generateFeedback(request: ConversationRequest): FeedbackPayload {
-  const scenario = getScenario(request.scenarioId);
+  const label = getContextLabel(request);
   const fluencyScore = score(request.message);
   const confidenceResult = confidence(fluencyScore, request.message);
-  const seed = request.message.length + request.history.length + scenario.title.length;
-  const vocab = scenarioVocabulary[scenario.id] ?? scenarioVocabulary.default;
-  const rewrites = rewrite(request.message, request.mode, request.level);
-  
+  const seed = request.message.length + request.history.length + label.length;
+  const vocab = getVocabularySet(request);
+  const rewrites = rewrite(request.message, request.mode, request.level, request.kind);
   const grammarCorrectionsList = grammar(request.message);
-  const isGenericGrammar = grammarCorrectionsList[0]?.explanation === "Use a complete sentence with a clear subject, verb, and idea.";
-  const hasGrammarIssue = !isGenericGrammar;
   const topTip = grammarCorrectionsList[0]?.explanation ?? "Add one specific example to make your answer stronger.";
 
-  // Detect if previous AI message was a coaching request
-  const aiMessages = request.history.filter(m => m.role === "ai");
+  const aiMessages = request.history.filter((message) => message.role === "ai");
   const lastAiMessage = aiMessages[aiMessages.length - 1];
-  const isRetryTurn = lastAiMessage?.content.includes("try rephrasing") || lastAiMessage?.content.includes("try again");
+  const isRetryTurn = lastAiMessage?.content.toLowerCase().includes("try");
+  let aiReply = nextQuestion(request);
 
-  // Simulated simple contextual response
-  let nextQuestion = "I understand. Let's explore that further. Could you give me another example?";
-  const lowerMsg = request.message.toLowerCase();
-  if (lowerMsg.includes("specials") || lowerMsg.includes("menu")) nextQuestion = "Our specials today are the grilled salmon and the vegetarian pasta. Does either of those sound good?";
-  else if (lowerMsg.includes("price") || lowerMsg.includes("cost")) nextQuestion = "The price depends on the specific options you choose, but it generally ranges from $15 to $25.";
-  else if (scenario.id === "job-interview" && lowerMsg.includes("experience")) nextQuestion = "That sounds like relevant experience. How did you handle any challenges during that time?";
-  else if (scenario.id === "friends-chat") nextQuestion = "Oh wow, that sounds really interesting! Tell me more about how that went.";
-
-  let aiReply = nextQuestion;
-
-  if (isRetryTurn) {
-    const previousUserMessages = request.history.filter(m => m.role === "user");
-    const previousUserMessage = previousUserMessages[previousUserMessages.length - 1];
-    const prevScore = previousUserMessage ? score(previousUserMessage.content) : 0;
-    
-    if (fluencyScore > prevScore || !hasGrammarIssue) {
-       aiReply = `Excellent improvement! Your response sounds much more ${request.mode === "formal" ? "professional" : "natural"} now. ${nextQuestion}`;
-    } else {
-       aiReply = `Good effort! You're getting closer. Let's keep practicing. ${nextQuestion}`;
-    }
-  } else if (fluencyScore < 6.5 || hasGrammarIssue) {
-     aiReply = `I understand. I've shared a quick tip above. Would you like to try rephrasing your response to see how it sounds, or should we continue?`;
+  if (request.requestWrapUp) {
+    aiReply = request.kind === "pronunciation"
+      ? "You can stop here and review the pronunciation notes, or repeat the line once more for extra fluency."
+      : "You have enough material for a detailed review now. If you want, you can head to feedback or give one final answer first.";
+  } else if (isRetryTurn && fluencyScore >= 6.5) {
+    aiReply = `Excellent improvement. Your response sounds more ${request.mode === "formal" ? "polished" : "natural"} now. ${nextQuestion(request)}`;
+  } else if (fluencyScore < 6.5) {
+    aiReply = `I shared a quick tip above. Would you like to try rephrasing your answer, or should we move forward?`;
   }
 
   return {
@@ -197,14 +221,28 @@ export function generateFeedback(request: ConversationRequest): FeedbackPayload 
     quickTip: `Tip: ${topTip}`,
     fluencyScore,
     ...confidenceResult,
-    toneLabel: request.mode === "formal" ? "Polite and Professional" : "Friendly and Natural",
-    strengths: pick(strengths.map((item) => `${item} (${scenario.title})`), seed, 3),
+    toneLabel:
+      request.kind === "pronunciation"
+        ? "Clear and Controlled"
+        : request.kind === "free-chat"
+          ? "Friendly and Natural"
+          : request.mode === "formal"
+            ? "Polite and Professional"
+            : "Friendly and Natural",
+    strengths: pick(strengths.map((item) => `${item} (${label})`), seed, 3),
     improvements: pick(improvements, seed + 3, 3),
     grammarCorrections: grammarCorrectionsList,
-    pronunciationNotes: [
-      "Slow down slightly on important nouns so your listener catches the key idea.",
-      request.mode === "formal" ? "Keep a steady pace and lower your tone at the end of confident statements." : "Use natural stress on friendly words so the sentence sounds relaxed.",
-    ],
+    pronunciationNotes: request.kind === "pronunciation"
+      ? [
+          `${getPronunciationExercise(request.exerciseId).coachNote}`,
+          "Repeat the line once slowly, once at a natural pace, and once with stronger word stress.",
+        ]
+      : [
+          "Slow down slightly on important nouns so your listener catches the key idea.",
+          request.mode === "formal"
+            ? "Keep a steady pace and lower your tone at the end of confident statements."
+            : "Use natural stress on friendly words so the sentence sounds relaxed.",
+        ],
     vocabularySuggestions: vocab.map(([word, alternative, context]) => ({ word, alternative, context })),
     simpleRewrite: rewrites.simple,
     advancedRewrite: rewrites.advanced,
@@ -213,8 +251,8 @@ export function generateFeedback(request: ConversationRequest): FeedbackPayload 
   };
 }
 
-export const simulatedProvider: AiProvider = {
-  async analyzeTurn(request) {
+export const simulatedProvider = {
+  async analyzeTurn(request: ConversationRequest) {
     return generateFeedback(request);
   },
 };

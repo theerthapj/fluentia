@@ -12,10 +12,10 @@ export function InlineCoachingTip({ tip, onDismiss }: { tip: string; onDismiss: 
       className="glass-card border-l-2 border-l-accent-primary p-4 text-sm text-text-secondary"
     >
       <div className="flex items-start gap-3">
-        <Lightbulb aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-accent-primary" />
+        <Lightbulb aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-accent-primary" />
         <p className="flex-1">{tip}</p>
         <button id="inline-coaching-dismiss" aria-label="Dismiss coaching tip" onClick={onDismiss} className="rounded-full p-1 hover:bg-white/10">
-          <X aria-hidden className="h-4 w-4" />
+          <X aria-hidden="true" className="h-4 w-4" />
         </button>
       </div>
     </motion.div>

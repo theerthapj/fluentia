@@ -5,6 +5,10 @@ export type Mode = "formal" | "casual";
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 export type MessageRole = "user" | "ai" | "system";
 export type ConfidenceLevel = "low" | "medium" | "high";
+export type ConversationKind = "scenario" | "free-chat" | "pronunciation";
+export type PlaybackSpeed = "slow" | "normal" | "fast";
+export type PreferredInputMode = "text" | "voice";
+export type PronunciationExerciseType = "tongue-twister" | "minimal-pair" | "fluency-line";
 
 export interface Message {
   id: string;
@@ -16,16 +20,32 @@ export interface Message {
 export interface Scenario {
   id: string;
   title: string;
+  description: string;
+  mode: Mode;
+  level: Level;
   difficulty: Difficulty;
-  modes: Array<Mode | "both">;
+  category: string;
+  goals: string[];
+  starterPrompts: string[];
+  followUpPrompts: string[];
+  culturalNotes: string[];
+  voiceSample: string;
   iconName: string;
-  openingPrompt: string;
-  openingPromptAdvanced: string;
-  culturalNote: string;
 }
 
 export interface ScenarioWithIcon extends Scenario {
   Icon: LucideIcon;
+}
+
+export interface PronunciationExercise {
+  id: string;
+  title: string;
+  type: PronunciationExerciseType;
+  level: Level;
+  focus: string;
+  prompt: string;
+  targetWords: string[];
+  coachNote: string;
 }
 
 export interface AssessmentAnswer {
@@ -74,9 +94,11 @@ export interface FeedbackPayload {
 
 export interface SessionRecord {
   id: string;
-  scenarioId: string;
-  mode: Mode;
+  scenarioId: string | null;
+  scenarioTitle: string;
+  mode: Mode | null;
   level: Level;
+  kind: ConversationKind;
   fluencyScore: number;
   feedback: FeedbackPayload;
   messages: Message[];
@@ -89,12 +111,21 @@ export interface ModerationResult {
   warning?: string;
 }
 
+export interface AppPreferences {
+  listeningEnabled: boolean;
+  playbackSpeed: PlaybackSpeed;
+  preferredInputMode: PreferredInputMode;
+}
+
 export interface ConversationRequest {
   message: string;
-  scenarioId: string;
-  mode: Mode;
+  kind: ConversationKind;
+  scenarioId?: string | null;
+  exerciseId?: string | null;
+  mode: Mode | null;
   level: Level;
   history: Message[];
+  requestWrapUp?: boolean;
 }
 
 export interface ConversationResponse {
@@ -103,6 +134,7 @@ export interface ConversationResponse {
   feedback?: FeedbackPayload;
   warning?: string;
   category?: string;
+  provider?: "live" | "simulated";
 }
 
 export interface AppState {
@@ -111,9 +143,12 @@ export interface AppState {
   assessmentScores: AssessmentScores | null;
   selectedMode: Mode | null;
   selectedScenario: Scenario | null;
+  selectedExerciseId: string | null;
+  activeConversationKind: ConversationKind;
   conversationHistory: Message[];
   lastFeedback: FeedbackPayload | null;
   sessions: SessionRecord[];
   warningCount: number;
   cooldownUntil: number | null;
+  preferences: AppPreferences;
 }
