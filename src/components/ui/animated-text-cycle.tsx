@@ -1,68 +1,108 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { cn } from "@/lib/utils";
+import * as React from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface FluentiaTextCycleProps {
+interface AnimatedTextCycleProps {
   words: string[];
   interval?: number;
   className?: string;
-  useGradient?: boolean;
 }
 
-export function FluentiaTextCycle({
+export default function AnimatedTextCycle({
   words,
-  interval = 4000,
+  interval = 5000,
   className = "",
-  useGradient = true,
-}: FluentiaTextCycleProps) {
+}: AnimatedTextCycleProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [width, setWidth] = useState("auto");
   const measureRef = useRef<HTMLDivElement>(null);
 
+  // Get the width of the current word
   useEffect(() => {
-    const element = measureRef.current?.children[currentIndex];
-    if (element) setWidth(`${element.getBoundingClientRect().width}px`);
-  }, [currentIndex, words]);
+    if (measureRef.current) {
+      const elements = measureRef.current.children;
+      if (elements.length > currentIndex) {
+        // Add a small buffer (10px) to prevent text wrapping
+        const newWidth = elements[currentIndex].getBoundingClientRect().width;
+        setWidth(`${newWidth}px`);
+      }
+    }
+  }, [currentIndex]);
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setCurrentIndex((current) => (current + 1) % words.length);
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % words.length);
     }, interval);
-    return () => window.clearInterval(timer);
+
+    return () => clearInterval(timer);
   }, [interval, words.length]);
 
-  const variants: Variants = {
-    hidden: { y: 12, opacity: 0, filter: "blur(4px)" },
-    visible: { y: 0, opacity: 1, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] as const } },
-    exit: { y: -12, opacity: 0, filter: "blur(4px)", transition: { duration: 0.4 } },
+  const containerVariants = {
+    hidden: { 
+      y: -20,
+      opacity: 0,
+      filter: "blur(8px)"
+    },
+    visible: {
+      y: 0,
+      opacity: 1,
+      filter: "blur(0px)",
+      transition: {
+        duration: 0.4,
+        ease: "easeOut" as const
+      }
+    },
+    exit: { 
+      y: 20,
+      opacity: 0,
+      filter: "blur(8px)",
+      transition: { 
+        duration: 0.3, 
+        ease: "easeIn" as const
+      }
+    },
   };
-
-  if (!words.length) return null;
 
   return (
     <>
-      <div ref={measureRef} aria-hidden="true" className="pointer-events-none invisible absolute opacity-0">
-        {words.map((word) => (
-          <span key={word} className={cn("px-1 font-bold", className)}>
+      {/* Hidden measurement div with all words rendered */}
+      <div 
+        ref={measureRef} 
+        aria-hidden="true"
+        className="absolute opacity-0 pointer-events-none"
+        style={{ visibility: "hidden" }}
+      >
+        {words.map((word, i) => (
+          <span key={i} className={`font-bold ${className}`}>
             {word}
           </span>
         ))}
       </div>
 
-      <motion.span
-        className="relative inline-block max-w-full align-bottom"
-        animate={{ width, transition: { type: "spring", stiffness: 200, damping: 20 } }}
+      {/* Visible animated word */}
+      <motion.span 
+        className="relative inline-block"
+        animate={{ 
+          width,
+          transition: { 
+            type: "spring",
+            stiffness: 150,
+            damping: 15,
+            mass: 1.2,
+          }
+        }}
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
-            key={words[currentIndex]}
-            className={cn("inline-block max-w-full whitespace-nowrap px-1 font-bold", useGradient ? "gradient-text" : "text-accent-primary", className)}
-            variants={variants}
+            key={currentIndex}
+            className={`inline-block font-bold ${className}`}
+            variants={containerVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
+            style={{ whiteSpace: "nowrap" }}
           >
             {words[currentIndex]}
           </motion.span>

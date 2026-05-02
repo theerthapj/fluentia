@@ -7,7 +7,7 @@ import { AmbientBackground } from "@/components/home/AmbientBackground";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAppState } from "@/components/providers/AppStateProvider";
-import { FluentiaTextCycle } from "@/components/ui/animated-text-cycle";
+import FluentiaTextCycle from "@/components/ui/animated-text-cycle";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
