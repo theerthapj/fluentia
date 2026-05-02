@@ -24,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <div className="flex min-h-screen flex-col">
               <Header />
               <div className="relative isolate flex-1">
-                <FallingPattern />
+                <FallingPattern className="absolute inset-0 z-[-1]" />
                 <div className="relative z-10">{children}</div>
               </div>
               <Footer />

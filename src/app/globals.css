@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
   --header-height: 64px;
@@ -23,7 +24,7 @@
 }
 
 .dark {
-  --background: oklch(0.14 0.02 257);
+  --background: oklch(0 0 0);
   --brand: 31 97% 72%;
   --brand-foreground: 27 96% 61%;
 }
@@ -143,6 +144,10 @@ a {
   background: var(--accent-primary);
   left: 12%;
   top: -30%;
+  overflow: hidden;
+  max-width: 100vw;
+  max-height: 100vh;
+  box-sizing: border-box;
 }
 
 .lab-bg::after {

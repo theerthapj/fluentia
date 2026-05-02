@@ -11,7 +11,7 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { Button } from "@/components/shared/Button";
 import { SafetyBanner } from "@/components/shared/SafetyBanner";
-import { FluentiaAnimatedChat } from "@/components/ui/animated-ai-chat";
+import { FluentiaAnimatedChat } from "@/components/ui/fluentia-animated-chat";
 import {
   getPronunciationExercise,
   getScenario,
