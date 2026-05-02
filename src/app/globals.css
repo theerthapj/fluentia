@@ -6,6 +6,10 @@
   --bg-secondary: #111827;
   --surface: #172033;
   --surface-elevated: #1E293B;
+  --bg-primary: #0F172A;
+  --bg-secondary: #111827;
+  --surface: #172033;
+  --surface-elevated: #1E293B;
   --accent-primary: #14B8A6;
   --accent-secondary: #3B82F6;
   --success: #22C55E;
@@ -14,10 +18,14 @@
   --text-primary: #F8FAFC;
   --text-secondary: #CBD5E1;
   --border: rgba(255,255,255,0.08);
+  --brand: 27 96% 61%;
+  --brand-foreground: 31 97% 72%;
 }
 
 .dark {
   --background: oklch(0.14 0.02 257);
+  --brand: 31 97% 72%;
+  --brand-foreground: 27 96% 61%;
 }
 
 @theme inline {
@@ -34,6 +42,10 @@
   --color-warning: var(--warning);
   --color-error: var(--error);
   --font-sans: "Inter", system-ui, sans-serif;
+  --color-brand: hsl(var(--brand));
+  --color-brand-foreground: hsl(var(--brand-foreground));
+  --animate-appear: appear 0.5s ease-out forwards;
+  --animate-appear-zoom: appear-zoom 0.5s ease-out forwards;
 }
 
 * {
@@ -183,4 +195,30 @@ a {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+@keyframes appear {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes appear-zoom {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@utility delay-100 {
+  animation-delay: 100ms;
+}
+
+@utility delay-300 {
+  animation-delay: 300ms;
+}
+
+@utility delay-700 {
+  animation-delay: 700ms;
+}
+
+@utility delay-1000 {
+  animation-delay: 1000ms;
 }
