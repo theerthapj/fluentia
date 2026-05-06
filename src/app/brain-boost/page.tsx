@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Brain } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { quizMeta } from "@/lib/brainboost-data";
 import type { QuizType } from "@/lib/brainboost-data";
 
@@ -19,8 +18,6 @@ export default function BrainBoostPage() {
   return (
     <main className="mesh-gradient min-h-screen px-5 py-10">
       <div className="mx-auto max-w-5xl">
-        <Breadcrumb current="BrainBoost Zone" />
-
         {/* Hero */}
         <motion.div
           initial="hidden"
@@ -37,9 +34,8 @@ export default function BrainBoostPage() {
             </span>
           </motion.div>
 
-          <motion.h1 variants={fadeUp} className="mt-5 text-4xl font-bold sm:text-5xl">
-            BrainBoost{" "}
-            <span className="gradient-text">Zone</span>
+          <motion.h1 variants={fadeUp} className="mt-5 text-4xl font-bold sm:text-5xl text-text-primary">
+            BrainBoost <span className="gradient-text">Zone</span>
           </motion.h1>
           <motion.p variants={fadeUp} className="mt-3 max-w-2xl text-lg leading-8 text-text-secondary">
             Three fun quiz types to sharpen your vocabulary, spelling, and phrase knowledge. Each session brings 7 fresh questions — pick a quiz and start boosting!
@@ -53,7 +49,7 @@ export default function BrainBoostPage() {
             {quizTypes.map((type) => {
               const meta = quizMeta[type];
               return (
-                <Link key={type} href={`/pronunciation/quiz?type=${type}`}>
+                <Link key={type} href={`/brain-boost/quiz?type=${type}`}>
                   <GlassCard hover className="group h-full cursor-pointer p-6 transition-all duration-300">
                     <div className="text-4xl">{meta.emoji}</div>
                     <h2 className="mt-4 text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors">

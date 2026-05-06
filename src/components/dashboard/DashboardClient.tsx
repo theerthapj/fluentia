@@ -7,7 +7,6 @@ import { LevelBadge } from "@/components/assessment/LevelBadge";
 import { SessionRow } from "@/components/dashboard/SessionRow";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { SuggestedScenarios } from "@/components/dashboard/SuggestedScenarios";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
@@ -32,8 +31,7 @@ export function DashboardClient() {
 
   return (
     <main className="mesh-gradient min-h-screen px-5 py-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 lg:flex-row">
-        <Sidebar />
+      <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <div className="flex-1">
           <GlassCard className="p-6 sm:p-8">
             <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">

@@ -12,9 +12,6 @@ import type { Mode } from "@/types";
 const practiceOptions = [
   { id: "formal", title: "Formal", description: "Interviews, presentations, client calls, workplace meetings", Icon: Briefcase },
   { id: "casual", title: "Casual", description: "Friends, travel, shopping, everyday conversations", Icon: Coffee },
-  { id: "odd-word", title: "Find the Odd Word", description: "Three words share a meaning — one is the odd one out. Can you spot it?", Icon: Brain },
-  { id: "spelling", title: "Spot the Correct Spelling", description: "Four spellings, only one is right. Choose wisely!", Icon: Type },
-  { id: "fix-idiom", title: "Fix the Idiom", description: "Rearrange the word tiles to rebuild the famous English phrase.", Icon: MessageCircle },
 ];
 
 export default function ModePage() {
@@ -28,13 +25,9 @@ export default function ModePage() {
   if (!hydrated) return null;
 
   const choose = (id: string) => {
-    if (id === "formal" || id === "casual") {
-      setMode(id as Mode);
-      setConversationKind("scenario");
-      router.push("/scenarios");
-    } else {
-      router.push(`/pronunciation/quiz?type=${id}`);
-    }
+    setMode(id as Mode);
+    setConversationKind("scenario");
+    router.push("/scenarios");
   };
 
   return (

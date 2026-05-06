@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { Sidebar } from "@/components/layout/Sidebar";
 import { AppStateProvider } from "@/components/providers/AppStateProvider";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { FallingPattern } from "@/components/ui/falling-pattern";
@@ -21,13 +22,25 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body suppressHydrationWarning className="font-sans antialiased">
         <SmoothScrollProvider>
           <AppStateProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <div className="relative isolate flex-1">
-                <FallingPattern className="absolute inset-0 z-[-1]" />
-                <div className="relative z-10">{children}</div>
+            <div className="flex min-h-screen bg-bg-primary">
+              {/* Desktop Sidebar */}
+              <div className="hidden lg:block lg:w-72 lg:shrink-0">
+                <Sidebar />
               </div>
-              <Footer />
+              
+              <div className="flex flex-1 flex-col overflow-hidden">
+                <Header />
+                <main className="relative isolate flex-1 overflow-y-auto">
+                  <FallingPattern className="absolute inset-0 z-[-1]" />
+                  <div className="relative z-10">{children}</div>
+                </main>
+                <Footer />
+              </div>
+
+              {/* Mobile Sidebar (Fixed at bottom) */}
+              <div className="fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 lg:hidden">
+                <Sidebar mobileOnly />
+              </div>
             </div>
           </AppStateProvider>
         </SmoothScrollProvider>

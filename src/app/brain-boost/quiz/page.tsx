@@ -46,7 +46,7 @@ function QuizContent() {
     setKey((k) => k + 1);
   };
 
-  const handleBackToHub = () => router.push("/pronunciation");
+  const handleBackToHub = () => router.push("/brain-boost");
 
   return (
     <main className="min-h-screen bg-bg-primary px-4 py-8">
@@ -55,7 +55,7 @@ function QuizContent() {
         {/* Top bar */}
         <div className="mb-6 flex items-center justify-between">
           <Link
-            href="/pronunciation"
+            href="/brain-boost"
             className="flex items-center gap-2 text-sm font-semibold text-text-secondary transition hover:text-text-primary"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
