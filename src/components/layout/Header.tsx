@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { ArrowLeft, Gauge, MessageSquare } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { cn } from "@/lib/utils";
+import type { PlaybackSpeed } from "@/types";
 
 function getBackTarget(pathname: string) {
   if (pathname.startsWith("/brain-boost/quiz")) return "/brain-boost";
@@ -18,6 +20,8 @@ function getBackTarget(pathname: string) {
   if (pathname.startsWith("/free-chat")) return "/home";
   return "/home";
 }
+
+const speedOrder: PlaybackSpeed[] = ["slow", "normal", "fast"];
 
 export function Header() {
   const pathname = usePathname();
@@ -42,6 +46,7 @@ export function Header() {
 
   const showBackButton = pathname !== "/home" && pathname !== "/dashboard";
   const backTarget = getBackTarget(pathname);
+  const nextPlaybackSpeed = speedOrder[(speedOrder.indexOf(state.preferences.playbackSpeed) + 1) % speedOrder.length];
 
   return (
     <header className="sticky top-0 z-40 h-20 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
@@ -61,28 +66,48 @@ export function Header() {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-4">
           {/* Top Right Corner Status Section */}
-          <div className="mr-2 hidden items-center gap-3 sm:flex lg:mr-4">
+          <div className="mr-1 flex items-center gap-2 sm:mr-2 sm:gap-3 lg:mr-4">
             {/* Status Indicators in a horizontal row */}
-            <div className="flex items-center gap-3 rounded-full border border-border bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-text-secondary">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-full border border-border bg-white/5 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+              <button
+                id="header-listening-toggle"
+                type="button"
+                onClick={() => {
+                  updatePreferences({ listeningEnabled: !state.preferences.listeningEnabled });
+                  toast.success(`Listening ${state.preferences.listeningEnabled ? "off" : "on"}.`);
+                }}
+                aria-pressed={state.preferences.listeningEnabled}
+                title={state.preferences.listeningEnabled ? "Turn listening off" : "Turn listening on"}
+                className="flex items-center gap-2 rounded-full px-2 py-1.5 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70"
+              >
                 <span className={cn("h-1.5 w-1.5 rounded-full shadow-[0_0_8px]", state.preferences.listeningEnabled ? "bg-success shadow-success/50" : "bg-error shadow-error/50")} />
                 <span className="hidden sm:inline">Listening: {state.preferences.listeningEnabled ? "On" : "Off"}</span>
                 <span className="sm:hidden">{state.preferences.listeningEnabled ? "On" : "Off"}</span>
-              </div>
+              </button>
               <span className="h-4 w-px bg-border" />
-              <div className="flex items-center gap-2 text-accent-primary">
+              <button
+                id="header-playback-speed"
+                type="button"
+                onClick={() => {
+                  updatePreferences({ playbackSpeed: nextPlaybackSpeed });
+                  toast.success(`Playback speed: ${nextPlaybackSpeed}.`);
+                }}
+                title={`Switch playback speed to ${nextPlaybackSpeed}`}
+                className="flex items-center gap-2 rounded-full px-2 py-1.5 text-accent-primary transition hover:bg-accent-primary/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70"
+              >
                 <Gauge className="h-3.5 w-3.5" />
                 <span>{state.preferences.playbackSpeed}</span>
-              </div>
+              </button>
             </div>
 
             <button
               onClick={() => {
-                updatePreferences({
-                  preferredInputMode: state.preferences.preferredInputMode === "voice" ? "text" : "voice",
-                });
+                updatePreferences({ preferredInputMode: "text" });
+                router.push("/free-chat");
               }}
-              title={state.preferences.preferredInputMode === "voice" ? "Switch to Text First" : "Switch to Voice First"}
+              id="header-open-free-chat"
+              aria-label="Open Free Chat"
+              title="Open Free Chat"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/5 text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary"
             >
               <MessageSquare className="h-5 w-5" />
@@ -93,10 +118,11 @@ export function Header() {
             <button
               id="global-back-button"
               onClick={() => router.push(backTarget)}
+              aria-label={`Back to ${backTarget.replace("/", "") || "home"}`}
               className="group flex items-center gap-2 rounded-full border border-border bg-white/5 px-3 py-2.5 text-sm font-semibold text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary sm:px-5"
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" aria-hidden />
-              <span>Back</span>
+              <span className="hidden sm:inline">Back</span>
             </button>
           )}
         </div>
