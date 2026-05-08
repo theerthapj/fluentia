@@ -47,7 +47,16 @@ function ChatContent() {
   const [fluviFeedback, setFluviFeedback] = useState<FeedbackResult | null>(null);
 
   // Fluvi state triggers — additive, does not replace any existing logic
-  const { startThinking, stopThinking, triggerCorrect, triggerIncorrect, triggerWarning } = useFluvi();
+  const {
+    startThinking,
+    stopThinking,
+    triggerCelebration,
+    triggerCorrect,
+    triggerGrammarSuccess,
+    triggerIncorrect,
+    triggerPronunciationSuccess,
+    triggerWarning,
+  } = useFluvi();
 
   const kind = (params.get("kind") as ConversationKind | null) ?? state.activeConversationKind ?? "scenario";
   const scenarioId = params.get("scenario");
@@ -192,8 +201,17 @@ function ChatContent() {
         encouragement: data.feedback.encouragementMessage,
       };
       setFluviFeedback(fluviResult);
-      if (score >= 6) triggerCorrect();
-      else triggerIncorrect();
+      if (score >= 8) {
+        triggerCelebration();
+      } else if (kind === "pronunciation" && score >= 6) {
+        triggerPronunciationSuccess();
+      } else if (score >= 7 && data.feedback.grammarCorrections.length === 0) {
+        triggerGrammarSuccess();
+      } else if (score >= 6) {
+        triggerCorrect();
+      } else {
+        triggerIncorrect();
+      }
 
       if (requestWrapUp) {
         router.push("/feedback");

@@ -4,10 +4,11 @@
 // All animatable parts have unique IDs. SVG viewBox is exactly "0 0 200 220".
 // Colors use CSS variables from FluviTheme — no hardcoded hex inside fills.
 
-import { motion, useAnimation, useReducedMotion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { AnimatePresence, motion, useAnimation, useReducedMotion } from 'framer-motion';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFluvi } from '@/context/FluviContext';
 import { getFluviCSSVars } from './FluviTheme';
+import { getRandomMessage, HOVER_GREETING_MESSAGES } from './FluviMessages';
 import type { CorrectVariant } from '@/types/fluvi.types';
 
 interface FluviCharacterProps {
@@ -18,8 +19,10 @@ interface FluviCharacterProps {
 
 export function FluviCharacter({ size = 200, className = '', showLabel = false }: FluviCharacterProps) {
   const { state } = useFluvi();
-  const { mode, theme, voiceAmplitude, consecutiveErrors } = state;
+  const { mode, theme, voiceAmplitude, consecutiveErrors, reactionMessage, reactionKey } = state;
   const prefersReducedMotion = useReducedMotion();
+  const [localBubble, setLocalBubble] = useState<string | null>(null);
+  const [bubbleAlign, setBubbleAlign] = useState<'left' | 'center' | 'right'>('center');
 
   const headControls = useAnimation();
   const beakUpperControls = useAnimation();
@@ -33,6 +36,52 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
 
   const blinkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const breatheTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const bubbleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const activeBubble = localBubble ?? (size >= 72 ? reactionMessage : null);
+  const shouldShowThinkingDots = mode === 'thinking' && !localBubble;
+
+  const placeBubble = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const rect = rootRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    if (rect.left < 120) setBubbleAlign('left');
+    else if (window.innerWidth - rect.right < 120) setBubbleAlign('right');
+    else setBubbleAlign('center');
+  }, []);
+
+  const showGreeting = useCallback(() => {
+    placeBubble();
+    setLocalBubble(getRandomMessage(HOVER_GREETING_MESSAGES, 'hover-greeting'));
+    if (!prefersReducedMotion) {
+      void headControls.start({
+        rotate: [0, -5, 3, 0],
+        transition: { duration: 0.6, ease: 'easeInOut' },
+      });
+      void bodyControls.start({
+        y: [0, -3, 0],
+        transition: { duration: 0.55, ease: 'easeOut' },
+      });
+      void eyeControls.start({
+        scaleY: [1, 0.12, 1],
+        transition: { duration: 0.22, ease: 'easeInOut' },
+      });
+    }
+    if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
+    bubbleTimer.current = setTimeout(() => setLocalBubble(null), 2200);
+  }, [bodyControls, eyeControls, headControls, placeBubble, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!reactionMessage) return;
+    placeBubble();
+  }, [placeBubble, reactionKey, reactionMessage]);
+
+  useEffect(() => {
+    return () => {
+      if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
+    };
+  }, []);
 
   // ── IDLE: breathing + random blink ────────────────────────────
   useEffect(() => {
@@ -91,12 +140,41 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
   useEffect(() => {
     if (mode !== 'thinking') return;
     if (prefersReducedMotion) return;
-    void headControls.start({ rotate: -4, x: 3, transition: { duration: 0.8, ease: 'easeInOut' } });
-    void pupilControls.start({ x: 2, y: -2, transition: { duration: 0.6, ease: 'easeInOut' } });
-  }, [mode, headControls, pupilControls, prefersReducedMotion]);
+    void headControls.start({
+      rotate: [-3, 3, -3],
+      x: [1, 3, 1],
+      transition: { duration: 1.4, repeat: Infinity, ease: 'easeInOut' },
+    });
+    void pupilControls.start({
+      x: [2, -1, 2],
+      y: [-2, -1, -2],
+      transition: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' },
+    });
+  }, [mode, reactionKey, headControls, pupilControls, prefersReducedMotion]);
 
   async function runCorrectVariant(variant: CorrectVariant) {
     if (prefersReducedMotion) return;
+    void bodyControls.start({
+      x: [0, -4, 4, -2, 0],
+      rotate: [0, -3, 3, -1, 0],
+      transition: { duration: 1.1, ease: 'easeInOut' },
+    });
+    void featherControls.start({
+      rotate: [-2, 7, -2],
+      scale: [1, 1.1, 1],
+      transition: { duration: 1.1, type: 'spring', stiffness: 180, damping: 12 },
+    });
+    void glowControls.start({
+      opacity: [0, 0.45, 0],
+      scale: [0.9, 1.18, 1],
+      transition: { duration: 1.2, ease: 'easeOut' },
+    });
+    void sparkleControls.start({
+      opacity: [0, 0.9, 0],
+      y: [0, -8],
+      scale: [0.8, 1.1, 0],
+      transition: { duration: 1.2, ease: 'easeInOut' },
+    });
     switch (variant) {
       case 'feather_spread':
         await featherControls.start({
@@ -153,10 +231,10 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
   // ── CORRECT FEEDBACK: variant-based ───────────────────────────
   useEffect(() => {
     if (mode !== 'correct_feedback') return;
-    const variant = state.correctVariantQueue[0];
+    const variant = state.activeCorrectVariant;
     void runCorrectVariant(variant);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode]);
+  }, [mode, reactionKey]);
 
   // ── INCORRECT: mild sadness → encouragement ───────────────────
   useEffect(() => {
@@ -176,7 +254,58 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
     }
 
     return () => clearTimeout(t);
-  }, [mode, consecutiveErrors, headControls, eyeControls, prefersReducedMotion]);
+  }, [mode, reactionKey, consecutiveErrors, headControls, eyeControls, prefersReducedMotion]);
+
+  // ── PRONUNCIATION SUCCESS: nod + beak pop ─────────────────────
+  useEffect(() => {
+    if (mode !== 'pronunciation_success') return;
+    if (prefersReducedMotion) return;
+
+    void headControls.start({
+      rotate: [0, 5, -2, 0],
+      y: [0, 2, -1, 0],
+      transition: { duration: 0.9, ease: 'easeInOut' },
+    });
+    void beakUpperControls.start({
+      rotateX: [0, -8, 0],
+      transition: { duration: 0.35, repeat: 1, ease: 'easeInOut' },
+    });
+    void beakLowerControls.start({
+      rotateX: [0, 10, 0],
+      transition: { duration: 0.35, repeat: 1, ease: 'easeInOut' },
+    });
+    void glowControls.start({
+      opacity: [0, 0.28, 0],
+      scale: [0.95, 1.12, 1],
+      transition: { duration: 1, ease: 'easeOut' },
+    });
+  }, [
+    mode,
+    reactionKey,
+    headControls,
+    beakUpperControls,
+    beakLowerControls,
+    glowControls,
+    prefersReducedMotion,
+  ]);
+
+  // ── GRAMMAR SUCCESS: polished feather shimmer ─────────────────
+  useEffect(() => {
+    if (mode !== 'grammar_success') return;
+    if (prefersReducedMotion) return;
+
+    void featherControls.start({
+      filter: ['brightness(1)', 'brightness(1.28)', 'brightness(1)'],
+      scale: [1, 1.04, 1],
+      transition: { duration: 1.1, ease: 'easeInOut' },
+    });
+    void sparkleControls.start({
+      opacity: [0, 0.75, 0],
+      x: [-6, 6],
+      scale: [0.6, 1, 0.8],
+      transition: { duration: 1.1, ease: 'easeInOut' },
+    });
+  }, [mode, reactionKey, featherControls, sparkleControls, prefersReducedMotion]);
 
   // ── WARNING: still, composed ───────────────────────────────────
   useEffect(() => {
@@ -192,26 +321,36 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
     }, 1500);
 
     return () => clearTimeout(t);
-  }, [mode, headControls, featherControls, eyeControls, prefersReducedMotion]);
+  }, [mode, reactionKey, headControls, featherControls, eyeControls, prefersReducedMotion]);
 
   // ── CELEBRATION ────────────────────────────────────────────────
   useEffect(() => {
     if (mode !== 'celebration') return;
     if (prefersReducedMotion) return;
 
-    void (async () => {
-      await featherControls.start({
-        rotate: [-4, 10, -4],
-        scale: [1, 1.05, 1],
-        transition: { duration: 2.5, ease: 'easeInOut' },
-      });
-      await bodyControls.start({
-        y: [0, -8, 0],
-        rotate: [0, 3, -3, 0],
-        transition: { duration: 1.5, ease: 'easeInOut' },
-      });
-    })();
-  }, [mode, featherControls, bodyControls, prefersReducedMotion]);
+    void featherControls.start({
+      rotate: [-4, 12, -5, 0],
+      scale: [1, 1.12, 1.04, 1],
+      transition: { duration: 1.6, type: 'spring', stiffness: 170, damping: 11 },
+    });
+    void bodyControls.start({
+      x: [0, -5, 5, -3, 0],
+      y: [0, -5, 0, -3, 0],
+      rotate: [0, -4, 4, -2, 0],
+      transition: { duration: 1.4, ease: 'easeInOut' },
+    });
+    void glowControls.start({
+      opacity: [0, 0.5, 0],
+      scale: [0.9, 1.25, 1],
+      transition: { duration: 1.4, ease: 'easeOut' },
+    });
+    void sparkleControls.start({
+      opacity: [0, 0.95, 0],
+      y: [0, -12],
+      scale: [0.7, 1.15, 0],
+      transition: { duration: 1.4, ease: 'easeInOut' },
+    });
+  }, [mode, reactionKey, featherControls, bodyControls, glowControls, sparkleControls, prefersReducedMotion]);
 
   // ── RESET to idle ──────────────────────────────────────────────
   useEffect(() => {
@@ -221,18 +360,63 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
     void beakLowerControls.start({ rotateX: 0, transition: { duration: 0.4, ease: 'easeInOut' } });
     void pupilControls.start({ x: 0, y: 0, transition: { duration: 0.6, ease: 'easeInOut' } });
     void glowControls.start({ opacity: 0, scale: 1, transition: { duration: 0.6, ease: 'easeInOut' } });
-    void featherControls.start({ scale: 1, rotate: 0, transition: { duration: 0.8, ease: 'easeInOut' } });
+    void featherControls.start({ scale: 1, rotate: 0, filter: 'brightness(1)', transition: { duration: 0.8, ease: 'easeInOut' } });
     void eyeControls.start({ scaleY: 1, transition: { duration: 0.4, ease: 'easeInOut' } });
     void sparkleControls.start({ opacity: 0, transition: { duration: 0.6, ease: 'easeInOut' } });
   }, [mode, headControls, beakUpperControls, beakLowerControls, pupilControls, glowControls, featherControls, eyeControls, sparkleControls]);
 
   const cssVars = getFluviCSSVars(theme);
+  const bubblePosition = useMemo(() => {
+    if (bubbleAlign === 'left') return { left: 0, transform: 'translateY(-100%)' };
+    if (bubbleAlign === 'right') return { right: 0, transform: 'translateY(-100%)' };
+    return { left: '50%', transform: 'translate(-50%, -100%)' };
+  }, [bubbleAlign]);
 
   return (
     <div
+      ref={rootRef}
+      tabIndex={0}
+      aria-label="Say hello to Fluvi"
+      onMouseEnter={showGreeting}
+      onClick={showGreeting}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          showGreeting();
+        }
+      }}
       className={`relative flex flex-col items-center ${className}`}
-      style={{ width: size, height: size + 24, ...(cssVars as React.CSSProperties) }}
+      style={{
+        width: size,
+        height: size + 24,
+        cursor: 'pointer',
+        pointerEvents: 'auto',
+        ...(cssVars as React.CSSProperties),
+      }}
     >
+      <AnimatePresence>
+        {activeBubble && (
+          <motion.div
+            key={`${activeBubble}-${localBubble ? 'local' : reactionKey}`}
+            initial={{ opacity: 0, y: 6, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, scale: 0.98 }}
+            transition={{ duration: prefersReducedMotion ? 0.01 : 0.18, ease: 'easeOut' }}
+            className="pointer-events-none absolute top-0 z-20 min-w-36 max-w-[min(220px,calc(100vw-32px))] rounded-xl px-3 py-2 text-center text-xs font-semibold leading-snug shadow-xl"
+            style={{
+              ...bubblePosition,
+              color: '#F8FAFC',
+              background: 'rgba(15,23,42,0.94)',
+              border: '1px solid rgba(94,234,212,0.32)',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.28)',
+            }}
+          >
+            {activeBubble}
+            {shouldShowThinkingDots ? <FluviThinkingDots compact /> : null}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Glow ring (speaking) */}
       <motion.div
         animate={glowControls}
@@ -479,16 +663,18 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
 }
 
 // ── Thinking Dots ──────────────────────────────────────────────────────────
-export function FluviThinkingDots() {
+export function FluviThinkingDots({ compact = false }: { compact?: boolean }) {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <div className="flex gap-1 items-center mt-2">
+    <div className={`flex gap-1 items-center ${compact ? 'mt-1 justify-center' : 'mt-2'}`}>
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="w-1.5 h-1.5 rounded-full"
+          className={`${compact ? 'h-1 w-1' : 'h-1.5 w-1.5'} rounded-full`}
           style={{ background: '#14B8A6' }}
-          animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }}
+          animate={prefersReducedMotion ? { opacity: 0.7 } : { y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 0.8, repeat: prefersReducedMotion ? 0 : Infinity, delay: i * 0.15, ease: 'easeInOut' }}
         />
       ))}
     </div>

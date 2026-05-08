@@ -7,6 +7,8 @@ export type FluviMode =
   | 'thinking'
   | 'correct_feedback'
   | 'incorrect_feedback'
+  | 'pronunciation_success'
+  | 'grammar_success'
   | 'encouragement'
   | 'warning'
   | 'celebration';
@@ -35,6 +37,9 @@ export interface FluviTheme {
 export interface FluviState {
   mode: FluviMode;
   correctVariantQueue: CorrectVariant[];
+  activeCorrectVariant: CorrectVariant;
+  reactionMessage: string | null;
+  reactionKey: number;
   consecutiveCorrect: number;
   consecutiveErrors: number;
   hasSeenIntro: boolean;
@@ -48,6 +53,8 @@ export interface FluviAction {
   type:
     | 'TRIGGER_CORRECT'
     | 'TRIGGER_INCORRECT'
+    | 'TRIGGER_PRONUNCIATION_SUCCESS'
+    | 'TRIGGER_GRAMMAR_SUCCESS'
     | 'TRIGGER_WARNING'
     | 'TRIGGER_CELEBRATION'
     | 'START_SPEAKING'

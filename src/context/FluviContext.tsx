@@ -7,12 +7,21 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback } 
 import type { FluviState, FluviAction, UserLevel, CorrectVariant } from '@/types/fluvi.types';
 import { getFluviTheme } from '@/components/fluvi/FluviTheme';
 import { buildVariantQueue, getNextVariant } from '@/components/fluvi/FluviAnimations';
+import {
+  getRandomMessage,
+  GRAMMAR_SUCCESS_MESSAGES,
+  PRONUNCIATION_SUCCESS_MESSAGES,
+  TRY_AGAIN_MESSAGES,
+} from '@/components/fluvi/FluviMessages';
 
 const FLUVI_STORAGE_KEY = 'fluvi_state';
 
 const INITIAL_STATE: FluviState = {
   mode: 'idle',
   correctVariantQueue: buildVariantQueue(),
+  activeCorrectVariant: 'feather_spread',
+  reactionMessage: null,
+  reactionKey: 0,
   consecutiveCorrect: 0,
   consecutiveErrors: 0,
   hasSeenIntro: true,
@@ -25,6 +34,7 @@ const INITIAL_STATE: FluviState = {
 function fluviReducer(state: FluviState, action: FluviAction): FluviState {
   switch (action.type) {
     case 'TRIGGER_CORRECT': {
+      const payload = action.payload as { message?: string } | undefined;
       const newConsecutive = state.consecutiveCorrect + 1;
       const isDanceMoment = newConsecutive > 0 && newConsecutive % 5 === 0;
       const variant: CorrectVariant = isDanceMoment
@@ -33,6 +43,9 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
       return {
         ...state,
         mode: 'correct_feedback',
+        activeCorrectVariant: variant,
+        reactionMessage: payload?.message ?? null,
+        reactionKey: state.reactionKey + 1,
         consecutiveCorrect: newConsecutive,
         consecutiveErrors: 0,
         correctVariantQueue: buildVariantQueue(variant),
@@ -40,32 +53,53 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
     }
 
     case 'TRIGGER_INCORRECT': {
+      const payload = action.payload as { message?: string } | undefined;
       const newErrors = state.consecutiveErrors + 1;
       return {
         ...state,
         mode: 'incorrect_feedback',
+        reactionMessage: payload?.message ?? getRandomMessage(TRY_AGAIN_MESSAGES, 'try-again'),
+        reactionKey: state.reactionKey + 1,
         consecutiveErrors: newErrors,
         consecutiveCorrect: 0,
       };
     }
 
+    case 'TRIGGER_PRONUNCIATION_SUCCESS':
+      return {
+        ...state,
+        mode: 'pronunciation_success',
+        reactionMessage: getRandomMessage(PRONUNCIATION_SUCCESS_MESSAGES, 'pronunciation-success'),
+        reactionKey: state.reactionKey + 1,
+        consecutiveErrors: 0,
+      };
+
+    case 'TRIGGER_GRAMMAR_SUCCESS':
+      return {
+        ...state,
+        mode: 'grammar_success',
+        reactionMessage: getRandomMessage(GRAMMAR_SUCCESS_MESSAGES, 'grammar-success'),
+        reactionKey: state.reactionKey + 1,
+        consecutiveErrors: 0,
+      };
+
     case 'TRIGGER_WARNING':
-      return { ...state, mode: 'warning' };
+      return { ...state, mode: 'warning', reactionMessage: null, reactionKey: state.reactionKey + 1 };
 
     case 'TRIGGER_CELEBRATION':
-      return { ...state, mode: 'celebration' };
+      return { ...state, mode: 'celebration', reactionMessage: null, reactionKey: state.reactionKey + 1 };
 
     case 'START_SPEAKING':
-      return { ...state, mode: 'speaking', isVoiceActive: true };
+      return { ...state, mode: 'speaking', reactionMessage: null, isVoiceActive: true };
 
     case 'STOP_SPEAKING':
-      return { ...state, mode: 'idle', isVoiceActive: false, voiceAmplitude: 0 };
+      return { ...state, mode: 'idle', reactionMessage: null, isVoiceActive: false, voiceAmplitude: 0 };
 
     case 'START_THINKING':
-      return { ...state, mode: 'thinking' };
+      return { ...state, mode: 'thinking', reactionMessage: getRandomMessage(['Thinking...'], 'thinking-bubble') };
 
     case 'STOP_THINKING':
-      return { ...state, mode: 'idle' };
+      return { ...state, mode: 'idle', reactionMessage: null };
 
     case 'SET_VOICE_AMPLITUDE':
       return { ...state, voiceAmplitude: action.payload as number };
@@ -79,7 +113,7 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
     }
 
     case 'RESET_TO_IDLE':
-      return { ...state, mode: 'idle' };
+      return { ...state, mode: 'idle', reactionMessage: null };
 
     default:
       return state;
@@ -90,7 +124,9 @@ interface FluviContextValue {
   state: FluviState;
   dispatch: React.Dispatch<FluviAction>;
   triggerCorrect: () => void;
-  triggerIncorrect: () => void;
+  triggerIncorrect: (message?: string) => void;
+  triggerPronunciationSuccess: () => void;
+  triggerGrammarSuccess: () => void;
   triggerWarning: () => void;
   triggerCelebration: () => void;
   startSpeaking: () => void;
@@ -140,13 +176,22 @@ export function FluviProvider({ children }: { children: React.ReactNode }) {
 
   // Auto-reset transient states after their display duration
   useEffect(() => {
-    const transientModes = ['correct_feedback', 'warning', 'incorrect_feedback', 'celebration'];
+    const transientModes = [
+      'correct_feedback',
+      'warning',
+      'incorrect_feedback',
+      'celebration',
+      'pronunciation_success',
+      'grammar_success',
+    ];
     if (!transientModes.includes(state.mode)) return;
 
     const duration =
-      state.mode === 'correct_feedback' ? 2000
+      state.mode === 'correct_feedback' ? 1800
       : state.mode === 'warning' ? 2500
-      : state.mode === 'celebration' ? 3000
+      : state.mode === 'celebration' ? 2400
+      : state.mode === 'pronunciation_success' ? 1600
+      : state.mode === 'grammar_success' ? 1600
       : 1800; // incorrect_feedback
 
     const timer = setTimeout(() => {
@@ -159,10 +204,18 @@ export function FluviProvider({ children }: { children: React.ReactNode }) {
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [state.mode]);
+  }, [state.mode, state.reactionKey]);
 
   const triggerCorrect = useCallback(() => dispatch({ type: 'TRIGGER_CORRECT' }), []);
-  const triggerIncorrect = useCallback(() => dispatch({ type: 'TRIGGER_INCORRECT' }), []);
+  const triggerIncorrect = useCallback(
+    (message?: string) => dispatch({ type: 'TRIGGER_INCORRECT', payload: { message } }),
+    [],
+  );
+  const triggerPronunciationSuccess = useCallback(
+    () => dispatch({ type: 'TRIGGER_PRONUNCIATION_SUCCESS' }),
+    [],
+  );
+  const triggerGrammarSuccess = useCallback(() => dispatch({ type: 'TRIGGER_GRAMMAR_SUCCESS' }), []);
   const triggerWarning = useCallback(() => dispatch({ type: 'TRIGGER_WARNING' }), []);
   const triggerCelebration = useCallback(() => dispatch({ type: 'TRIGGER_CELEBRATION' }), []);
   const startSpeaking = useCallback(() => dispatch({ type: 'START_SPEAKING' }), []);
@@ -181,6 +234,8 @@ export function FluviProvider({ children }: { children: React.ReactNode }) {
         dispatch,
         triggerCorrect,
         triggerIncorrect,
+        triggerPronunciationSuccess,
+        triggerGrammarSuccess,
         triggerWarning,
         triggerCelebration,
         startSpeaking,

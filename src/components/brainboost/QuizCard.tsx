@@ -6,6 +6,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { QuizQuestion, OddWordQuestion, SpellingQuestion, IdiomQuestion } from "@/lib/brainboost-data";
 import { correctEmojis, wrongEmojis } from "@/lib/brainboost-data";
+import { useFluvi } from "@/context/FluviContext";
 
 interface QuizCardProps {
   question: QuizQuestion;
@@ -205,9 +206,12 @@ function IdiomCard({ question, onAnswer }: { question: IdiomQuestion; onAnswer: 
 // ─── Main QuizCard ────────────────────────────────────────────────────────────
 export function QuizCard({ question, questionNumber, total, onAnswer }: QuizCardProps) {
   const [feedback, setFeedback] = useState<{ correct: boolean; emoji: string } | null>(null);
+  const { triggerCorrect, triggerIncorrect } = useFluvi();
 
   const handleAnswer = (correct: boolean) => {
     const emoji = correct ? pickRandom(correctEmojis) : pickRandom(wrongEmojis);
+    if (correct) triggerCorrect();
+    else triggerIncorrect();
     setFeedback({ correct, emoji });
     setTimeout(() => {
       setFeedback(null);

@@ -40,6 +40,31 @@ export const THINKING_MESSAGES = [
   "Almost ready…",
 ];
 
+export const HOVER_GREETING_MESSAGES = [
+  "Hi, I'm Fluvi!",
+  "Ready to practice?",
+  "You're doing great.",
+  "Let's speak with confidence.",
+];
+
+export const TRY_AGAIN_MESSAGES = [
+  "Try again, you're close.",
+  "Good effort. One more try.",
+  "Let's fix it together.",
+];
+
+export const PRONUNCIATION_SUCCESS_MESSAGES = [
+  "That sounded clearer.",
+  "Nice pronunciation!",
+  "Great voice control.",
+];
+
+export const GRAMMAR_SUCCESS_MESSAGES = [
+  "Clean grammar move.",
+  "That sentence shines.",
+  "Nice grammar polish.",
+];
+
 // Returns a random message, avoiding the last used one
 const lastIndex: Record<string, number> = {};
 

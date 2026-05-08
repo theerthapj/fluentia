@@ -41,7 +41,7 @@ export default function HomePage() {
           <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
             <GlassCard className="p-7 sm:p-10 relative overflow-hidden">
               {/* Fluvi in top-right corner — decorative, won't block buttons */}
-              <div className="hidden md:block absolute top-4 right-4 pointer-events-none opacity-90">
+              <div className="hidden md:block absolute top-4 right-4 z-20 pointer-events-none opacity-90">
                 <FluviCharacter size={120} />
               </div>
               <div className="relative z-10">

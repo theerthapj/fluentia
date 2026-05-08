@@ -167,7 +167,7 @@ export function FluentiaAnimatedChat({
   return (
     <div className="lab-bg relative mx-auto w-full max-w-4xl">
       {/* Fluvi peeking near the interaction area */}
-      <div className="absolute -top-[110px] -right-4 md:-right-8 z-0 pointer-events-none drop-shadow-2xl">
+      <div className="absolute -top-[110px] -right-4 md:-right-8 z-20 pointer-events-none drop-shadow-2xl">
         <FluviCharacter size={100} />
       </div>
       <motion.div
