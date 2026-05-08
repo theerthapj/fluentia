@@ -135,1281 +135,1283 @@ type ScenarioSeed = {
 
 const formalBeginnerSeeds: ScenarioSeed[] = [
   {
-    id: "formal-beginner-job-intro",
-    title: "Interview Introduction",
-    description: "Practice a clear first answer in a simple interview.",
-    category: "Work",
-    iconName: "Briefcase",
-    goals: ["Introduce yourself", "Name one strength", "Sound calm and polite"],
-    starterPrompts: [
-      "Welcome. Please introduce yourself and tell me one strength you would bring to this role.",
-      "Thanks for joining us. Start with your name, background, and one reason this role interests you.",
-    ],
-    followUpPrompts: [
-      "Can you share one example that shows this strength in action?",
-      "What kind of work environment helps you do your best?",
-    ],
-    culturalNotes: [
-      "A short, clear answer often sounds stronger than a long list of qualities.",
-      "In interviews, specific examples usually sound more credible than general claims.",
-    ],
-    voiceSample: "Thank you for meeting with me. I am a reliable learner who enjoys helping teams stay organized.",
-  },
-  {
-    id: "formal-beginner-class-question",
-    title: "Class Question",
-    description: "Answer a teacher with a simple explanation.",
+    id: "formal-beginner-introduce-to-teacher",
+    title: "Introducing Yourself to a Teacher",
+    description: "Introduce yourself respectfully to a new teacher on the first day.",
     category: "Education",
     iconName: "GraduationCap",
-    goals: ["State your idea", "Add one reason", "Use respectful classroom language"],
+    goals: ["State your name clearly", "Mention one thing about yourself", "Use polite formal language"],
     starterPrompts: [
-      "Your teacher asks what you understood from today's lesson. Answer clearly.",
-      "Please explain your answer to the teacher in two or three clear sentences.",
+      "Your new teacher has asked everyone to introduce themselves. It is your turn.",
+      "The teacher wants to know your name and one thing about you. Speak politely."
     ],
     followUpPrompts: [
-      "Can you add one example from class?",
-      "What part of the lesson was easiest for you to understand?",
+      "What subject are you most interested in this year?",
+      "How would you greet your teacher formally at the start of class?"
     ],
     culturalNotes: [
-      "Phrases like 'I think' or 'From my understanding' can sound thoughtful in class.",
-      "Teachers usually appreciate direct answers before extra detail.",
+      "In formal school settings, always address teachers as 'Sir', 'Ma'am', or by their title.",
+      "A short, clear introduction sounds more respectful than a long one in a classroom."
     ],
-    voiceSample: "I think the main idea is that regular practice helps students remember the lesson for longer.",
+    voiceSample: "Good morning. My name is Arjun, and I am very happy to be in your class this year."
   },
   {
-    id: "formal-beginner-office-help",
-    title: "Office Help Request",
-    description: "Ask a coworker for help respectfully.",
-    category: "Work",
-    iconName: "HandHelping",
-    goals: ["Ask politely", "Explain the task", "Say what support you need"],
-    starterPrompts: [
-      "You need help with a task at work. Ask a coworker politely.",
-      "Explain what you are trying to do and ask for support in a professional way.",
-    ],
-    followUpPrompts: [
-      "What have you already tried?",
-      "How urgent is this request?",
-    ],
-    culturalNotes: [
-      "Professional requests often sound natural with 'Could you help me with...?'",
-      "Brief context helps the other person respond faster.",
-    ],
-    voiceSample: "Could you help me review this report? I finished the draft, but I want to make sure the summary is clear.",
-  },
-  {
-    id: "formal-beginner-meeting-update",
-    title: "Meeting Update",
-    description: "Give a short progress update in a team meeting.",
-    category: "Work",
-    iconName: "Presentation",
-    goals: ["State progress", "Mention one next step", "Keep a steady formal tone"],
-    starterPrompts: [
-      "It is your turn in a team meeting. Share a brief update on your work.",
-      "Give a short status update and explain your next step.",
-    ],
-    followUpPrompts: [
-      "Is there anything blocking your progress?",
-      "What will you finish by the end of the day?",
-    ],
-    culturalNotes: [
-      "Simple signposts like 'So far' and 'Next' help updates sound organized.",
-      "Short meeting updates are often preferred to long explanations.",
-    ],
-    voiceSample: "So far, I have completed the first draft and checked the main numbers. Next, I will review the final section with my manager.",
-  },
-  {
-    id: "formal-beginner-email-summary",
-    title: "Email Summary",
-    description: "Speak as if you are summarizing a polite email.",
-    category: "Work",
-    iconName: "MessageCircle",
-    goals: ["Explain the purpose", "Mention one request", "Sound clear and courteous"],
-    starterPrompts: [
-      "Imagine you are summarizing a professional email aloud. What does it say?",
-      "Tell a teammate the main point of your email and what action you need.",
-    ],
-    followUpPrompts: [
-      "What deadline should the listener remember?",
-      "How would you close the message politely?",
-    ],
-    culturalNotes: [
-      "Professional English often sounds smoother when the purpose is stated early.",
-      "Closing with appreciation can sound warm without being overly formal.",
-    ],
-    voiceSample: "I am writing to confirm tomorrow's schedule and ask for your feedback on the final draft before noon.",
-  },
-  {
-    id: "formal-beginner-front-desk",
-    title: "Front Desk Check-In",
-    description: "Handle a simple formal check-in at a desk or office.",
-    category: "Services",
-    iconName: "Hotel",
-    goals: ["State your name", "Explain why you are there", "Ask one polite question"],
-    starterPrompts: [
-      "You arrive at a reception desk. Introduce yourself and explain your appointment.",
-      "Check in politely and confirm what you need next.",
-    ],
-    followUpPrompts: [
-      "Do you need to show any documents?",
-      "How would you ask where to wait?",
-    ],
-    culturalNotes: [
-      "Reception conversations often sound natural with calm, short sentences.",
-      "Saying your purpose early helps staff assist you quickly.",
-    ],
-    voiceSample: "Good morning. My name is Asha Patel, and I have a ten o'clock appointment with the training team.",
-  },
-  {
-    id: "formal-beginner-phone-message",
-    title: "Phone Message",
-    description: "Leave a short professional voice message.",
-    category: "Communication",
-    iconName: "Phone",
-    goals: ["Introduce yourself", "Explain why you called", "Request a callback"],
-    starterPrompts: [
-      "Leave a short professional voice message for a colleague.",
-      "Say who you are, why you are calling, and what you need next.",
-    ],
-    followUpPrompts: [
-      "What is the best time to call you back?",
-      "How can you sound polite but concise?",
-    ],
-    culturalNotes: [
-      "Voicemails are usually clearest when you say your name twice.",
-      "A slow pace helps with names, numbers, and contact details.",
-    ],
-    voiceSample: "Hello, this is Daniel Kim from the support team. I am calling about tomorrow's client meeting, so please call me back this afternoon.",
-  },
-  {
-    id: "formal-beginner-training-intro",
-    title: "Training Introduction",
-    description: "Introduce yourself at a workplace training session.",
-    category: "Work",
-    iconName: "UserPlus",
-    goals: ["Say your role", "Share one learning goal", "Sound confident and friendly"],
-    starterPrompts: [
-      "Introduce yourself at the start of a training session.",
-      "Tell the group your role and one thing you want to learn today.",
-    ],
-    followUpPrompts: [
-      "Why is this training useful for you?",
-      "What skill do you want to improve most?",
-    ],
-    culturalNotes: [
-      "A simple structure like name, role, goal sounds polished and easy to follow.",
-      "A modest, specific learning goal often sounds stronger than a broad one.",
-    ],
-    voiceSample: "Hello everyone. I work in customer support, and I hope to improve how I handle difficult conversations more confidently.",
-  },
-  {
-    id: "formal-beginner-bank-visit",
-    title: "Bank Visit",
-    description: "Handle a practical conversation in a formal service setting.",
-    category: "Services",
-    iconName: "WalletCards",
-    goals: ["Explain your need", "Ask one question", "Use polite service language"],
-    starterPrompts: [
-      "You are speaking to a bank representative. Explain what help you need.",
-      "Describe your request clearly and ask what the next step is.",
-    ],
-    followUpPrompts: [
-      "What documents do you have with you?",
-      "How would you ask about processing time?",
-    ],
-    culturalNotes: [
-      "Service conversations often sound natural with 'I would like to...' rather than 'I want...'.",
-      "Clear questions help avoid confusion in formal settings.",
-    ],
-    voiceSample: "I would like to update my account details, and I would also like to know how long the process usually takes.",
-  },
-  {
-    id: "formal-beginner-library-card",
-    title: "Library Registration",
-    description: "Register for a service with clear, careful language.",
+    id: "formal-beginner-ask-permission-enter",
+    title: "Asking Permission to Enter",
+    description: "Ask a teacher politely if you may enter the classroom.",
     category: "Education",
     iconName: "Library",
-    goals: ["State your purpose", "Share one detail", "Ask about the process"],
+    goals: ["Greet the teacher", "Apologize for being late", "Ask permission to enter"],
     starterPrompts: [
-      "You are registering for a library card. Explain what you need.",
-      "Speak to the librarian and ask how to complete the registration.",
+      "You are late to class. Knock and ask the teacher if you may come in.",
+      "The teacher looks at you from the door. Ask for permission to enter politely."
     ],
     followUpPrompts: [
-      "How would you ask about borrowing limits?",
-      "What information should you confirm before you leave?",
+      "How would you explain why you are late without making excuses?",
+      "What do you say after the teacher lets you in?"
     ],
     culturalNotes: [
-      "Questions with 'Could you tell me...' sound polite and natural in public service settings.",
-      "Short check-in questions can make you sound prepared and organized.",
+      "Always greet the teacher first before asking permission.",
+      "A brief apology shows respect and helps the conversation go more smoothly."
     ],
-    voiceSample: "Hello. I am here to register for a library card, and I would like to know what documents I need to bring.",
+    voiceSample: "Good morning, ma'am. I am sorry I am late. May I please come in?"
   },
+  {
+    id: "formal-beginner-request-homework-help",
+    title: "Requesting Homework Help",
+    description: "Ask your teacher politely for help with an assignment.",
+    category: "Education",
+    iconName: "BadgeHelp",
+    goals: ["Explain what you do not understand", "Ask a clear question", "Sound respectful"],
+    starterPrompts: [
+      "You do not understand part of your homework. Ask your teacher for help.",
+      "Tell the teacher which question is confusing and ask how to approach it."
+    ],
+    followUpPrompts: [
+      "How would you ask for more time if the homework is too difficult?",
+      "What would you say if you need the teacher to explain again?"
+    ],
+    culturalNotes: [
+      "Saying 'I tried but I am confused about...' shows effort.",
+      "Asking specific questions gets more helpful answers than general ones."
+    ],
+    voiceSample: "Excuse me, sir. I tried question three, but I am not sure I understood it correctly."
+  },
+  {
+    id: "formal-beginner-greet-staff-member",
+    title: "Greeting a Staff Member",
+    description: "Greet a school staff member you meet in the hallway.",
+    category: "Education",
+    iconName: "HeartHandshake",
+    goals: ["Use a formal greeting", "Be polite and brief", "Sound confident"],
+    starterPrompts: [
+      "You pass a school staff member in the hallway. Greet them respectfully.",
+      "A staff member looks at you as you walk by. What do you say?"
+    ],
+    followUpPrompts: [
+      "How would you greet a teacher you do not know by name?",
+      "What is the difference between greeting a friend and greeting a staff member?"
+    ],
+    culturalNotes: [
+      "Simple greetings like 'Good morning' or 'Good afternoon' are appropriate.",
+      "Making eye contact and smiling helps a formal greeting feel warm."
+    ],
+    voiceSample: "Good afternoon, ma'am. I hope you are having a nice day."
+  },
+  {
+    id: "formal-beginner-ask-question-in-class",
+    title: "Asking a Question in Class",
+    description: "Raise your hand and ask the teacher a question.",
+    category: "Education",
+    iconName: "MessageCircle",
+    goals: ["Get attention politely", "Ask a clear question", "Use classroom language"],
+    starterPrompts: [
+      "You did not understand something the teacher said. Ask politely.",
+      "You have a question about today's topic. How do you ask the teacher?"
+    ],
+    followUpPrompts: [
+      "How would you ask the teacher to repeat something you missed?",
+      "What phrase helps you sound polite when asking in class?"
+    ],
+    culturalNotes: [
+      "Saying 'Excuse me' before asking shows good classroom manners.",
+      "Keeping questions short and clear helps the teacher answer quickly."
+    ],
+    voiceSample: "Excuse me, sir. Could you please explain what you meant by that last point?"
+  },
+  {
+    id: "formal-beginner-thank-teacher",
+    title: "Thanking a Teacher",
+    description: "Express gratitude to a teacher who helped you.",
+    category: "Education",
+    iconName: "HandHelping",
+    goals: ["Express thanks clearly", "Mention one specific thing", "Sound polite"],
+    starterPrompts: [
+      "Your teacher helped you understand something difficult. Thank them.",
+      "The lesson was very helpful. Tell your teacher you appreciated it."
+    ],
+    followUpPrompts: [
+      "How would you thank a teacher in front of the whole class?",
+      "What can you say to make your thanks sound more specific?"
+    ],
+    culturalNotes: [
+      "Specific thanks, like 'Thank you for explaining...' sounds more sincere.",
+      "Teachers appreciate knowing what part of the lesson helped most."
+    ],
+    voiceSample: "Thank you so much for explaining that topic today. I understand it clearly now."
+  },
+  {
+    id: "formal-beginner-ask-directions",
+    title: "Asking for Directions",
+    description: "Ask a teacher or staff member where to find a room.",
+    category: "Education",
+    iconName: "ScanSearch",
+    goals: ["Ask for directions politely", "Confirm the route", "Thank the person"],
+    starterPrompts: [
+      "You cannot find the library. Ask a teacher nearby for directions.",
+      "You need to reach the principal's office. Ask a staff member how to get there."
+    ],
+    followUpPrompts: [
+      "How do you confirm the directions to make sure you understood?",
+      "What do you say if you get lost and need to ask again?"
+    ],
+    culturalNotes: [
+      "Always start with 'Excuse me' when approaching a teacher.",
+      "Repeating the directions back is a polite way to confirm."
+    ],
+    voiceSample: "Excuse me, sir. Could you please tell me how to get to the science lab from here?"
+  },
+  {
+    id: "formal-beginner-speaking-attendance",
+    title: "Speaking During Attendance",
+    description: "Respond clearly when your name is called during attendance.",
+    category: "Education",
+    iconName: "UserPlus",
+    goals: ["Respond promptly", "Use formal language", "Sound confident"],
+    starterPrompts: [
+      "The teacher is calling the attendance roll. Respond when your name is called.",
+      "Practice what you say when a teacher calls your name."
+    ],
+    followUpPrompts: [
+      "How would you explain that a classmate is absent?",
+      "What do you say if the teacher mispronounces your name?"
+    ],
+    culturalNotes: [
+      "A clear 'Present' or 'Yes, sir/ma'am' is the standard response.",
+      "Politely correcting mispronunciation is acceptable in a classroom."
+    ],
+    voiceSample: "Present, ma'am."
+  },
+  {
+    id: "formal-beginner-class-introduction",
+    title: "Class Introduction",
+    description: "Give a brief self-introduction to your class.",
+    category: "Education",
+    iconName: "Presentation",
+    goals: ["State your name", "Share one interest", "Sound calm"],
+    starterPrompts: [
+      "Your teacher asks you to introduce yourself to the class in a few sentences.",
+      "Stand up and give a short formal introduction."
+    ],
+    followUpPrompts: [
+      "What is one goal you have for this school year?",
+      "How would you describe your favourite subject to the class?"
+    ],
+    culturalNotes: [
+      "Speak slowly and loudly enough for everyone to hear.",
+      "A smile while speaking helps you seem approachable."
+    ],
+    voiceSample: "Good morning, everyone. My name is Priya. I enjoy reading and I look forward to learning together."
+  },
+  {
+    id: "formal-beginner-ask-clarification",
+    title: "Asking for Clarification",
+    description: "Ask a teacher to clarify something you did not understand.",
+    category: "Education",
+    iconName: "BadgeHelp",
+    goals: ["Explain what is unclear", "Ask a focused question", "Use polite language"],
+    starterPrompts: [
+      "The teacher gave an instruction you did not understand. Ask for clarification.",
+      "You are unsure whether you understood the assignment. Ask to clarify."
+    ],
+    followUpPrompts: [
+      "How would you confirm that your understanding is now correct?",
+      "What phrase helps you ask for clarification without sounding impolite?"
+    ],
+    culturalNotes: [
+      "Asking for clarification shows you are engaged.",
+      "Phrases like 'Could you please clarify...' sound polite."
+    ],
+    voiceSample: "Excuse me, ma'am. Could you please clarify whether we need to submit this today?"
+  }
 ];
+
 
 const formalIntermediateSeeds: ScenarioSeed[] = [
   {
-    id: "formal-intermediate-panel-interview",
-    title: "Panel Interview",
-    description: "Handle a more detailed interview response with evidence.",
+    id: "formal-intermediate-job-interview",
+    title: "Attending a Job Interview",
+    description: "Answer questions clearly during a professional interview.",
     category: "Work",
     iconName: "Briefcase",
-    goals: ["Connect experience to results", "Use structured answers", "Sound composed under pressure"],
+    goals: ["Describe your experience", "Sound confident", "Provide clear examples"],
     starterPrompts: [
-      "Please describe a project that shows how you solve problems effectively.",
-      "Answer like you are speaking to a hiring panel and connect your experience to measurable impact.",
+      "Tell me about a time you solved a difficult problem at work.",
+      "Why are you interested in this position?"
     ],
     followUpPrompts: [
-      "What challenge did you face and how did you respond?",
-      "How would your teammates describe your contribution?",
+      "What was the biggest challenge you faced during that project?",
+      "How do you handle working under a tight deadline?"
     ],
     culturalNotes: [
-      "STAR-style answers can sound especially strong in formal interviews.",
-      "Clear outcomes sound more persuasive than vague effort alone.",
+      "Use the STAR method (Situation, Task, Action, Result) for behavioral questions.",
+      "Keep answers concise but detailed enough to show your capability."
     ],
-    voiceSample: "In my last role, I streamlined our reporting process and reduced weekly preparation time by nearly thirty percent.",
+    voiceSample: "In my previous role, I handled a similar situation by reorganizing our task list and prioritizing the most urgent items."
   },
   {
-    id: "formal-intermediate-client-call",
-    title: "Client Status Call",
-    description: "Update a client with clarity and reassurance.",
-    category: "Work",
-    iconName: "Phone",
-    goals: ["Explain status clearly", "Acknowledge concerns", "Set expectations"],
-    starterPrompts: [
-      "A client asks for an update on a shared project. Respond professionally.",
-      "Give a calm status update and explain what happens next.",
-    ],
-    followUpPrompts: [
-      "How would you handle a delayed deadline?",
-      "What reassurance can you offer without overpromising?",
-    ],
-    culturalNotes: [
-      "Client calls often sound stronger when risks and next steps are both addressed directly.",
-      "Phrases like 'what we can commit to today is...' help set realistic expectations.",
-    ],
-    voiceSample: "We have completed the testing phase, and the remaining work is focused on the final review and delivery timeline.",
-  },
-  {
-    id: "formal-intermediate-project-pitch",
-    title: "Project Pitch",
-    description: "Present a concise idea to a manager or stakeholder.",
-    category: "Work",
-    iconName: "Presentation",
-    goals: ["Open with value", "Explain one recommendation", "Invite discussion professionally"],
-    starterPrompts: [
-      "Pitch a small project idea to your manager and explain why it matters.",
-      "Introduce your proposal, the benefit, and the first step.",
-    ],
-    followUpPrompts: [
-      "What evidence supports your idea?",
-      "How would you respond to a concern about budget or time?",
-    ],
-    culturalNotes: [
-      "Decision-makers often respond well to clear tradeoffs and realistic first steps.",
-      "A short preview of benefits can help listeners stay engaged.",
-    ],
-    voiceSample: "I would like to propose a simpler onboarding guide that reduces repeated support questions and saves time for new hires.",
-  },
-  {
-    id: "formal-intermediate-feedback-meeting",
-    title: "Performance Feedback",
-    description: "Respond thoughtfully during a feedback conversation.",
-    category: "Work",
-    iconName: "ShieldCheck",
-    goals: ["Show reflection", "Ask a useful follow-up", "Keep a growth mindset tone"],
-    starterPrompts: [
-      "Your manager has given you feedback. Respond professionally and reflect on it.",
-      "Acknowledge the feedback and explain how you will act on it.",
-    ],
-    followUpPrompts: [
-      "What support would help you improve faster?",
-      "How would you summarize the action plan at the end?",
-    ],
-    culturalNotes: [
-      "Reflective responses often sound stronger than defensive ones in feedback meetings.",
-      "A good follow-up question can show maturity and ownership.",
-    ],
-    voiceSample: "Thank you for the feedback. I understand the main concern, and I would like to focus on improving how I prioritize urgent requests.",
-  },
-  {
-    id: "formal-intermediate-networking",
-    title: "Professional Networking",
-    description: "Make a polished introduction at a professional event.",
-    category: "Career",
-    iconName: "Users",
-    goals: ["Introduce your background", "Ask a relevant question", "Build rapport naturally"],
-    starterPrompts: [
-      "You are meeting a new professional contact at an event. Start the conversation.",
-      "Introduce yourself, mention your work, and ask a thoughtful follow-up question.",
-    ],
-    followUpPrompts: [
-      "How would you continue the conversation if they seem interested?",
-      "What would you say before exchanging contact details?",
-    ],
-    culturalNotes: [
-      "Professional networking often feels smoother when you focus on shared interests instead of self-promotion alone.",
-      "Questions about the other person's work can sound more engaging than long introductions.",
-    ],
-    voiceSample: "Hi, I work in product operations, and I am especially interested in how teams improve collaboration across different departments.",
-  },
-  {
-    id: "formal-intermediate-mentor-checkin",
-    title: "Mentor Check-In",
-    description: "Discuss your progress with a mentor in a thoughtful way.",
-    category: "Career",
-    iconName: "HeartHandshake",
-    goals: ["Reflect on progress", "Ask for guidance", "Describe a challenge clearly"],
-    starterPrompts: [
-      "Your mentor asks how your development is going. Give a clear update.",
-      "Explain one thing that is going well and one area where you need advice.",
-    ],
-    followUpPrompts: [
-      "What kind of feedback would help you most?",
-      "How have you applied previous advice?",
-    ],
-    culturalNotes: [
-      "Mentoring conversations often sound strongest when they balance honesty with initiative.",
-      "Naming a specific challenge can lead to more useful advice.",
-    ],
-    voiceSample: "I feel more confident leading small meetings now, but I would appreciate advice on speaking more clearly when the discussion becomes complex.",
-  },
-  {
-    id: "formal-intermediate-campus-presentation",
-    title: "Campus Presentation",
-    description: "Present an idea clearly in an academic setting.",
+    id: "formal-intermediate-class-presentation",
+    title: "Giving a Classroom Presentation",
+    description: "Deliver a structured presentation to your class.",
     category: "Education",
     iconName: "Presentation",
-    goals: ["Open with context", "Explain one key argument", "Guide the audience"],
+    goals: ["Introduce the topic", "Explain key points clearly", "Conclude effectively"],
     starterPrompts: [
-      "You are opening a short classroom presentation. Introduce your topic and its importance.",
-      "Start your presentation with context, purpose, and a quick preview.",
+      "Begin your presentation by introducing your main topic to the class.",
+      "Explain the first key point of your research."
     ],
     followUpPrompts: [
-      "How would you handle a question from the audience?",
-      "What example would make your point clearer?",
+      "How would you answer a question from a classmate about your sources?",
+      "How do you transition smoothly to the next point?"
     ],
     culturalNotes: [
-      "Academic presentations often sound stronger with a signpost like 'I will focus on two key points today.'",
-      "A calm pace helps listeners follow unfamiliar information.",
+      "Start by greeting your audience and clearly stating the purpose of the presentation.",
+      "Pacing and clear enunciation are key to a successful presentation."
     ],
-    voiceSample: "Today I will explain why community-based learning improves both student engagement and long-term confidence.",
+    voiceSample: "Good morning. Today I will be presenting our findings on renewable energy sources, starting with solar power."
   },
   {
-    id: "formal-intermediate-problem-report",
-    title: "Issue Escalation",
-    description: "Report a workplace issue without sounding emotional or vague.",
+    id: "formal-intermediate-explain-concept",
+    title: "Explaining a Simple Concept",
+    description: "Explain an idea clearly to someone who is unfamiliar with it.",
     category: "Work",
-    iconName: "Wrench",
-    goals: ["Describe the issue", "Explain impact", "Recommend the next step"],
+    iconName: "MessageCircle",
+    goals: ["Use simple terms", "Check for understanding", "Provide an example"],
     starterPrompts: [
-      "A process is failing and you need to escalate it to a manager. Explain the issue clearly.",
-      "Report the problem, its impact, and what support you need next.",
+      "A colleague asks you to explain how the new software works. Give a brief overview.",
+      "Explain the basic rules of a project to a new team member."
     ],
     followUpPrompts: [
-      "What evidence would strengthen your report?",
-      "How would you phrase urgency without sounding dramatic?",
+      "What do you say if they still seem confused?",
+      "How would you summarize the main point?"
     ],
     culturalNotes: [
-      "Escalations usually sound most effective when they focus on facts, impact, and next actions.",
-      "It can help to separate the problem from any personal frustration.",
+      "Avoid jargon when explaining something to a beginner.",
+      "Using analogies often helps clarify abstract concepts."
     ],
-    voiceSample: "The approval queue has been delayed for two days, which is now affecting delivery timelines for three client requests.",
+    voiceSample: "The new system works like a digital filing cabinet. You can search for any document by typing the client's name."
   },
   {
-    id: "formal-intermediate-service-complaint",
-    title: "Formal Complaint",
-    description: "Raise a concern firmly but respectfully.",
-    category: "Services",
-    iconName: "BadgeHelp",
-    goals: ["State the issue clearly", "Describe the expected resolution", "Stay professional"],
+    id: "formal-intermediate-group-discussion",
+    title: "Participating in a Group Discussion",
+    description: "Share your thoughts politely during a formal meeting.",
+    category: "Work",
+    iconName: "Users",
+    goals: ["Express your opinion", "Acknowledge others' points", "Stay on topic"],
     starterPrompts: [
-      "You need to make a formal complaint about a service problem. Explain it calmly.",
-      "Describe what happened and what outcome you would consider fair.",
+      "The team is discussing a new strategy. Share your thoughts on the proposed timeline.",
+      "Respond to a colleague's idea with constructive feedback."
     ],
     followUpPrompts: [
-      "How would you respond if the first answer is not helpful?",
-      "What details make your complaint sound credible?",
+      "How would you politely disagree with someone's suggestion?",
+      "What do you say to build upon another person's idea?"
     ],
     culturalNotes: [
-      "A calm tone can sound more persuasive than an angry tone in formal complaints.",
-      "Specific details help service staff understand the problem faster.",
+      "Saying 'I agree with [Name], and I\\'d like to add...' is a great way to contribute.",
+      "Wait for your turn to speak and avoid interrupting."
     ],
-    voiceSample: "I would like to report an issue with my reservation because the confirmation details did not match the service I received.",
+    voiceSample: "I think the timeline is realistic, but we should also consider adding a buffer week for testing."
   },
   {
-    id: "formal-intermediate-policy-question",
-    title: "Policy Clarification",
-    description: "Ask for clarification in a precise, professional way.",
+    id: "formal-intermediate-formal-request",
+    title: "Making a Formal Request",
+    description: "Ask for resources or approval professionally.",
+    category: "Work",
+    iconName: "HandHelping",
+    goals: ["State what you need", "Provide a reason", "Use formal phrasing"],
+    starterPrompts: [
+      "You need to request additional budget for a project. Explain why to your manager.",
+      "Ask a different department to provide data you need for your report."
+    ],
+    followUpPrompts: [
+      "How would you respond if the request is denied?",
+      "What timeline would you provide for your request?"
+    ],
+    culturalNotes: [
+      "Formal requests should be direct but polite, often using 'Would it be possible...'.",
+      "Always explain the 'why' behind the request to build a stronger case."
+    ],
+    voiceSample: "Would it be possible to extend the deadline by two days? We need more time to gather the final data from the client."
+  },
+  {
+    id: "formal-intermediate-describe-skills",
+    title: "Describing Your Skills",
+    description: "Talk about your professional abilities clearly.",
+    category: "Career",
+    iconName: "ShieldCheck",
+    goals: ["Highlight key skills", "Give context", "Sound professional"],
+    starterPrompts: [
+      "During a review, explain your strongest technical skills.",
+      "A client asks about your team's expertise. Provide a clear overview."
+    ],
+    followUpPrompts: [
+      "How would you talk about a skill you are currently trying to improve?",
+      "What is an example of when you used this skill recently?"
+    ],
+    culturalNotes: [
+      "Focus on skills relevant to the context of the conversation.",
+      "Confidence is important, but avoid sounding boastful."
+    ],
+    voiceSample: "My main strengths are in data analysis and project management, which I use regularly to improve our team's efficiency."
+  },
+  {
+    id: "formal-intermediate-detailed-info",
+    title: "Asking for Detailed Information",
+    description: "Request specific details about a task or project.",
     category: "Work",
     iconName: "ScanSearch",
-    goals: ["Ask a focused question", "Reference context", "Confirm understanding"],
+    goals: ["Ask precise questions", "Clarify context", "Ensure understanding"],
     starterPrompts: [
-      "You need clarification on a workplace policy. Ask professionally.",
-      "Explain what part of the policy is unclear and what you need to confirm.",
+      "You need more details about a new assignment before starting. Ask your supervisor.",
+      "Request specific specifications from a supplier for a product you want to order."
     ],
     followUpPrompts: [
-      "How would you summarize the answer back to confirm understanding?",
-      "What background detail would make your question easier to answer?",
+      "How would you summarize the information they provide to confirm?",
+      "What do you say if a detail they give is contradictory?"
     ],
     culturalNotes: [
-      "Focused questions often get better answers than broad questions in formal settings.",
-      "Repeating back the main point can help avoid misunderstandings.",
+      "Prepare your questions in advance to show that you value the other person's time.",
+      "Taking notes while receiving detailed information is highly professional."
     ],
-    voiceSample: "I wanted to clarify the travel reimbursement policy, especially which expenses need approval before the trip.",
+    voiceSample: "Could you provide more details regarding the formatting requirements for the final report?"
   },
+  {
+    id: "formal-intermediate-giving-instructions",
+    title: "Giving Instructions to Someone",
+    description: "Explain how to complete a task clearly and politely.",
+    category: "Work",
+    iconName: "Wrench",
+    goals: ["Outline steps logically", "Be clear and concise", "Offer help if needed"],
+    starterPrompts: [
+      "Explain to a new employee how to submit their weekly timesheet.",
+      "Give step-by-step instructions to a client on how to access their account."
+    ],
+    followUpPrompts: [
+      "How do you check if they understood the instructions?",
+      "What should they do if they encounter an error?"
+    ],
+    culturalNotes: [
+      "Use transition words like 'First', 'Next', and 'Finally' to structure the instructions.",
+      "Always offer further assistance at the end of the explanation."
+    ],
+    voiceSample: "First, log into the portal. Next, select 'Timesheets' from the menu. Finally, click 'Submit' when you are done."
+  },
+  {
+    id: "formal-intermediate-reporting-issue",
+    title: "Reporting an Issue Politely",
+    description: "Inform a superior or IT about a problem you encountered.",
+    category: "Work",
+    iconName: "BadgeHelp",
+    goals: ["Describe the problem clearly", "State the impact", "Keep a professional tone"],
+    starterPrompts: [
+      "You notice a bug in the software the team uses. Report it to the IT department.",
+      "Inform your manager that a delivery from a vendor will be delayed."
+    ],
+    followUpPrompts: [
+      "What steps have you already taken to try and solve the problem?",
+      "How urgent is this issue?"
+    ],
+    culturalNotes: [
+      "When reporting an issue, stick to the facts and avoid emotional language.",
+      "If possible, suggest a temporary workaround while the issue is being fixed."
+    ],
+    voiceSample: "I wanted to let you know that the server is currently down, which is preventing the team from accessing the shared files."
+  },
+  {
+    id: "formal-intermediate-structured-questions",
+    title: "Answering Structured Questions",
+    description: "Provide clear, organized answers in a formal assessment.",
+    category: "Education",
+    iconName: "Library",
+    goals: ["Answer directly", "Provide supporting evidence", "Stay concise"],
+    starterPrompts: [
+      "An examiner asks you to list three main causes of a historical event. Respond clearly.",
+      "Answer a formal survey question about the effectiveness of a recent training program."
+    ],
+    followUpPrompts: [
+      "Can you elaborate on your second point?",
+      "How would you summarize your overall perspective in one sentence?"
+    ],
+    culturalNotes: [
+      "In formal assessments, answer the specific question asked without digressing.",
+      "Using structured phrases like 'The primary reason is...' shows clear thinking."
+    ],
+    voiceSample: "The training was effective primarily because it provided hands-on practice, which helped reinforce the theoretical concepts."
+  }
 ];
 
 const formalAdvancedSeeds: ScenarioSeed[] = [
   {
-    id: "formal-advanced-executive-presentation",
-    title: "Executive Presentation",
-    description: "Present a recommendation to senior leaders with strong structure.",
+    id: "formal-advanced-professional-meeting",
+    title: "Handling a Professional Meeting",
+    description: "Lead a strategic meeting with key stakeholders.",
     category: "Leadership",
-    iconName: "Presentation",
-    goals: ["Open with impact", "Frame tradeoffs", "Speak with authority and clarity"],
+    iconName: "Briefcase",
+    goals: ["Set the agenda", "Guide the discussion", "Summarize action items"],
     starterPrompts: [
-      "Present a recommendation to senior leaders and explain why it matters now.",
-      "Open with the problem, the recommendation, and the business impact.",
+      "You are leading the quarterly review meeting. Open the meeting and state the agenda.",
+      "Transition the discussion from reviewing past performance to planning next steps."
     ],
     followUpPrompts: [
-      "What tradeoffs would you address if questioned?",
-      "How would you close with a decision request?",
+      "How do you handle a participant who is dominating the conversation?",
+      "What do you say to keep the meeting on schedule?"
     ],
     culturalNotes: [
-      "Senior audiences often value brevity, clarity, and decision-ready framing.",
-      "Confident transitions can make complex ideas easier to trust.",
+      "Effective leaders start meetings on time and respect the scheduled duration.",
+      "Always end with clear action items and assigned responsibilities."
     ],
-    voiceSample: "My recommendation is to simplify the rollout into two phases so we reduce delivery risk while protecting the customer experience.",
+    voiceSample: "Thank you all for joining. Today we will review our Q3 results, discuss current challenges, and outline our strategy for Q4."
   },
   {
-    id: "formal-advanced-stakeholder-negotiation",
-    title: "Stakeholder Negotiation",
-    description: "Navigate disagreement while preserving alignment.",
+    id: "formal-advanced-formal-speech",
+    title: "Delivering a Formal Speech",
+    description: "Give a well-structured speech to a large audience.",
+    category: "Public Speaking",
+    iconName: "Presentation",
+    goals: ["Engage the audience", "Deliver a clear message", "Maintain a strong presence"],
+    starterPrompts: [
+      "You are delivering the keynote address at a conference. Begin your speech.",
+      "Deliver the concluding remarks of a formal presentation to shareholders."
+    ],
+    followUpPrompts: [
+      "How do you use pacing to emphasize a key point?",
+      "What rhetorical device can you use to make your closing memorable?"
+    ],
+    culturalNotes: [
+      "Eye contact and purposeful pauses are crucial for effective public speaking.",
+      "A strong opening hook grabs attention immediately."
+    ],
+    voiceSample: "We stand today at a critical juncture in our industry, facing challenges that require unprecedented innovation and collaboration."
+  },
+  {
+    id: "formal-advanced-negotiation",
+    title: "Negotiating in a Formal Setting",
+    description: "Negotiate terms or a contract professionally.",
     category: "Leadership",
     iconName: "HeartHandshake",
-    goals: ["Acknowledge concerns", "Reframe toward shared goals", "Negotiate calmly"],
+    goals: ["State your terms", "Listen to counter-offers", "Find a compromise"],
     starterPrompts: [
-      "A stakeholder disagrees with your plan. Respond diplomatically and persuasively.",
-      "Address the concern, protect the relationship, and propose a constructive path forward.",
+      "You are negotiating a contract with a new vendor. Present your proposed terms.",
+      "Respond to a counter-offer that does not meet all your requirements."
     ],
     followUpPrompts: [
-      "How would you respond if they still resist?",
-      "Which shared goal can you emphasize to move the discussion forward?",
+      "How do you politely decline an unacceptable term?",
+      "What language helps keep the negotiation collaborative rather than adversarial?"
     ],
     culturalNotes: [
-      "Negotiation often sounds strongest when you validate the concern before arguing your case.",
-      "Shared-goal language can reduce defensiveness in formal discussions.",
+      "Successful negotiation focuses on interests, not positions.",
+      "Maintain a calm, professional demeanor even if the discussion becomes difficult."
     ],
-    voiceSample: "I understand the concern about timing, and I think we can protect the deadline by narrowing scope rather than lowering quality.",
+    voiceSample: "While we appreciate the offer, the proposed timeline is too long for our needs. We would need delivery within four weeks to proceed."
   },
   {
-    id: "formal-advanced-crisis-briefing",
-    title: "Crisis Briefing",
-    description: "Explain a sensitive situation with precision and control.",
-    category: "Leadership",
+    id: "formal-advanced-handling-complaint",
+    title: "Handling a Complaint Professionally",
+    description: "Address a serious issue raised by a client or stakeholder.",
+    category: "Services",
     iconName: "ShieldCheck",
-    goals: ["State facts first", "Manage urgency", "Project calm leadership"],
+    goals: ["Acknowledge the issue", "Take responsibility", "Propose a solution"],
     starterPrompts: [
-      "You need to brief leadership on a high-risk issue. Speak clearly and calmly.",
-      "Explain the situation, immediate impact, and the next decision needed.",
+      "A major client is unhappy with the recent service outage. Address their concerns.",
+      "Respond to a formal complaint from an employee regarding workplace policies."
     ],
     followUpPrompts: [
-      "How would you answer a tough question about accountability?",
-      "What information should you avoid speculating about?",
+      "How do you assure them that the issue will not happen again?",
+      "What steps are you taking immediately to resolve the problem?"
     ],
     culturalNotes: [
-      "In crisis briefings, clear facts and next steps matter more than dramatic language.",
-      "Separating confirmed facts from assumptions builds trust.",
+      "Empathy and active listening are essential when handling complaints.",
+      "Focus on the solution rather than making excuses."
     ],
-    voiceSample: "At this stage, we have confirmed the service interruption, identified the affected customers, and launched the mitigation plan.",
+    voiceSample: "I completely understand your frustration regarding the delay. We take this matter seriously and are currently investigating the cause to prevent it from recurring."
   },
   {
-    id: "formal-advanced-conference-qa",
-    title: "Conference Q&A",
-    description: "Answer a challenging question in public with confidence.",
-    category: "Public Speaking",
+    id: "formal-advanced-express-disagreement",
+    title: "Expressing Disagreement Politely",
+    description: "Voice a dissenting opinion constructively.",
+    category: "Leadership",
+    iconName: "MessageCircle",
+    goals: ["Acknowledge the other view", "State your disagreement clearly", "Offer an alternative"],
+    starterPrompts: [
+      "During a board meeting, you disagree with the proposed budget cuts. Express your opinion.",
+      "A colleague suggests a strategy you believe is flawed. Respond constructively."
+    ],
+    followUpPrompts: [
+      "How do you back up your disagreement with data?",
+      "What phrase helps soften the disagreement?"
+    ],
+    culturalNotes: [
+      "Use 'I' statements to avoid sounding accusatory (e.g., 'I have concerns about...').",
+      "Always offer an alternative solution when disagreeing with a proposal."
+    ],
+    voiceSample: "I see the rationale behind cutting the marketing budget, but I am concerned it might negatively impact our growth targets for the next quarter. Perhaps we could look at reducing administrative costs instead."
+  },
+  {
+    id: "formal-advanced-team-discussion",
+    title: "Leading a Team Discussion",
+    description: "Facilitate a complex discussion among team members.",
+    category: "Leadership",
     iconName: "Users",
-    goals: ["Respond without rushing", "Clarify your position", "Handle complexity gracefully"],
+    goals: ["Encourage participation", "Synthesize different ideas", "Guide towards a decision"],
     starterPrompts: [
-      "You have just finished speaking at a conference and receive a challenging question. Answer it.",
-      "Respond in a way that sounds thoughtful, confident, and concise.",
+      "Your team is brainstorming solutions to a complex problem. Guide the discussion.",
+      "Two team members have conflicting ideas. Help them find common ground."
     ],
     followUpPrompts: [
-      "How would you respond if the question is partly based on a wrong assumption?",
-      "What phrase helps you pause and organize your answer?",
+      "How do you ensure quiet team members have a chance to speak?",
+      "How do you summarize a long, complex discussion?"
     ],
     culturalNotes: [
-      "Public answers often sound stronger when you briefly frame the issue before responding.",
-      "It is acceptable to narrow the question if it is too broad or loaded.",
+      "A good facilitator remains neutral and focuses on the process of the discussion.",
+      "Validating contributions encourages further participation."
     ],
-    voiceSample: "That is an important question, and I would separate it into two parts: the short-term operational view and the longer-term strategic view.",
+    voiceSample: "We have heard some great ideas from both the design and engineering teams. Let's see how we can integrate the user-friendly interface with the robust backend architecture."
   },
   {
-    id: "formal-advanced-board-update",
-    title: "Board Update",
-    description: "Deliver a strategic update to a high-level audience.",
+    id: "formal-advanced-complex-idea",
+    title: "Explaining a Complex Idea",
+    description: "Make a difficult concept understandable to a non-expert audience.",
+    category: "Work",
+    iconName: "Library",
+    goals: ["Break down the concept", "Use appropriate analogies", "Check for comprehension"],
+    starterPrompts: [
+      "Explain the impact of the new regulatory changes to the sales team.",
+      "Describe the architecture of the new database system to a non-technical manager."
+    ],
+    followUpPrompts: [
+      "What analogy would you use to explain this concept?",
+      "How do you answer a question that shows they misunderstood a key point?"
+    ],
+    culturalNotes: [
+      "Avoid condescension when explaining complex topics to non-experts.",
+      "Use clear, jargon-free language whenever possible."
+    ],
+    voiceSample: "Think of the new data structure like a highly organized library, where every piece of information has a specific tag, making it much faster to retrieve exactly what you need."
+  },
+  {
+    id: "formal-advanced-present-solution",
+    title: "Presenting a Solution",
+    description: "Propose a formal solution to a recognized problem.",
     category: "Leadership",
-    iconName: "Landmark",
-    goals: ["Highlight priorities", "Use strategic language", "Anticipate concerns"],
+    iconName: "Wrench",
+    goals: ["Identify the problem", "Present the solution", "Outline the benefits"],
     starterPrompts: [
-      "Give a strategic progress update to a board-level audience.",
-      "Explain where progress is strongest, where risk remains, and what decision support you need.",
+      "Present your proposed solution for the high employee turnover rate to the HR director.",
+      "Pitch a new software tool to the executive board that will improve efficiency."
     ],
     followUpPrompts: [
-      "How would you discuss underperformance without sounding defensive?",
-      "What evidence makes your update more credible?",
+      "How do you address potential risks associated with your solution?",
+      "What is the required investment in terms of time and money?"
     ],
     culturalNotes: [
-      "Board-level communication often sounds sharper when it centers on decisions, not activity alone.",
-      "Strategic audiences usually expect tradeoffs, not perfect certainty.",
+      "Focus on the ROI (Return on Investment) or value proposition of your solution.",
+      "Anticipate objections and have well-reasoned responses prepared."
     ],
-    voiceSample: "Our strongest progress is in retention, but the main risk remains execution speed across regional teams.",
+    voiceSample: "To address the bottlenecks in our supply chain, I propose implementing an automated tracking system, which will reduce errors by twenty percent and save us thousands in delays."
   },
   {
-    id: "formal-advanced-academic-defense",
-    title: "Academic Defense",
-    description: "Defend a complex academic point with nuance.",
+    id: "formal-advanced-debate-participation",
+    title: "Formal Debate Participation",
+    description: "Argue a position effectively in a formal debate setting.",
     category: "Education",
-    iconName: "GraduationCap",
-    goals: ["Defend a position", "Use careful language", "Balance confidence and precision"],
+    iconName: "Landmark",
+    goals: ["State your argument clearly", "Rebut the opponent's points", "Maintain a formal tone"],
     starterPrompts: [
-      "You are defending a research argument during a formal academic discussion. Respond carefully.",
-      "Explain your position, acknowledge a limitation, and reinforce the core argument.",
+      "Deliver your opening statement affirming the resolution.",
+      "Provide a rebuttal to the opposing team's argument regarding economic impact."
     ],
     followUpPrompts: [
-      "How would you respond to a methodological criticism?",
-      "What phrase helps you sound precise rather than defensive?",
+      "How do you structure your closing statement?",
+      "What is the most critical weakness in the opponent's argument?"
     ],
     culturalNotes: [
-      "Academic English often sounds strongest when it uses careful qualifiers instead of absolute claims.",
-      "Acknowledging limitations can actually strengthen credibility.",
+      "Debates require strict adherence to rules and respectful language towards opponents.",
+      "Logical coherence and factual evidence are the keys to winning an argument."
     ],
-    voiceSample: "While the dataset has limitations, the central pattern remains consistent across the strongest comparison points.",
+    voiceSample: "The opposing team argues that this policy will increase costs. However, our data clearly shows that the long-term savings significantly outweigh the initial investment."
   },
   {
-    id: "formal-advanced-cross-cultural-meeting",
-    title: "Cross-Cultural Meeting",
-    description: "Lead a formal conversation with international partners.",
-    category: "Leadership",
-    iconName: "Plane",
-    goals: ["Use clear global English", "Check alignment", "Avoid ambiguity"],
-    starterPrompts: [
-      "You are leading a formal call with international partners. Open the discussion clearly.",
-      "Set the agenda, confirm shared goals, and explain how you want to use the meeting time.",
-    ],
-    followUpPrompts: [
-      "How would you check understanding without sounding patronizing?",
-      "What phrases reduce ambiguity in cross-cultural business English?",
-    ],
-    culturalNotes: [
-      "In international meetings, plain English often works better than idioms or humor.",
-      "Explicit signposting helps everyone stay aligned.",
-    ],
-    voiceSample: "To make the meeting useful for everyone, I will start with the objective, then review decisions, and finally confirm the next actions.",
-  },
-  {
-    id: "formal-advanced-legal-brief",
-    title: "Policy Briefing",
-    description: "Present a careful, high-stakes explanation with precision.",
+    id: "formal-advanced-decision-making",
+    title: "Workplace Decision-Making",
+    description: "Discuss and finalize a major workplace decision.",
     category: "Leadership",
     iconName: "ScanSearch",
-    goals: ["Use measured language", "Separate fact from interpretation", "Stay concise"],
+    goals: ["Evaluate options", "Discuss trade-offs", "Reach a consensus"],
     starterPrompts: [
-      "You need to brief a senior team on a sensitive policy change. Explain it carefully.",
-      "State what is confirmed, what is changing, and what remains under review.",
+      "You are finalizing the choice of a new vendor. Discuss the pros and cons with the committee.",
+      "Lead the final discussion before approving the launch of the new product."
     ],
     followUpPrompts: [
-      "How would you answer a question you cannot fully confirm yet?",
-      "What wording reduces the risk of overstatement?",
+      "How do you ensure all perspectives have been considered before deciding?",
+      "What is the contingency plan if the decision leads to negative outcomes?"
     ],
     culturalNotes: [
-      "High-stakes briefings often sound stronger when they avoid certainty beyond the facts.",
-      "Phrases like 'based on what we know today' can sound appropriately careful.",
+      "Consensus-building takes time but leads to greater buy-in from the team.",
+      "Clearly document the final decision and the rationale behind it."
     ],
-    voiceSample: "Based on what we know today, the policy change affects reporting timelines more than core service delivery.",
-  },
-  {
-    id: "formal-advanced-partnership-pitch",
-    title: "Partnership Proposal",
-    description: "Make a persuasive partnership case to another organization.",
-    category: "Career",
-    iconName: "Store",
-    goals: ["Frame mutual value", "Anticipate objections", "Close with a clear ask"],
-    starterPrompts: [
-      "Present a partnership idea to another organization in a persuasive but professional way.",
-      "Explain the value for both sides and suggest a realistic first step.",
-    ],
-    followUpPrompts: [
-      "How would you respond if they want proof before committing?",
-      "What language makes the proposal sound collaborative instead of self-serving?",
-    ],
-    culturalNotes: [
-      "Partnership pitches usually sound stronger when they focus on mutual benefit rather than one-sided gain.",
-      "A realistic pilot idea can sound more persuasive than an oversized first ask.",
-    ],
-    voiceSample: "I believe a small pilot partnership would let both teams test value quickly while keeping the commitment practical.",
-  },
-  {
-    id: "formal-advanced-media-response",
-    title: "Press Response",
-    description: "Answer a formal public question with composure and clarity.",
-    category: "Public Speaking",
-    iconName: "MessageCircle",
-    goals: ["Stay on message", "Avoid overcommitting", "Sound calm and credible"],
-    starterPrompts: [
-      "A journalist asks about a sensitive issue. Respond carefully and professionally.",
-      "Answer in a way that sounds transparent, calm, and responsibly limited to confirmed facts.",
-    ],
-    followUpPrompts: [
-      "How would you handle a repeated question trying to force a stronger claim?",
-      "What phrase helps you stay clear without sounding evasive?",
-    ],
-    culturalNotes: [
-      "Public-facing answers often sound better when they return to confirmed facts and current actions.",
-      "You can sound transparent without answering beyond what is verified.",
-    ],
-    voiceSample: "What I can confirm today is that we are reviewing the issue carefully and sharing updates as soon as they are verified.",
-  },
+    voiceSample: "While Vendor A offers a lower price, Vendor B has a proven track record of reliability. Given our strict deadlines, I recommend we prioritize reliability and go with Vendor B."
+  }
 ];
 
 const casualBeginnerSeeds: ScenarioSeed[] = [
   {
-    id: "casual-beginner-friends-catchup",
-    title: "Friends Catch-Up",
-    description: "Have a relaxed conversation with a friend.",
+    id: "casual-beginner-hello-friend",
+    title: "Saying Hello to a Friend",
+    description: "Greet a friend you just met casually.",
     category: "Social",
     iconName: "Users",
-    goals: ["Share a simple update", "Ask a follow-up question", "Sound warm and natural"],
+    goals: ["Say hello", "Sound friendly", "Ask a basic question"],
     starterPrompts: [
-      "A friend asks what you have been up to lately. Answer casually.",
-      "Share a small life update and ask your friend something back.",
+      "You see your friend at the park. Greet them.",
+      "Say hello to your friend when they arrive at your house."
     ],
     followUpPrompts: [
-      "What was the best part of your week?",
-      "How would you keep the conversation going naturally?",
+      "What do you say if you haven't seen them in a few days?",
+      "How do you compliment something they are wearing?"
     ],
     culturalNotes: [
-      "Short follow-up questions make casual conversations feel more balanced.",
-      "Relaxed English often sounds natural with simple connectors like 'so' or 'then'.",
+      "Casual greetings often include 'Hey' or 'Hi' instead of 'Hello'.",
+      "Smiling makes the greeting feel warm."
     ],
-    voiceSample: "I have been pretty busy this week, but I finally had time to relax yesterday and catch up with my family.",
+    voiceSample: "Hey! It is so good to see you. How have you been?"
   },
   {
-    id: "casual-beginner-ordering-food",
-    title: "Ordering Food",
-    description: "Place a simple order and ask one polite question.",
+    id: "casual-beginner-favorite-food",
+    title: "Talking About Favorite Food",
+    description: "Discuss your favorite food with a friend.",
     category: "Daily Life",
     iconName: "UtensilsCrossed",
-    goals: ["Order clearly", "Mention a preference", "Use polite service language"],
+    goals: ["Name a food", "Describe why you like it", "Ask their preference"],
     starterPrompts: [
-      "You are ordering food at a cafe. Tell the staff what you want.",
-      "Place your order and ask one simple question about the menu.",
+      "A friend asks what your favorite food is. Tell them.",
+      "Talk about a meal you really enjoy eating."
     ],
     followUpPrompts: [
-      "Would you like to change anything about the order?",
-      "How would you ask if something is spicy?",
+      "Can you cook this food yourself?",
+      "What food do you not like at all?"
     ],
     culturalNotes: [
-      "In casual service settings, 'Could I have...' often sounds polite and natural.",
-      "A short confirmation at the end can help avoid mistakes.",
+      "Using simple descriptive words like 'spicy', 'sweet', or 'delicious' helps.",
+      "Asking 'What about you?' keeps the conversation going."
     ],
-    voiceSample: "Hi, could I have a vegetable wrap and a small coffee, please? Also, is the sauce spicy?",
+    voiceSample: "My favorite food is pizza because I love the cheese. What about you?"
   },
   {
-    id: "casual-beginner-daily-plans",
-    title: "Daily Plans",
-    description: "Talk about what you need to do today.",
-    category: "Daily Life",
-    iconName: "CalendarClock",
-    goals: ["Describe plans", "Use time words", "Keep the flow natural"],
-    starterPrompts: [
-      "Tell me what you need to do today.",
-      "Describe your plans for today in a relaxed conversation.",
-    ],
-    followUpPrompts: [
-      "Which part of your day are you looking forward to most?",
-      "What might change in your plan?",
-    ],
-    culturalNotes: [
-      "Simple time phrases like 'later this afternoon' or 'after that' help daily plans sound smooth.",
-      "Short, natural details make casual speech feel more real.",
-    ],
-    voiceSample: "This morning I need to finish some work, and later I want to call my cousin and go for a walk.",
-  },
-  {
-    id: "casual-beginner-shopping-help",
-    title: "Shopping Help",
-    description: "Ask for help while shopping in a friendly way.",
-    category: "Daily Life",
-    iconName: "ShoppingBag",
-    goals: ["Ask for an item", "Mention a need", "Sound polite but casual"],
-    starterPrompts: [
-      "You are in a store and need help finding something. Ask casually and clearly.",
-      "Explain what you are looking for and ask where to find it.",
-    ],
-    followUpPrompts: [
-      "How would you ask whether another size is available?",
-      "What would you say if you changed your mind?",
-    ],
-    culturalNotes: [
-      "In stores, short polite questions usually sound more natural than long explanations.",
-      "Adding one detail, like size or color, helps the staff respond faster.",
-    ],
-    voiceSample: "Hi, could you help me find a light jacket? I am looking for something simple and comfortable.",
-  },
-  {
-    id: "casual-beginner-bus-stop",
-    title: "Bus Stop Chat",
-    description: "Ask a simple question while waiting for transport.",
-    category: "Travel",
-    iconName: "Bus",
-    goals: ["Ask for information", "Sound friendly", "Confirm understanding"],
-    starterPrompts: [
-      "You are at a bus stop and need information. Ask another passenger politely.",
-      "Start a short conversation to confirm which bus you need.",
-    ],
-    followUpPrompts: [
-      "How would you ask if the bus is usually on time?",
-      "What would you say to thank the person?",
-    ],
-    culturalNotes: [
-      "Short openers like 'Excuse me' often make casual public questions sound polite.",
-      "Repeating key information can help you sound careful and clear.",
-    ],
-    voiceSample: "Excuse me, does this bus go to Central Station, or should I wait for the next one?",
-  },
-  {
-    id: "casual-beginner-neighbor-intro",
-    title: "Neighbor Introduction",
-    description: "Introduce yourself naturally to a new neighbor.",
+    id: "casual-beginner-family",
+    title: "Talking About Your Family",
+    description: "Share simple details about your family members.",
     category: "Social",
     iconName: "Home",
-    goals: ["Say hello", "Share a little about yourself", "Sound approachable"],
+    goals: ["Mention family members", "Share a simple fact", "Keep it relaxed"],
     starterPrompts: [
-      "You meet a new neighbor for the first time. Introduce yourself casually.",
-      "Say hello, share a small detail, and ask a friendly question back.",
+      "A friend asks about your family. Tell them who you live with.",
+      "Describe one person in your family briefly."
     ],
     followUpPrompts: [
-      "What would you say if you wanted to continue the conversation?",
-      "How can you sound friendly without oversharing?",
+      "Do you have any pets?",
+      "What do you like to do with your family on weekends?"
     ],
     culturalNotes: [
-      "Small talk with neighbors often sounds natural when it stays light and friendly.",
-      "A short question back can make the exchange feel warm and balanced.",
+      "It is common to talk about siblings or parents in casual chat.",
+      "Keep the details light and positive."
     ],
-    voiceSample: "Hi, I am Riya. I moved in last week, and I am still getting to know the area. How long have you lived here?",
+    voiceSample: "I live with my parents and my younger brother. He is still in middle school."
   },
   {
-    id: "casual-beginner-coffee-order",
-    title: "Coffee Order",
-    description: "Customize a drink order clearly.",
-    category: "Daily Life",
-    iconName: "Coffee",
-    goals: ["Order naturally", "Mention preferences", "Confirm details"],
-    starterPrompts: [
-      "You are ordering a coffee and want to customize it. Speak naturally.",
-      "Tell the barista what drink you want and one preference.",
-    ],
-    followUpPrompts: [
-      "How would you ask if oat milk is available?",
-      "What would you say if you wanted it less sweet?",
-    ],
-    culturalNotes: [
-      "In cafes, a short order plus one or two preferences usually sounds natural.",
-      "Repeating the final order can help confirm accuracy.",
-    ],
-    voiceSample: "Can I get a medium iced latte with oat milk, please? If possible, I would like it with less sugar.",
-  },
-  {
-    id: "casual-beginner-ticket-counter",
-    title: "Ticket Counter",
-    description: "Buy a ticket and ask a practical question.",
-    category: "Travel",
-    iconName: "Ticket",
-    goals: ["Ask for a ticket", "State destination", "Confirm timing or price"],
-    starterPrompts: [
-      "You are buying a ticket at a counter. Explain what you need.",
-      "Ask for the ticket and one extra detail, like the time or the price.",
-    ],
-    followUpPrompts: [
-      "How would you ask whether there is a return ticket option?",
-      "What would you say if you needed help understanding the schedule?",
-    ],
-    culturalNotes: [
-      "Transport conversations are easier to follow when you say the destination early.",
-      "Numbers and times often sound clearer when spoken a little more slowly.",
-    ],
-    voiceSample: "Hi, I need one ticket to Lakeside, please. What time does the next train leave?",
-  },
-  {
-    id: "casual-beginner-doctor-checkin",
-    title: "Clinic Check-In",
-    description: "Handle a simple check-in at a clinic or health center.",
-    category: "Daily Life",
-    iconName: "Stethoscope",
-    goals: ["State your name", "Explain your appointment", "Ask a clear next-step question"],
-    starterPrompts: [
-      "You have arrived for an appointment at a clinic. Check in clearly.",
-      "Introduce yourself at the desk and confirm what you should do next.",
-    ],
-    followUpPrompts: [
-      "How would you ask how long the wait might be?",
-      "What detail would help the receptionist find your booking?",
-    ],
-    culturalNotes: [
-      "Simple, calm language usually works best in check-in conversations.",
-      "Mentioning your appointment time can make the conversation smoother.",
-    ],
-    voiceSample: "Hello, I am here for my appointment with Dr. Shah at two o'clock. Should I wait here or fill out a form first?",
-  },
-  {
-    id: "casual-beginner-weekend-plan",
-    title: "Weekend Plans",
-    description: "Talk casually about your weekend with a friend.",
+    id: "casual-beginner-how-are-you",
+    title: "Asking 'How are you?'",
+    description: "Ask someone how they are doing and respond appropriately.",
     category: "Social",
-    iconName: "PartyPopper",
-    goals: ["Share plans", "Express feeling", "Ask about the other person"],
+    iconName: "MessageCircle",
+    goals: ["Ask the question", "Listen to the answer", "Give a brief response"],
     starterPrompts: [
-      "A friend asks about your weekend plans. Answer casually.",
-      "Talk about what you might do this weekend and ask your friend the same question.",
+      "Ask a friend how they are doing today.",
+      "Your friend asks 'How are you?'. Give a natural response."
     ],
     followUpPrompts: [
-      "What sounds most fun about your plan?",
-      "How would you mention that your plan is still flexible?",
+      "What do you say if you are feeling a bit tired?",
+      "How do you respond if they say they had a bad day?"
     ],
     culturalNotes: [
-      "Weekend conversations often sound natural when you leave room for uncertainty, like 'I might' or 'I am thinking about'.",
-      "A relaxed follow-up question helps keep the chat going.",
+      "'I am good, thanks' is a very common and polite response.",
+      "You don't always have to give a long answer."
     ],
-    voiceSample: "I might meet a friend on Saturday and stay home on Sunday to rest a little. What about you?",
+    voiceSample: "I am doing pretty well, thanks. Just a bit tired from work. How are you?"
   },
+  {
+    id: "casual-beginner-school-day",
+    title: "Talking About Your School Day",
+    description: "Share what happened at school today.",
+    category: "Education",
+    iconName: "GraduationCap",
+    goals: ["Mention a class or activity", "Say how it was", "Use simple past tense"],
+    starterPrompts: [
+      "Tell a friend what you did at school today.",
+      "Someone asks how your classes were. Answer briefly."
+    ],
+    followUpPrompts: [
+      "What was the best part of your day?",
+      "Did you have any difficult assignments?"
+    ],
+    culturalNotes: [
+      "Using 'It was fun' or 'It was boring' is common for school talk.",
+      "Sharing a specific small detail makes the story more interesting."
+    ],
+    voiceSample: "School was okay today. We had a science experiment which was actually pretty fun."
+  },
+  {
+    id: "casual-beginner-what-you-like",
+    title: "Saying What You Like",
+    description: "Express your preferences casually.",
+    category: "Daily Life",
+    iconName: "HeartHandshake",
+    goals: ["Use 'I like'", "Mention an activity or thing", "Give a short reason"],
+    starterPrompts: [
+      "Tell a friend about a game or show you really like.",
+      "Explain what kind of music you enjoy listening to."
+    ],
+    followUpPrompts: [
+      "How often do you do this activity?",
+      "Do you like doing this alone or with friends?"
+    ],
+    culturalNotes: [
+      "Saying 'I\\'m really into...' is a natural casual phrase.",
+      "Enthusiasm in your voice makes the conversation more engaging."
+    ],
+    voiceSample: "I really like playing video games on the weekend because it helps me relax."
+  },
+  {
+    id: "casual-beginner-hobby",
+    title: "Talking About Your Hobby",
+    description: "Discuss what you do in your free time.",
+    category: "Daily Life",
+    iconName: "PartyPopper",
+    goals: ["Name the hobby", "Say when you do it", "Sound enthusiastic"],
+    starterPrompts: [
+      "Someone asks what you do for fun. Tell them about your hobby.",
+      "Describe an activity you enjoy doing after school or work."
+    ],
+    followUpPrompts: [
+      "How long have you been doing this hobby?",
+      "What do you need to do this hobby?"
+    ],
+    culturalNotes: [
+      "Hobbies are a great way to connect with others.",
+      "Offering to show them or do it together is a friendly gesture."
+    ],
+    voiceSample: "In my free time, I love to paint. I usually do it on Sunday afternoons."
+  },
+  {
+    id: "casual-beginner-ask-questions",
+    title: "Asking Simple Questions",
+    description: "Ask a friend basic questions to learn more about them.",
+    category: "Social",
+    iconName: "MessageCircle",
+    goals: ["Ask clearly", "Show interest", "Keep the tone light"],
+    starterPrompts: [
+      "Ask a friend what their favorite movie is.",
+      "Ask a new friend where they grew up."
+    ],
+    followUpPrompts: [
+      "How do you ask about their weekend plans?",
+      "What do you say if you have the same answer?"
+    ],
+    culturalNotes: [
+      "Asking questions shows you care about the other person.",
+      "Follow-up questions are key to a good conversation."
+    ],
+    voiceSample: "So, what kind of movies do you usually like to watch?"
+  },
+  {
+    id: "casual-beginner-favorite-place",
+    title: "Talking About Your Favorite Place",
+    description: "Describe a place you love to visit.",
+    category: "Travel",
+    iconName: "Plane",
+    goals: ["Name the place", "Describe it simply", "Say why you like it"],
+    starterPrompts: [
+      "Tell a friend about your favorite park or cafe.",
+      "Describe a place in your city that you really like."
+    ],
+    followUpPrompts: [
+      "When is the best time to go there?",
+      "Who do you usually go with?"
+    ],
+    culturalNotes: [
+      "Using adjectives like 'quiet', 'busy', or 'beautiful' helps describe the place.",
+      "People love hearing recommendations for new places."
+    ],
+    voiceSample: "My favorite place is the library downtown. It is very quiet and has comfortable chairs."
+  },
+  {
+    id: "casual-beginner-saying-goodbye",
+    title: "Saying Goodbye Casually",
+    description: "End a conversation with a friend naturally.",
+    category: "Social",
+    iconName: "Users",
+    goals: ["Say goodbye", "Mention seeing them later", "Be friendly"],
+    starterPrompts: [
+      "You have to leave. Say goodbye to your friend.",
+      "End a phone call with a friend casually."
+    ],
+    followUpPrompts: [
+      "What do you say if you will see them tomorrow?",
+      "How do you say goodbye if you are in a hurry?"
+    ],
+    culturalNotes: [
+      "'See you later' or 'Catch you later' are very common.",
+      "A quick wave or smile goes well with a casual goodbye."
+    ],
+    voiceSample: "I have to go now. It was great talking to you. See you tomorrow!"
+  }
 ];
 
 const casualIntermediateSeeds: ScenarioSeed[] = [
   {
-    id: "casual-intermediate-roommate-discussion",
-    title: "Roommate Discussion",
-    description: "Talk through a shared-living issue without sounding harsh.",
+    id: "casual-intermediate-weekend-plans",
+    title: "Talking About Weekend Plans",
+    description: "Discuss what you are going to do this weekend.",
     category: "Social",
-    iconName: "Home",
-    goals: ["Raise a concern politely", "Explain your point", "Suggest a solution"],
+    iconName: "CalendarClock",
+    goals: ["Use future tense", "Share details", "Ask about their plans"],
     starterPrompts: [
-      "You need to talk to your roommate about a small problem at home. Start the conversation.",
-      "Explain the issue and suggest a practical fix without sounding rude.",
+      "A friend asks what you are doing this weekend. Tell them your plans.",
+      "Start a conversation by asking a friend about their weekend."
     ],
     followUpPrompts: [
-      "How would you respond if they disagree?",
-      "What phrase helps you sound calm and collaborative?",
+      "What do you say if your plans are not finalized yet?",
+      "How would you invite them to join you?"
     ],
     culturalNotes: [
-      "In casual conflict, 'I noticed...' can sound softer than direct blame.",
-      "A suggested solution often makes the conversation feel more constructive.",
+      "Weekend plans are a very common topic for small talk.",
+      "Using 'I am thinking of...' or 'I might...' sounds natural."
     ],
-    voiceSample: "I wanted to bring up something small about the kitchen because I think we could make it easier for both of us to keep it organized.",
+    voiceSample: "I am thinking of going to the beach on Saturday if the weather is nice. What are you up to?"
   },
   {
-    id: "casual-intermediate-travel-delay",
-    title: "Travel Delay",
-    description: "Handle an informal but slightly stressful travel conversation.",
-    category: "Travel",
-    iconName: "Plane",
-    goals: ["Explain the situation", "Ask for help clearly", "Stay calm under pressure"],
-    starterPrompts: [
-      "Your travel plans changed unexpectedly. Explain the situation and ask for help.",
-      "Tell someone at the counter about the delay and what you need now.",
-    ],
-    followUpPrompts: [
-      "How would you ask about alternate options?",
-      "What detail should you share first to save time?",
-    ],
-    culturalNotes: [
-      "Travel staff conversations often go more smoothly when you state the problem first, then the request.",
-      "Short, clear questions are helpful in busy travel environments.",
-    ],
-    voiceSample: "My train was cancelled, and I am trying to find the fastest way to get to the airport this evening.",
-  },
-  {
-    id: "casual-intermediate-online-order",
-    title: "Order Problem",
-    description: "Explain a delivery issue in clear everyday English.",
-    category: "Daily Life",
-    iconName: "ShoppingCart",
-    goals: ["Describe the problem", "Request a reasonable fix", "Stay polite but firm"],
-    starterPrompts: [
-      "Your online order arrived with a problem. Explain it clearly.",
-      "Tell customer support what happened and what resolution you want.",
-    ],
-    followUpPrompts: [
-      "How would you sound firm without sounding angry?",
-      "What detail would make your request easier to resolve?",
-    ],
-    culturalNotes: [
-      "Customer support conversations often sound strongest when they stay specific and solution-focused.",
-      "Briefly naming your preferred outcome can save time.",
-    ],
-    voiceSample: "The order arrived on time, but one item was missing, so I would like to know whether you can resend it or refund it.",
-  },
-  {
-    id: "casual-intermediate-gym-chat",
-    title: "Gym Conversation",
-    description: "Have a practical conversation at the gym.",
-    category: "Daily Life",
-    iconName: "ShieldCheck",
-    goals: ["Ask a question naturally", "Explain a goal", "Keep the exchange friendly"],
-    starterPrompts: [
-      "You are talking to a trainer or gym staff member. Explain what help you need.",
-      "Describe your fitness goal and ask one useful question.",
-    ],
-    followUpPrompts: [
-      "How would you ask whether an exercise is suitable for beginners?",
-      "What extra detail could help the trainer guide you better?",
-    ],
-    culturalNotes: [
-      "Casual fitness conversations often sound natural when they stay practical and specific.",
-      "A direct but friendly question works well in this setting.",
-    ],
-    voiceSample: "I want to build a more regular routine, but I am not sure which exercises would be best for improving stamina first.",
-  },
-  {
-    id: "casual-intermediate-family-call",
-    title: "Family Call",
-    description: "Share a meaningful life update with a family member.",
-    category: "Social",
-    iconName: "Phone",
-    goals: ["Share news clearly", "Express emotion naturally", "Keep a warm tone"],
-    starterPrompts: [
-      "You are calling a family member to share an update. Start the conversation.",
-      "Tell them what changed recently and how you feel about it.",
-    ],
-    followUpPrompts: [
-      "How would you explain a mixed emotion, like feeling excited and nervous?",
-      "What question would you ask them in return?",
-    ],
-    culturalNotes: [
-      "Family conversations often sound natural when emotion and detail are balanced.",
-      "A reflective sentence can make the update feel more genuine.",
-    ],
-    voiceSample: "I wanted to call because something important changed at work, and I feel excited about it, but also a little nervous about what comes next.",
-  },
-  {
-    id: "casual-intermediate-social-invite",
-    title: "Invite a Friend",
-    description: "Invite someone out and handle uncertainty smoothly.",
-    category: "Social",
-    iconName: "PartyPopper",
-    goals: ["Make a clear invitation", "Suggest details", "Respond flexibly"],
-    starterPrompts: [
-      "Invite a friend to do something this week in a natural way.",
-      "Suggest a plan, give a reason, and leave room if they are busy.",
-    ],
-    followUpPrompts: [
-      "How would you respond if they cannot come?",
-      "What phrase helps the invitation sound relaxed rather than pushy?",
-    ],
-    culturalNotes: [
-      "Casual invitations often sound more natural when they feel flexible rather than demanding.",
-      "A simple reason can make the invitation feel warmer and more personal.",
-    ],
-    voiceSample: "I was thinking of checking out that new cafe on Friday evening if you are free. It looks like a nice place to relax and catch up.",
-  },
-  {
-    id: "casual-intermediate-return-item",
-    title: "Return an Item",
-    description: "Explain a return request with clear everyday language.",
-    category: "Daily Life",
-    iconName: "ShoppingBag",
-    goals: ["State the problem", "Explain the reason", "Ask what options are available"],
-    starterPrompts: [
-      "You want to return an item to a store. Explain why and ask what to do next.",
-      "Describe the issue and ask whether a refund or exchange is possible.",
-    ],
-    followUpPrompts: [
-      "How would you respond if they ask whether you kept the receipt?",
-      "What phrasing sounds polite but confident here?",
-    ],
-    culturalNotes: [
-      "Return conversations often sound clearer when the reason is specific and simple.",
-      "A calm tone usually works better than a frustrated tone with service staff.",
-    ],
-    voiceSample: "I bought this yesterday, but it does not fit the way I expected, so I wanted to ask whether I could exchange it for another size.",
-  },
-  {
-    id: "casual-intermediate-small-talk",
-    title: "Extended Small Talk",
-    description: "Keep a casual conversation going with more depth.",
+    id: "casual-intermediate-share-experience",
+    title: "Sharing a Personal Experience",
+    description: "Tell a short story about something that happened to you.",
     category: "Social",
     iconName: "MessageCircle",
-    goals: ["Extend the conversation", "Show interest", "Use natural transitions"],
+    goals: ["Narrate clearly", "Express emotion", "Keep it engaging"],
     starterPrompts: [
-      "You are chatting with someone new at a social event. Start and continue the conversation.",
-      "Introduce yourself casually and ask questions that keep the conversation moving.",
+      "Tell a friend about a funny thing that happened to you recently.",
+      "Share an experience of a time you got lost."
     ],
     followUpPrompts: [
-      "How would you move from basic introductions to a more interesting topic?",
-      "What phrase helps you sound curious without sounding formal?",
+      "How do you build suspense in your story?",
+      "What was the reaction of the people around you?"
     ],
     culturalNotes: [
-      "Good small talk often depends more on follow-up questions than clever first lines.",
-      "Reacting naturally to what the other person says makes the exchange feel more alive.",
+      "Storytelling among friends is a great way to bond.",
+      "Using expressive tone and gestures makes the story better."
     ],
-    voiceSample: "I just moved here a few months ago, so I am still discovering good places around the city. Do you have any favorites?",
+    voiceSample: "You will not believe what happened yesterday. I was walking to the store and completely forgot where I was going!"
   },
   {
-    id: "casual-intermediate-station-help",
-    title: "Station Assistance",
-    description: "Ask for practical travel help in a busy setting.",
-    category: "Travel",
-    iconName: "TrainFront",
-    goals: ["Describe your need efficiently", "Ask a focused question", "Confirm next steps"],
+    id: "casual-intermediate-movies-shows",
+    title: "Talking About Movies or Shows",
+    description: "Discuss a movie or TV show you recently watched.",
+    category: "Daily Life",
+    iconName: "PartyPopper",
+    goals: ["Give a brief summary", "Share your opinion", "Ask for their thoughts"],
     starterPrompts: [
-      "You need help at a station because you are unsure about your route. Ask clearly.",
-      "Explain where you are going and what information you need right now.",
+      "Tell a friend about a great movie you saw last night.",
+      "Discuss the latest episode of a popular TV show."
     ],
     followUpPrompts: [
-      "How would you ask whether you need to change platforms?",
-      "What phrase helps you confirm the direction correctly?",
+      "How do you talk about a movie without giving spoilers?",
+      "What didn't you like about the show?"
     ],
     culturalNotes: [
-      "Busy public settings often reward short, efficient questions.",
-      "Repeating the destination name can help avoid mistakes.",
+      "Discussing entertainment is universally popular.",
+      "Asking 'Have you seen it?' is a good way to involve them."
     ],
-    voiceSample: "I am trying to get to Riverside Park, but I am not sure whether this train stops there or if I need to switch lines first.",
+    voiceSample: "I just watched that new sci-fi movie. The special effects were amazing, but the plot was a bit confusing."
   },
   {
-    id: "casual-intermediate-group-plan",
-    title: "Group Plan",
-    description: "Coordinate plans with several friends smoothly.",
+    id: "casual-intermediate-planning-outing",
+    title: "Planning an Outing with Friends",
+    description: "Coordinate a meetup or activity with a group.",
     category: "Social",
     iconName: "Users",
-    goals: ["Suggest a plan", "Balance preferences", "Keep the tone easygoing"],
+    goals: ["Suggest an activity", "Discuss time and place", "Agree on a plan"],
     starterPrompts: [
-      "You are helping friends decide on a group plan. Start the conversation.",
-      "Suggest an option, mention why it could work, and invite other ideas.",
+      "Suggest going out for dinner with a couple of friends.",
+      "Try to find a time when everyone is free to meet up."
     ],
     followUpPrompts: [
-      "How would you respond if everyone wants something different?",
-      "What phrase helps you sound flexible instead of controlling?",
+      "What do you say if someone cannot make that time?",
+      "How do you suggest a different location politely?"
     ],
     culturalNotes: [
-      "Group planning often sounds more natural when you propose an idea and invite input right away.",
-      "Flexible language like 'we could' helps keep the mood collaborative.",
+      "Being flexible and offering alternatives helps when planning.",
+      "Group chats often require someone to take the lead to make a decision."
     ],
-    voiceSample: "We could meet a little earlier, grab dinner nearby, and then decide together whether we want to see a movie or just walk around.",
+    voiceSample: "Are you guys free on Friday night? We could try that new Italian place downtown."
   },
+  {
+    id: "casual-intermediate-daily-routine",
+    title: "Describing Your Daily Routine",
+    description: "Talk about your typical day.",
+    category: "Daily Life",
+    iconName: "CalendarClock",
+    goals: ["Use sequence words", "Describe habits", "Keep a steady pace"],
+    starterPrompts: [
+      "Describe what a normal weekday looks like for you.",
+      "Explain your morning routine to a friend."
+    ],
+    followUpPrompts: [
+      "What is your favorite part of the day?",
+      "How does your routine change on the weekends?"
+    ],
+    culturalNotes: [
+      "Using words like 'usually', 'always', and 'sometimes' adds nuance.",
+      "Routines are a relatable topic for casual conversation."
+    ],
+    voiceSample: "I usually wake up around 7 AM, grab a quick coffee, and then read the news before starting work."
+  },
+  {
+    id: "casual-intermediate-talking-goals",
+    title: "Talking About Your Goals",
+    description: "Share what you want to achieve in the future.",
+    category: "Career",
+    iconName: "ShieldCheck",
+    goals: ["Express ambition", "Explain your motivation", "Sound determined"],
+    starterPrompts: [
+      "Tell a friend about a personal goal you are working towards.",
+      "Discuss what you hope to achieve by the end of the year."
+    ],
+    followUpPrompts: [
+      "What are the steps you are taking to reach this goal?",
+      "What is the biggest challenge you face in achieving it?"
+    ],
+    culturalNotes: [
+      "Sharing goals can be motivating and helps friends support you.",
+      "It is okay to be unsure; sharing the process is also interesting."
+    ],
+    voiceSample: "My main goal right now is to save up enough money to take a trip to Europe next summer."
+  },
+  {
+    id: "casual-intermediate-giving-opinion",
+    title: "Giving Your Opinion",
+    description: "Share your thoughts on a casual topic.",
+    category: "Social",
+    iconName: "MessageCircle",
+    goals: ["State your opinion", "Provide a reason", "Ask for agreement/disagreement"],
+    starterPrompts: [
+      "Give your opinion on a new trend or popular topic.",
+      "A friend asks what you think of a new song. Answer honestly."
+    ],
+    followUpPrompts: [
+      "How do you express a negative opinion politely?",
+      "What if you don't have a strong opinion either way?"
+    ],
+    culturalNotes: [
+      "Phrases like 'In my opinion' or 'I feel like' soften the statement.",
+      "Casual debates about trivial things can be fun."
+    ],
+    voiceSample: "I know a lot of people like it, but I feel like the new design is actually harder to use than the old one."
+  },
+  {
+    id: "casual-intermediate-travel-experiences",
+    title: "Talking About Travel Experiences",
+    description: "Discuss a memorable trip you took.",
+    category: "Travel",
+    iconName: "Plane",
+    goals: ["Describe the destination", "Highlight key moments", "Express excitement"],
+    starterPrompts: [
+      "Tell a friend about your favorite vacation.",
+      "Describe a place you visited that completely surprised you."
+    ],
+    followUpPrompts: [
+      "What was the best food you ate there?",
+      "Would you go back to that place?"
+    ],
+    culturalNotes: [
+      "Travel stories are very engaging when you include sensory details.",
+      "Asking 'Have you ever been there?' includes the listener."
+    ],
+    voiceSample: "I went to Japan last year and it was incredible. The mix of modern cities and traditional temples was beautiful."
+  },
+  {
+    id: "casual-intermediate-why-you-like",
+    title: "Explaining Why You Like Something",
+    description: "Go into detail about why you enjoy a specific thing.",
+    category: "Daily Life",
+    iconName: "HeartHandshake",
+    goals: ["Identify the subject", "Provide specific reasons", "Sound passionate"],
+    starterPrompts: [
+      "Explain to a friend why a certain book is your favorite.",
+      "Discuss why you prefer a certain type of weather."
+    ],
+    followUpPrompts: [
+      "How did you first get into this?",
+      "Is there anything you dislike about it?"
+    ],
+    culturalNotes: [
+      "Passion is contagious; don't be afraid to show enthusiasm.",
+      "Connecting the 'like' to a personal feeling makes the explanation stronger."
+    ],
+    voiceSample: "I love hiking because it completely clears my mind. Just being away from the city noise is so refreshing."
+  },
+  {
+    id: "casual-intermediate-discussing-interests",
+    title: "Discussing Your Interests",
+    description: "Have a deeper conversation about your hobbies or passions.",
+    category: "Daily Life",
+    iconName: "PartyPopper",
+    goals: ["Share knowledge", "Ask about their interests", "Find common ground"],
+    starterPrompts: [
+      "Talk to a friend about a topic you are both interested in.",
+      "Explain a niche hobby you have to someone who doesn't know about it."
+    ],
+    followUpPrompts: [
+      "How do you find time for this interest?",
+      "What advice would you give someone starting out?"
+    ],
+    culturalNotes: [
+      "Finding common interests is a key way to build friendships.",
+      "Be careful not to dominate the conversation; let them speak too."
+    ],
+    voiceSample: "I have been really into photography lately. It is amazing how much you learn about lighting just by observing."
+  }
 ];
 
 const casualAdvancedSeeds: ScenarioSeed[] = [
   {
-    id: "casual-advanced-difficult-friend-talk",
-    title: "Difficult Friend Talk",
-    description: "Handle a sensitive personal conversation with honesty and care.",
-    category: "Relationships",
-    iconName: "HeartHandshake",
-    goals: ["Express feelings clearly", "Stay respectful", "Navigate emotional nuance"],
-    starterPrompts: [
-      "You need to talk to a friend about something sensitive. Start the conversation thoughtfully.",
-      "Explain how you feel, why it matters, and what you hope for next.",
-    ],
-    followUpPrompts: [
-      "How would you respond if your friend becomes defensive?",
-      "What phrasing sounds honest without sounding accusatory?",
-    ],
-    culturalNotes: [
-      "Sensitive conversations often feel safer when you speak from your own experience rather than making accusations.",
-      "Pausing to acknowledge the relationship can soften a hard message.",
-    ],
-    voiceSample: "I wanted to bring this up because our friendship matters to me, and I do not want a misunderstanding to keep growing between us.",
-  },
-  {
-    id: "casual-advanced-travel-story",
-    title: "Travel Story",
-    description: "Tell a vivid story from a trip with natural flow.",
+    id: "casual-advanced-storytelling",
+    title: "Storytelling",
+    description: "Tell a detailed and engaging story from your past.",
     category: "Storytelling",
-    iconName: "Plane",
-    goals: ["Tell a story smoothly", "Build detail and pacing", "Sound expressive and natural"],
+    iconName: "MessageCircle",
+    goals: ["Set the scene", "Build the narrative", "Deliver a strong ending"],
     starterPrompts: [
-      "Tell a memorable story from a trip in a lively, natural way.",
-      "Share what happened, why it stood out, and how you felt about it afterward.",
+      "Tell friends about the most unbelievable thing that ever happened to you.",
+      "Narrate a story about a memorable mistake you made."
     ],
     followUpPrompts: [
-      "How would you make the story more vivid without overexplaining?",
-      "What transition helps the story move from setup to the main moment?",
+      "How do you use pauses for dramatic effect?",
+      "What details are crucial to make the story come alive?"
     ],
     culturalNotes: [
-      "Strong storytelling often depends on pacing and selective detail, not just more words.",
-      "A reflective ending can make a casual story feel more memorable.",
+      "Good storytelling involves pacing, expression, and knowing your audience.",
+      "A mix of humor and sincerity often works best."
     ],
-    voiceSample: "At first it looked like a simple delay, but within an hour the whole station felt like a puzzle and everyone was trying to improvise a new plan.",
+    voiceSample: "So there I was, stranded in the middle of nowhere with a flat tire and no cell service. Let me tell you what happened next."
   },
   {
-    id: "casual-advanced-opinion-discussion",
-    title: "Opinion Discussion",
-    description: "Express a nuanced opinion without sounding aggressive.",
+    id: "casual-advanced-giving-advice",
+    title: "Giving Advice to a Friend",
+    description: "Offer thoughtful advice to a friend in a tough situation.",
+    category: "Relationships",
+    iconName: "HandHelping",
+    goals: ["Listen actively", "Show empathy", "Offer constructive suggestions"],
+    starterPrompts: [
+      "A friend asks for advice about a difficult coworker. What do you say?",
+      "Your friend is unsure whether to move to a new city. Help them think it through."
+    ],
+    followUpPrompts: [
+      "How do you give advice without sounding bossy?",
+      "What if they don't want to hear the truth?"
+    ],
+    culturalNotes: [
+      "Sometimes friends just want someone to listen, not necessarily to fix the problem.",
+      "Phrases like 'If I were in your shoes...' help frame the advice."
+    ],
+    voiceSample: "I understand why you are stressed. If I were you, I might try talking to them privately before escalating the issue."
+  },
+  {
+    id: "casual-advanced-casual-argument",
+    title: "Casual Argument or Disagreement",
+    description: "Argue a point passionately but playfully with friends.",
     category: "Discussion",
     iconName: "MessageCircle",
-    goals: ["State your view clearly", "Add nuance", "Invite real conversation"],
+    goals: ["Defend your view", "Keep it lighthearted", "Challenge their points"],
     starterPrompts: [
-      "You are discussing an opinion with friends. Share your view in a thoughtful way.",
-      "Explain what you think, why you think it, and where you still see complexity.",
+      "Argue with a friend over which superhero is the best.",
+      "Have a friendly debate over the best way to cook a steak."
     ],
     followUpPrompts: [
-      "How would you disagree without sounding dismissive?",
-      "What phrase helps you acknowledge another perspective while keeping your own?",
+      "How do you concede a point gracefully?",
+      "How do you keep the argument from becoming genuinely angry?"
     ],
     culturalNotes: [
-      "Nuanced casual discussion often sounds better with phrases like 'I can see why people think that, but...'.",
-      "Complex opinions usually sound stronger when they leave room for uncertainty.",
+      "Friendly debates are a common social dynamic among close friends.",
+      "Using humor diffuses tension and keeps the interaction fun."
     ],
-    voiceSample: "I get why that perspective is popular, but I think the real issue is more complicated once you look at how people are affected differently.",
+    voiceSample: "Are you kidding? There is no way that movie is better than the original. The pacing in the first one is just perfect."
   },
   {
-    id: "casual-advanced-housemate-boundary",
-    title: "Boundary Setting",
-    description: "Set a personal boundary kindly but firmly.",
+    id: "casual-advanced-future-ambitions",
+    title: "Talking About Future Ambitions",
+    description: "Discuss your long-term dreams and life plans.",
+    category: "Career",
+    iconName: "ShieldCheck",
+    goals: ["Express vision", "Share underlying motivations", "Inspire others"],
+    starterPrompts: [
+      "Tell a close friend where you see yourself in ten years.",
+      "Discuss a 'pipe dream' you have always wanted to pursue."
+    ],
+    followUpPrompts: [
+      "What is the biggest obstacle standing in your way?",
+      "How have your ambitions changed since you were younger?"
+    ],
+    culturalNotes: [
+      "Vulnerability in sharing big dreams strengthens deep friendships.",
+      "It's common to discuss the 'why' behind the ambition, not just the 'what'."
+    ],
+    voiceSample: "My ultimate dream is to open a small bakery. I know it's a lot of work, but baking brings me so much peace."
+  },
+  {
+    id: "casual-advanced-emotional-experiences",
+    title: "Sharing Emotional Experiences",
+    description: "Talk about a deeply emotional or significant moment.",
     category: "Relationships",
-    iconName: "Home",
-    goals: ["Be direct", "Stay calm", "Protect the relationship while setting limits"],
+    iconName: "HeartHandshake",
+    goals: ["Express vulnerability", "Articulate complex feelings", "Connect deeply"],
     starterPrompts: [
-      "You need to set a boundary with someone you live with. Start that conversation carefully.",
-      "Explain what needs to change and why it matters to you, without sounding harsh.",
+      "Share a moment when you felt incredibly proud of someone you love.",
+      "Talk about a time you experienced profound grief or loss."
     ],
     followUpPrompts: [
-      "How would you respond if they say you are overreacting?",
-      "What wording makes the boundary sound clear and reasonable?",
+      "How did that experience change your perspective on life?",
+      "How do you handle becoming emotional while speaking?"
     ],
     culturalNotes: [
-      "Boundaries often sound stronger when they are specific and calm.",
-      "It can help to explain the impact on you instead of judging the other person.",
+      "Sharing deep emotions requires trust and the right setting.",
+      "Active listening and offering comfort are crucial when receiving these stories."
     ],
-    voiceSample: "I want us to live together comfortably, so I need to be honest that I really need more quiet time late at night to rest properly.",
+    voiceSample: "When I saw them cross the finish line, I just started crying. I knew how hard they had worked to get there."
   },
   {
-    id: "casual-advanced-group-disagreement",
-    title: "Group Disagreement",
-    description: "Navigate disagreement in a group without escalating tension.",
+    id: "casual-advanced-persuading-friend",
+    title: "Persuading a Friend",
+    description: "Convince a friend to join you in an activity or change their mind.",
     category: "Discussion",
     iconName: "Users",
-    goals: ["Disagree tactfully", "Keep the discussion constructive", "Balance confidence and openness"],
+    goals: ["Use compelling reasons", "Address their hesitations", "Be enthusiastic"],
     starterPrompts: [
-      "You disagree with a group plan, but you want to keep the mood positive. Speak up.",
-      "Explain your concern and suggest an alternative without shutting people down.",
+      "Convince a hesitant friend to go on a spontaneous road trip.",
+      "Persuade a friend to try a new food they are nervous about."
     ],
     followUpPrompts: [
-      "How would you respond if the group still prefers the original idea?",
-      "What phrase helps your disagreement sound constructive instead of negative?",
+      "What is the strongest argument you can make?",
+      "How do you know when to stop pushing?"
     ],
     culturalNotes: [
-      "A constructive disagreement often starts by recognizing what others are trying to achieve.",
-      "Alternatives usually land better than criticism alone.",
+      "Persuasion among friends relies on knowing what appeals to them personally.",
+      "Enthusiasm is often more persuasive than logical arguments."
     ],
-    voiceSample: "I see why that option sounds fun, but I am not sure it works for everyone's budget, so maybe we could look at something a bit more flexible.",
+    voiceSample: "Come on, it will be an adventure! We can leave early, take the scenic route, and be back by Sunday. You won't regret it."
   },
   {
-    id: "casual-advanced-service-recovery",
-    title: "Service Recovery",
-    description: "Explain a frustrating service issue with poise and detail.",
-    category: "Daily Life",
-    iconName: "Store",
-    goals: ["Describe frustration clearly", "Stay composed", "Ask for a fair resolution"],
+    id: "casual-advanced-life-choices",
+    title: "Deep Discussion About Life Choices",
+    description: "Have a philosophical conversation about major decisions.",
+    category: "Discussion",
+    iconName: "Library",
+    goals: ["Explore complex ideas", "Weigh different paths", "Ask probing questions"],
     starterPrompts: [
-      "You have had a frustrating experience with a service provider. Explain it clearly.",
-      "Describe what happened, why it was disappointing, and what outcome you want now.",
+      "Discuss with a friend whether it is better to prioritize career or personal life.",
+      "Talk about the concept of 'regret' regarding life decisions."
     ],
     followUpPrompts: [
-      "How would you sound firm without sounding insulting?",
-      "What details make your explanation more persuasive?",
+      "How do societal expectations influence our choices?",
+      "What role does luck play in success?"
     ],
     culturalNotes: [
-      "Composed complaints often sound more credible than emotional ones.",
-      "A clear request at the end gives the conversation direction.",
+      "Late-night conversations often turn to these deep, philosophical topics.",
+      "The goal is exploration, not necessarily finding a definitive answer."
     ],
-    voiceSample: "I am not upset about one small mistake on its own, but the repeated delays and inconsistent updates made the experience much more frustrating than it needed to be.",
+    voiceSample: "I often wonder if I made the right choice moving away from home. On one hand, I gained independence, but on the other, I missed out on family time."
   },
   {
-    id: "casual-advanced-life-update",
-    title: "Big Life Update",
-    description: "Share a meaningful personal update with emotional depth.",
+    id: "casual-advanced-personal-challenges",
+    title: "Talking About Personal Challenges",
+    description: "Confide in a friend about a struggle you are facing.",
+    category: "Relationships",
+    iconName: "HeartHandshake",
+    goals: ["Be honest about struggles", "Ask for support", "Maintain perspective"],
+    starterPrompts: [
+      "Tell a close friend about a fear you are trying to overcome.",
+      "Discuss a period of burnout you are currently experiencing."
+    ],
+    followUpPrompts: [
+      "How can your friend support you right now?",
+      "What steps are you taking to address the challenge?"
+    ],
+    culturalNotes: [
+      "Admitting struggles is a sign of strength in close friendships.",
+      "Using phrases like 'I've been having a hard time with...' opens the door."
+    ],
+    voiceSample: "Lately, I have been really struggling to balance everything. I feel like I am always behind, and it is starting to affect my sleep."
+  },
+  {
+    id: "casual-advanced-strong-opinions",
+    title: "Expressing Strong Opinions",
+    description: "State a firm belief on a controversial or significant topic.",
+    category: "Discussion",
+    iconName: "MessageCircle",
+    goals: ["Articulate the belief clearly", "Provide strong reasoning", "Handle opposition gracefully"],
+    starterPrompts: [
+      "Express a strong opinion on the impact of social media.",
+      "Argue why a certain societal change is absolutely necessary."
+    ],
+    followUpPrompts: [
+      "How do you respond when someone fundamentally disagrees?",
+      "What evidence supports your strong opinion?"
+    ],
+    culturalNotes: [
+      "In advanced casual conversation, it is acceptable to have strong debates if respect is maintained.",
+      "Acknowledge complexity even when holding a firm stance."
+    ],
+    voiceSample: "I strongly believe that we rely too much on technology for communication. We are losing the ability to have genuine, uninterrupted conversations."
+  },
+  {
+    id: "casual-advanced-past-decisions",
+    title: "Reflecting on Past Decisions",
+    description: "Look back at choices you made and discuss their impact.",
     category: "Storytelling",
-    iconName: "UserPlus",
-    goals: ["Tell the update clearly", "Reflect on emotion", "Sound sincere and grounded"],
+    iconName: "CalendarClock",
+    goals: ["Analyze past events", "Acknowledge growth", "Share insights learned"],
     starterPrompts: [
-      "Share a major personal update with a close friend in a natural, thoughtful way.",
-      "Explain what changed, how you feel about it, and what you are still figuring out.",
+      "Discuss a decision you regret and what you learned from it.",
+      "Reflect on a risk you took that completely changed your life's direction."
     ],
     followUpPrompts: [
-      "How would you describe feeling both excited and uncertain at the same time?",
-      "What detail would make the update feel more personal and real?",
+      "If you could go back, what would you do differently?",
+      "How did that decision shape who you are today?"
     ],
     culturalNotes: [
-      "Big personal updates often feel more authentic when they include both facts and reflection.",
-      "A little uncertainty can make the story sound more human and relatable.",
+      "Reflection requires self-awareness and maturity.",
+      "These conversations often provide valuable lessons for the listener as well."
     ],
-    voiceSample: "It still feels a little unreal, but I finally decided to make the move, and now I am trying to balance the excitement with all the practical things I need to sort out.",
-  },
-  {
-    id: "casual-advanced-community-event",
-    title: "Community Event",
-    description: "Speak naturally while organizing or joining a local event.",
-    category: "Social",
-    iconName: "PartyPopper",
-    goals: ["Coordinate clearly", "Motivate others", "Keep the tone warm and inclusive"],
-    starterPrompts: [
-      "You are helping organize a community event. Explain the plan in a friendly way.",
-      "Share the idea, invite people in, and explain how they can take part.",
-    ],
-    followUpPrompts: [
-      "How would you encourage someone who feels unsure about joining?",
-      "What phrasing helps the invitation feel open and welcoming?",
-    ],
-    culturalNotes: [
-      "Inclusive language like 'we would love to have you' can help people feel more comfortable joining.",
-      "Warm, practical details often make invitations feel more real.",
-    ],
-    voiceSample: "We are keeping it simple and welcoming, so people can join for a little while, meet new neighbors, and take part however they feel comfortable.",
-  },
-  {
-    id: "casual-advanced-train-debate",
-    title: "Travel Decision",
-    description: "Talk through a fast-changing travel choice with nuance.",
-    category: "Travel",
-    iconName: "TrainFront",
-    goals: ["Compare options", "Explain tradeoffs", "Sound decisive without rushing"],
-    starterPrompts: [
-      "You and a friend need to decide quickly how to continue a trip. Talk through the options.",
-      "Compare the choices, explain the tradeoffs, and suggest what you think makes the most sense.",
-    ],
-    followUpPrompts: [
-      "How would you respond if your friend values cost more than convenience?",
-      "What phrase helps you sound flexible while still making a recommendation?",
-    ],
-    culturalNotes: [
-      "Comparing tradeoffs clearly can make casual decision-making sound more confident.",
-      "Phrases like 'the main difference is...' help organize the comparison.",
-    ],
-    voiceSample: "The cheaper option probably works if we do not mind arriving late, but if timing matters more, I think the direct route is worth the extra cost.",
-  },
-  {
-    id: "casual-advanced-cafe-recommendation",
-    title: "Recommendation Chat",
-    description: "Give a rich, natural recommendation in conversation.",
-    category: "Storytelling",
-    iconName: "Coffee",
-    goals: ["Recommend clearly", "Explain why", "Sound expressive rather than scripted"],
-    starterPrompts: [
-      "A friend asks for a recommendation. Share it in a natural, detailed way.",
-      "Explain what you recommend, why you like it, and who it would suit best.",
-    ],
-    followUpPrompts: [
-      "How would you make the recommendation sound vivid and specific?",
-      "What phrase helps you sound enthusiastic without exaggerating?",
-    ],
-    culturalNotes: [
-      "Good recommendations usually sound more convincing when they include concrete details.",
-      "A little contrast, like 'if you want X rather than Y', can make the recommendation more helpful.",
-    ],
-    voiceSample: "What I like about that place is not just the food itself, but the atmosphere, because it feels relaxed enough to stay for a long conversation without being noisy.",
-  },
+    voiceSample: "Looking back, quitting that job without a backup plan was incredibly risky, but it forced me to figure out what I really wanted to do."
+  }
 ];
+
 
 function toDifficulty(level: Level): Difficulty {
   if (level === "beginner") return "Beginner";
@@ -1556,9 +1558,9 @@ export function getScenariosForTrack(mode: Mode, level: Level) {
 
 export function getSuggestedScenarioIds(level: Level): string[] {
   const choices: Record<Level, string[]> = {
-    beginner: ["formal-beginner-meeting-update", "casual-beginner-friends-catchup", "casual-beginner-ordering-food"],
-    intermediate: ["formal-intermediate-panel-interview", "casual-intermediate-small-talk", "formal-intermediate-client-call"],
-    advanced: ["formal-advanced-executive-presentation", "casual-advanced-opinion-discussion", "formal-advanced-cross-cultural-meeting"],
+    beginner: ["formal-beginner-introduce-to-teacher", "casual-beginner-hello-friend", "casual-beginner-school-day"],
+    intermediate: ["formal-intermediate-job-interview", "casual-intermediate-weekend-plans", "formal-intermediate-explain-concept"],
+    advanced: ["formal-advanced-professional-meeting", "casual-advanced-future-ambitions", "formal-advanced-complex-idea"],
   };
   return choices[level];
 }

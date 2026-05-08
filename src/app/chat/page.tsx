@@ -22,6 +22,10 @@ import { checkModeration } from "@/lib/moderation/checker";
 import { registerViolation } from "@/lib/moderation/escalation";
 import { uid } from "@/lib/utils";
 import type { ConversationKind, ConversationResponse, Message } from "@/types";
+import { useFluvi } from "@/context/FluviContext";
+import { FluviCharacter, FluviThinkingDots } from "@/components/fluvi/FluviCharacter";
+import { FluviFeedbackPanel } from "@/components/fluvi/FluviFeedbackPanel";
+import type { FeedbackResult } from "@/types/fluvi.types";
 
 function ChatContent() {
   const router = useRouter();
@@ -41,6 +45,10 @@ function ChatContent() {
   const [providerLabel, setProviderLabel] = useState<"live" | "simulated" | null>(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const [tipVisible, setTipVisible] = useState(true);
+  const [fluviFeedback, setFluviFeedback] = useState<FeedbackResult | null>(null);
+
+  // Fluvi state triggers — additive, does not replace any existing logic
+  const { state: fluviState, startThinking, stopThinking, triggerCorrect, triggerIncorrect, triggerWarning } = useFluvi();
 
   const kind = (params.get("kind") as ConversationKind | null) ?? state.activeConversationKind ?? "scenario";
   const scenarioId = params.get("scenario");
@@ -135,6 +143,7 @@ function ChatContent() {
       const escalation = registerViolation();
       setWarnings(escalation.warningCount, escalation.cooldownUntil);
       setSafety(escalation.message || moderation.warning || "Please rephrase respectfully.");
+      triggerWarning(); // Fluvi: show warning animation
       return;
     }
     setSafety(null);
@@ -142,6 +151,7 @@ function ChatContent() {
     const nextMessages = [...messages, userMessage];
     setConversationHistory(nextMessages);
     setLoading(true);
+    startThinking(); // Fluvi: show thinking animation
     try {
       const response = await fetch("/api/conversation", {
         method: "POST",
@@ -166,12 +176,33 @@ function ChatContent() {
       setLastFeedback(data.feedback);
       setTipVisible(true);
       setConversationHistory([...nextMessages, data.aiMessage]);
+
+      // Fluvi: map existing FeedbackPayload → FeedbackResult and trigger animation
+      stopThinking();
+      const score = data.feedback.fluencyScore;
+      const fluviResult: FeedbackResult = {
+        fluency_score: score,
+        confidence_level: data.feedback.confidenceLevel === 'low' ? 'Low' : data.feedback.confidenceLevel === 'medium' ? 'Medium' : 'High',
+        tone_assessment: { label: data.feedback.toneLabel, appropriate: score >= 5, explanation: data.feedback.quickTip },
+        strengths: data.feedback.strengths,
+        suggestions: data.feedback.improvements,
+        grammar_corrections: data.feedback.grammarCorrections,
+        vocabulary_suggestions: data.feedback.vocabularySuggestions.map(v => ({ word: v.word, alternatives: [v.alternative], definition: v.context })),
+        simple_version: data.feedback.simpleRewrite,
+        advanced_version: data.feedback.advancedRewrite,
+        encouragement: data.feedback.encouragementMessage,
+      };
+      setFluviFeedback(fluviResult);
+      if (score >= 6) triggerCorrect();
+      else triggerIncorrect();
+
       if (requestWrapUp) {
         router.push("/feedback");
       }
     } catch {
       toast.error("Could not analyze this turn. Try again.");
     } finally {
+      stopThinking(); // Fluvi: stop thinking if an error occurred
       setLoading(false);
     }
   };
@@ -186,6 +217,9 @@ function ChatContent() {
       <ScenarioHeader scenario={scenario} mode={mode} advanced={advanced} kind={kind} title={title} />
       <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 px-4 py-6 pb-56">
         <Breadcrumb current="Chat" />
+
+        {/* Fluvi is now embedded in ChatBubble and FluviFeedbackPanel */}
+
         <CulturalNote note={culturalNote} />
         {providerLabel === "simulated" ? (
           <SafetyBanner message="Live AI is unavailable, so Fluentia is using its built-in coaching fallback." onDismiss={() => setProviderLabel(null)} />
@@ -199,6 +233,15 @@ function ChatContent() {
           {loading ? <ChatBubble message={{ id: "loading", role: "ai", content: "Analyzing tone, fluency, and confidence...", createdAt: new Date().toISOString() }} loading /> : null}
         </div>
         {state.lastFeedback?.quickTip && tipVisible ? <InlineCoachingTip tip={state.lastFeedback.quickTip} onDismiss={() => setTipVisible(false)} /> : null}
+
+        {/* Fluvi Feedback Panel — additive, shown below messages when feedback is available */}
+        {fluviFeedback && (
+          <FluviFeedbackPanel
+            feedback={fluviFeedback}
+            isCorrect={(fluviFeedback.fluency_score ?? 0) >= 6}
+          />
+        )}
+
         <div className="mt-2 flex flex-wrap justify-center gap-3">
           {canWrapUp && state.lastFeedback ? (
             <Button id="chat-feedback-button" onClick={() => router.push("/feedback")}>Get Detailed Feedback</Button>

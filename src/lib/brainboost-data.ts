@@ -131,7 +131,7 @@ export function getDailyQuestions(type: QuizType): QuizQuestion[] {
   // Rotate every calendar day — same order for everyone on the same day
   const daysSinceEpoch = Math.floor(Date.now() / 86_400_000);
   const seed = daysSinceEpoch * 2654435761 + type.charCodeAt(0);
-  const bank = type === "odd-word" ? oddWordBank : type === "spelling" ? spellingBank : idiomBank;
+  const bank: QuizQuestion[] = type === "odd-word" ? oddWordBank : type === "spelling" ? spellingBank : idiomBank;
   return seededShuffle(bank, seed).slice(0, 7);
 }
 

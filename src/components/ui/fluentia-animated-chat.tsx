@@ -35,6 +35,8 @@ function commandToMessage(value: string) {
   return value;
 }
 
+import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
+
 export function FluentiaAnimatedChat({
   scenarioTitle,
   onSendMessage,
@@ -164,8 +166,12 @@ export function FluentiaAnimatedChat({
 
   return (
     <div className="lab-bg relative mx-auto w-full max-w-4xl">
+      {/* Fluvi peeking near the interaction area */}
+      <div className="absolute -top-[110px] -right-4 md:-right-8 z-0 pointer-events-none drop-shadow-2xl">
+        <FluviCharacter size={100} />
+      </div>
       <motion.div
-        className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.04] shadow-2xl backdrop-blur-xl"
+        className="relative z-10 overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.04] shadow-2xl backdrop-blur-xl"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.35 }}

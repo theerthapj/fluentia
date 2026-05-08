@@ -16,7 +16,6 @@ export function Header() {
 
   const getTitle = () => {
     if (pathname.startsWith("/dashboard")) return "Dashboard";
-    if (pathname.startsWith("/brain-boost")) return "Brain Boost Zone";
     if (pathname.startsWith("/mode")) return "Practice Mode";
     if (pathname.startsWith("/scenarios")) return "Choose Scenario";
     if (pathname.startsWith("/chat")) return "Coaching Session";

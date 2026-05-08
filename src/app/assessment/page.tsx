@@ -179,7 +179,7 @@ export default function AssessmentPage() {
 
   return (
     <main className="mesh-gradient min-h-screen px-5 py-10">
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-2xl pb-32">
         <ProgressStepper total={assessmentQuestions.length} current={step} />
         {bannerMessage ? (
           <div className="mt-5 rounded-2xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">{bannerMessage}</div>
@@ -219,8 +219,14 @@ export default function AssessmentPage() {
                   </div>
                   <AnimatePresence>
                     {selectedOption ? (
-                      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.2 }}>
-                        <Button id={`assessment-confirm-${step}`} className="mt-4 w-full" onClick={handleMcqConfirm}>
+                      <motion.div
+                        className="mt-8 mb-8 flex justify-end gap-4"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Button id={`assessment-confirm-${step}`} className="w-full" onClick={handleMcqConfirm}>
                           Confirm Selection
                         </Button>
                       </motion.div>
@@ -258,14 +264,16 @@ export default function AssessmentPage() {
                       {moderationWarning}
                     </motion.p>
                   ) : null}
-                  <Button id={`assessment-next-${question.id}`} className="mt-4 w-full" onClick={handleTextSubmit}>
-                    Next
-                  </Button>
+                  <div className="mt-8 mb-8 flex justify-end gap-4">
+                    <Button id={`assessment-next-${question.id}`} className="w-full" onClick={handleTextSubmit}>
+                      Next
+                    </Button>
+                  </div>
                 </div>
               )}
             </GlassCard>
 
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-8 mb-8 flex items-center justify-between">
               {step > 0 ? (
                 <button
                   id="assessment-back-button"

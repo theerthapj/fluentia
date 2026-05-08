@@ -1,8 +1,8 @@
 "use client";
 
-import { MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { LevelBadge } from "@/components/assessment/LevelBadge";
 import { SessionRow } from "@/components/dashboard/SessionRow";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -12,15 +12,11 @@ import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { relativeTime } from "@/lib/utils";
 
+import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
+
 export function DashboardClient() {
   const router = useRouter();
   const { state, hydrated, restoreSession } = useAppState();
-
-  useEffect(() => {
-    if (hydrated && !state.assessmentCompleted) {
-      router.replace("/assessment?message=Complete%20your%20assessment%20first%20to%20see%20your%20dashboard.");
-    }
-  }, [hydrated, router, state.assessmentCompleted]);
 
   if (!hydrated) return null;
 
@@ -33,13 +29,38 @@ export function DashboardClient() {
     <main className="mesh-gradient min-h-screen px-5 py-8">
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <div className="flex-1">
-          <GlassCard className="p-6 sm:p-8">
-            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          {!state.assessmentCompleted ? (
+            <GlassCard className="border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-6 backdrop-blur-sm sm:p-8 relative overflow-hidden">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between relative z-10">
+                <div className="max-w-2xl">
+                  <h2 className="text-2xl font-bold text-white sm:text-3xl">Welcome to Fluentia!</h2>
+                  <p className="mt-3 max-w-xl text-base leading-7 text-text-secondary sm:text-lg">
+                    Start with a quick 2-minute assessment to discover your level and unlock personalized practice recommendations.
+                  </p>
+                </div>
+                <Link
+                  href="/assessment"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-accent-primary/90 sm:w-auto"
+                >
+                  Start Your Assessment
+                  <ArrowRight aria-hidden="true" className="h-5 w-5" />
+                </Link>
+              </div>
+              <div className="absolute -bottom-8 -right-8 opacity-20 pointer-events-none md:hidden">
+                 <FluviCharacter size={160} />
+              </div>
+            </GlassCard>
+          ) : null}
+
+          <GlassCard className="p-6 sm:p-8 relative overflow-hidden">
+            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between relative z-10">
               <div>
                 <h1 className="text-4xl font-bold">Welcome back, Learner</h1>
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                   {state.level ? <LevelBadge level={state.level} /> : null}
-                  <span className="text-sm text-text-secondary">Last practiced: {relativeTime(lastPracticed)}</span>
+                  <span className="text-sm text-text-secondary">
+                    Last practiced: {lastPracticed ? relativeTime(lastPracticed) : "Not yet"}
+                  </span>
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -50,6 +71,10 @@ export function DashboardClient() {
                   Open Free Chat
                 </Button>
               </div>
+            </div>
+            {/* Fluvi tucked in bottom-right corner — decorative only */}
+            <div className="hidden md:block absolute -bottom-2 right-6 opacity-30 pointer-events-none">
+              <FluviCharacter size={80} />
             </div>
           </GlassCard>
 

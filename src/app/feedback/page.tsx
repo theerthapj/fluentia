@@ -13,11 +13,20 @@ import { ConfidenceMeter } from "@/components/shared/ConfidenceMeter";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { ScoreRing } from "@/components/shared/ScoreRing";
 import { getPronunciationExercise } from "@/lib/constants";
+import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
+import { useFluvi } from "@/context/FluviContext";
 
 export default function FeedbackPage() {
   const router = useRouter();
   const { state, addSession } = useAppState();
   const feedback = state.lastFeedback;
+  const { triggerCelebration } = useFluvi();
+
+  useEffect(() => {
+    if (feedback && feedback.fluencyScore >= 7) {
+      triggerCelebration();
+    }
+  }, [feedback, triggerCelebration]);
 
   useEffect(() => {
     if (!feedback || !state.level || !state.conversationHistory.length) return;
@@ -123,8 +132,9 @@ export default function FeedbackPage() {
           <RewriteCard title="Simple Rewrite" text={feedback.simpleRewrite} />
           <RewriteCard title="Advanced Rewrite" text={feedback.advancedRewrite} />
         </div>
-        <GlassCard className="mt-5 p-6 text-center">
-          <p className="text-lg text-text-secondary">{feedback.encouragementMessage}</p>
+        <GlassCard className="mt-5 p-6 text-center flex flex-col items-center">
+          <FluviCharacter size={110} />
+          <p className="text-lg text-text-secondary mt-4 max-w-2xl">{feedback.encouragementMessage}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button id="feedback-try-another" onClick={() => router.push(retryHref)}>Try Another Response</Button>
             <Button id="feedback-new-scenario" variant="secondary" onClick={() => router.push("/mode")}>New Practice</Button>

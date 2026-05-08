@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart2, Brain, Home, LayoutDashboard, MessageSquare, Settings, Waves, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, BarChart2, Home, LayoutDashboard, MessageSquare, Settings, Waves } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
@@ -11,7 +12,6 @@ import { cn } from "@/lib/utils";
 const items = [
   { href: "/home", label: "Home", Icon: Home },
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { href: "/brain-boost", label: "Brain Boost Zone", Icon: Brain },
   { href: "/mode", label: "Practice", Icon: MessageSquare },
   { href: "/free-chat", label: "Free Chat", Icon: Waves },
   { href: "/dashboard#progress", label: "Progress", Icon: BarChart2 },
@@ -21,7 +21,15 @@ const items = [
 export function Sidebar({ mobileOnly = false }: { mobileOnly?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { state, resetDemo } = useAppState();
+  const { resetDemo } = useAppState();
+  const [currentHash, setCurrentHash] = useState("");
+
+  useEffect(() => {
+    const handleHashChange = () => setCurrentHash(window.location.hash);
+    setCurrentHash(window.location.hash);
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, [pathname]);
 
   // On mobile, we only show the GradientMenu (floating dock)
   if (mobileOnly) {
@@ -37,7 +45,13 @@ export function Sidebar({ mobileOnly = false }: { mobileOnly?: boolean }) {
       <nav aria-label="Main Navigation" className="flex-1 overflow-y-auto">
         <ul className="grid gap-2">
           {items.map(({ href, label, Icon }) => {
-            const active = pathname === href.split("#")[0];
+            let active = false;
+            if (href.includes("#")) {
+              const [path, hash] = href.split("#");
+              active = pathname === path && currentHash === "#" + hash;
+            } else {
+              active = pathname === href && (!currentHash || currentHash === "");
+            }
             return (
               <li key={href}>
                 <Link
