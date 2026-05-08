@@ -7,7 +7,7 @@ export default function AboutPage() {
         <GlassCard className="p-8">
           <h1 className="text-4xl font-bold">About Fluentia</h1>
           <p className="mt-4 leading-8 text-text-secondary">
-            Fluentia is an AI speaking coach designed to help English learners practice real conversations, receive supportive feedback, and build confidence across formal, casual, and pronunciation-focused situations.
+            Fluentia is an AI speaking coach designed to help English learners practice real conversations, receive supportive feedback, and build confidence across formal, casual, Brain Boost, and free-chat situations.
           </p>
         </GlassCard>
       </div>

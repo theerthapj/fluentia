@@ -19,7 +19,7 @@ export function ScenarioHeader({
 }) {
   const router = useRouter();
 
-  const backTarget = kind === "scenario" ? "/scenarios" : kind === "pronunciation" ? "/pronunciation" : "/free-chat";
+  const backTarget = kind === "scenario" ? "/scenarios" : kind === "pronunciation" ? "/mode" : "/free-chat";
 
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-bg-primary/86 px-4 py-4 backdrop-blur">

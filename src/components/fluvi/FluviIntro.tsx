@@ -18,9 +18,9 @@ export function FluviIntroGate() {
 
   // Only show if the user hasn't seen the intro yet
   useEffect(() => {
-    if (!state.hasSeenIntro) {
-      setVisible(true);
-    }
+    if (state.hasSeenIntro) return;
+    const timer = window.setTimeout(() => setVisible(true), 0);
+    return () => window.clearTimeout(timer);
   }, [state.hasSeenIntro]);
 
   // Typewriter effect — starts after character reveal animation completes

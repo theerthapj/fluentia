@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ArrowLeft, BarChart2, Home, LayoutDashboard, MessageSquare, Settings, Waves } from "lucide-react";
+import { ArrowLeft, BarChart2, Brain, Home, LayoutDashboard, MessageSquare, Settings, Waves } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 const items = [
   { href: "/home", label: "Home", Icon: Home },
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { href: "/brain-boost", label: "Brain Boost Zone", Icon: Brain },
   { href: "/mode", label: "Practice", Icon: MessageSquare },
   { href: "/free-chat", label: "Free Chat", Icon: Waves },
   { href: "/dashboard#progress", label: "Progress", Icon: BarChart2 },
@@ -26,9 +27,12 @@ export function Sidebar({ mobileOnly = false }: { mobileOnly?: boolean }) {
 
   useEffect(() => {
     const handleHashChange = () => setCurrentHash(window.location.hash);
-    setCurrentHash(window.location.hash);
+    const frame = window.requestAnimationFrame(handleHashChange);
     window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("hashchange", handleHashChange);
+    };
   }, [pathname]);
 
   // On mobile, we only show the GradientMenu (floating dock)
@@ -50,7 +54,7 @@ export function Sidebar({ mobileOnly = false }: { mobileOnly?: boolean }) {
               const [path, hash] = href.split("#");
               active = pathname === path && currentHash === "#" + hash;
             } else {
-              active = pathname === href && (!currentHash || currentHash === "");
+              active = (pathname === href || (href === "/brain-boost" && pathname.startsWith("/brain-boost"))) && (!currentHash || currentHash === "");
             }
             return (
               <li key={href}>

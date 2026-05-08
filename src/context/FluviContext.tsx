@@ -15,7 +15,7 @@ const INITIAL_STATE: FluviState = {
   correctVariantQueue: buildVariantQueue(),
   consecutiveCorrect: 0,
   consecutiveErrors: 0,
-  hasSeenIntro: false,
+  hasSeenIntro: true,
   userLevel: 'beginner',
   theme: getFluviTheme('beginner'),
   isVoiceActive: false,
@@ -116,7 +116,7 @@ export function FluviProvider({ children }: { children: React.ReactNode }) {
         const level: UserLevel = parsed.userLevel ?? 'beginner';
         return {
           ...init,
-          hasSeenIntro: parsed.hasSeenIntro ?? false,
+          hasSeenIntro: true,
           userLevel: level,
           theme: getFluviTheme(level),
         };

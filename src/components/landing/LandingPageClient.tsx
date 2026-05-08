@@ -90,7 +90,7 @@ export function LandingPageClient() {
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {[
               [Target, "Tell us your level", "Take the quick assessment so Fluentia can personalize your practice."],
-              [MessageCircle, "Pick a real scenario", "Choose from formal, casual, pronunciation, or free chat practice."],
+              [MessageCircle, "Pick a real scenario", "Choose from formal, casual, Brain Boost, or free chat practice."],
               [Sparkles, "Practice, get coached, improve", "Get supportive feedback on fluency, tone, grammar, and vocabulary."],
             ].map(([Icon, title, copy], index) => {
               const StepIcon = Icon as typeof Target;

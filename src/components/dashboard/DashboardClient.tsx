@@ -18,40 +18,57 @@ export function DashboardClient() {
   const router = useRouter();
   const { state, hydrated, restoreSession } = useAppState();
 
-  if (!hydrated) return null;
+  if (!hydrated) {
+    return (
+      <main className="mesh-gradient min-h-screen px-5 py-8">
+        <div className="mx-auto max-w-5xl">
+          <GlassCard className="p-6 sm:p-8">
+            <div className="h-10 w-2/3 rounded-2xl bg-white/10" />
+            <div className="mt-5 h-4 w-full rounded-full bg-white/10" />
+            <div className="mt-3 h-4 w-3/4 rounded-full bg-white/10" />
+          </GlassCard>
+        </div>
+      </main>
+    );
+  }
 
   const sessions = state.sessions ?? [];
   const average = sessions.length ? sessions.reduce((sum, session) => sum + session.fluencyScore, 0) / sessions.length : 0;
   const uniqueScenarios = new Set(sessions.map((session) => session.scenarioTitle)).size;
   const lastPracticed = sessions[0]?.completedAt;
 
+  if (!state.assessmentCompleted) {
+    return (
+      <main className="mesh-gradient min-h-screen px-5 py-8">
+        <div className="mx-auto max-w-3xl">
+          <GlassCard className="relative overflow-hidden border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-7 backdrop-blur-sm sm:p-10">
+            <div className="relative z-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Dashboard Locked</p>
+              <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">Complete your assessment to unlock progress.</h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg">
+                Your dashboard needs a baseline level before it can show scores, recommended scenarios, and progress trends.
+              </p>
+              <Link
+                href="/assessment"
+                className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent-primary px-6 py-4 font-semibold text-bg-primary transition-colors hover:bg-teal-300 sm:w-auto"
+              >
+                Start Assessment
+                <ArrowRight aria-hidden="true" className="h-5 w-5" />
+              </Link>
+            </div>
+            <div className="pointer-events-none absolute -bottom-8 -right-8 opacity-20 md:hidden">
+              <FluviCharacter size={160} />
+            </div>
+          </GlassCard>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="mesh-gradient min-h-screen px-5 py-8">
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <div className="flex-1">
-          {!state.assessmentCompleted ? (
-            <GlassCard className="border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-6 backdrop-blur-sm sm:p-8 relative overflow-hidden">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between relative z-10">
-                <div className="max-w-2xl">
-                  <h2 className="text-2xl font-bold text-white sm:text-3xl">Welcome to Fluentia!</h2>
-                  <p className="mt-3 max-w-xl text-base leading-7 text-text-secondary sm:text-lg">
-                    Start with a quick 2-minute assessment to discover your level and unlock personalized practice recommendations.
-                  </p>
-                </div>
-                <Link
-                  href="/assessment"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-accent-primary/90 sm:w-auto"
-                >
-                  Start Your Assessment
-                  <ArrowRight aria-hidden="true" className="h-5 w-5" />
-                </Link>
-              </div>
-              <div className="absolute -bottom-8 -right-8 opacity-20 pointer-events-none md:hidden">
-                 <FluviCharacter size={160} />
-              </div>
-            </GlassCard>
-          ) : null}
-
           <GlassCard className="p-6 sm:p-8 relative overflow-hidden">
             <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between relative z-10">
               <div>

@@ -6,6 +6,19 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { cn } from "@/lib/utils";
 
+function getBackTarget(pathname: string) {
+  if (pathname.startsWith("/brain-boost/quiz")) return "/brain-boost";
+  if (pathname.startsWith("/brain-boost")) return "/home";
+  if (pathname.startsWith("/assessment")) return "/home";
+  if (pathname.startsWith("/mode")) return "/home";
+  if (pathname.startsWith("/scenarios")) return "/mode";
+  if (pathname.startsWith("/chat")) return "/free-chat";
+  if (pathname.startsWith("/feedback")) return "/dashboard";
+  if (pathname.startsWith("/settings")) return "/home";
+  if (pathname.startsWith("/free-chat")) return "/home";
+  return "/home";
+}
+
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
@@ -16,23 +29,26 @@ export function Header() {
 
   const getTitle = () => {
     if (pathname.startsWith("/dashboard")) return "Dashboard";
+    if (pathname.startsWith("/brain-boost")) return "Brain Boost Zone";
     if (pathname.startsWith("/mode")) return "Practice Mode";
     if (pathname.startsWith("/scenarios")) return "Choose Scenario";
     if (pathname.startsWith("/chat")) return "Coaching Session";
     if (pathname.startsWith("/feedback")) return "Session Feedback";
+    if (pathname.startsWith("/free-chat")) return "Free Chat";
     if (pathname.startsWith("/settings")) return "Settings";
     if (pathname.startsWith("/assessment")) return "Level Assessment";
     return "";
   };
 
   const showBackButton = pathname !== "/home" && pathname !== "/dashboard";
+  const backTarget = getBackTarget(pathname);
 
   return (
     <header className="sticky top-0 z-40 h-20 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
-      <nav aria-label="Global Header" className="flex h-full items-center justify-between px-8">
-        <div className="flex items-center gap-8">
+      <nav aria-label="Global Header" className="flex h-full min-w-0 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-4 lg:gap-8">
           {/* Main App Identity */}
-          <Link href="/home" className="gradient-text text-3xl font-black tracking-tighter transition-transform hover:scale-105">
+          <Link href="/home" className="gradient-text shrink-0 text-base font-black tracking-tighter transition-transform hover:scale-105 sm:text-2xl lg:text-3xl">
             Fluentia
           </Link>
           
@@ -43,9 +59,9 @@ export function Header() {
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
           {/* Top Right Corner Status Section */}
-          <div className="flex items-center gap-3 mr-4">
+          <div className="mr-2 hidden items-center gap-3 sm:flex lg:mr-4">
             {/* Status Indicators in a horizontal row */}
             <div className="flex items-center gap-3 rounded-full border border-border bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-text-secondary">
               <div className="flex items-center gap-2">
@@ -76,11 +92,11 @@ export function Header() {
           {showBackButton && (
             <button
               id="global-back-button"
-              onClick={() => router.back()}
-              className="group flex items-center gap-2 rounded-full border border-border bg-white/5 px-5 py-2.5 text-sm font-semibold text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary"
+              onClick={() => router.push(backTarget)}
+              className="group flex items-center gap-2 rounded-full border border-border bg-white/5 px-3 py-2.5 text-sm font-semibold text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary sm:px-5"
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" aria-hidden />
-              Back
+              <span>Back</span>
             </button>
           )}
         </div>

@@ -3,23 +3,17 @@
 // STEP 16: FluviDebugPanel — Development only, hidden in production
 // Add this to layout.tsx only in development (guarded by NODE_ENV check inside component)
 
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useFluvi } from '@/context/FluviContext';
 
 export function FluviDebugPanel() {
-  // Guard: renders nothing outside development — safe to include in layout unconditionally
-  if (process.env.NODE_ENV !== 'development') return null;
+  // Guard: renders only when explicitly enabled for local visual testing.
+  if (process.env.NEXT_PUBLIC_FLUVI_DEBUG !== 'true') return null;
 
   return <FluviDebugPanelInner />;
 }
 
 function FluviDebugPanelInner() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   const {
     state,
     triggerCorrect,
@@ -29,7 +23,6 @@ function FluviDebugPanelInner() {
     startSpeaking,
     stopSpeaking,
     startThinking,
-    stopThinking,
     dispatch,
   } = useFluvi();
 
@@ -43,8 +36,6 @@ function FluviDebugPanelInner() {
     ['💭 Thinking', startThinking],
     ['🔄 Reset Intro', () => dispatch({ type: 'COMPLETE_INTRO' })],
   ];
-
-  if (!mounted) return null;
 
   return (
     <motion.div

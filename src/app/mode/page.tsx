@@ -2,10 +2,10 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useAppState } from "@/components/providers/AppStateProvider";
-import { Briefcase, Coffee, Brain, Type, MessageCircle } from "lucide-react";
+import { ArrowRight, Briefcase, Coffee } from "lucide-react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import type { Mode } from "@/types";
 
@@ -18,11 +18,39 @@ export default function ModePage() {
   const router = useRouter();
   const { state, hydrated, setConversationKind, setMode } = useAppState();
 
-  useEffect(() => {
-    if (hydrated && !state.assessmentCompleted) router.replace("/assessment");
-  }, [hydrated, router, state.assessmentCompleted]);
+  if (!hydrated) {
+    return (
+      <main className="mesh-gradient min-h-screen px-5 py-10">
+        <div className="mx-auto max-w-5xl">
+          <GlassCard className="p-6 sm:p-8">
+            <div className="h-10 w-2/3 rounded-2xl bg-white/10" />
+            <div className="mt-5 h-4 w-full rounded-full bg-white/10" />
+            <div className="mt-3 h-4 w-3/4 rounded-full bg-white/10" />
+          </GlassCard>
+        </div>
+      </main>
+    );
+  }
 
-  if (!hydrated) return null;
+  if (!state.assessmentCompleted) {
+    return (
+      <main className="mesh-gradient min-h-screen px-5 py-10">
+        <div className="mx-auto max-w-3xl">
+          <GlassCard className="p-7 sm:p-10">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Practice Locked</p>
+            <h1 className="mt-4 text-3xl font-bold sm:text-4xl">Complete your assessment first.</h1>
+            <p className="mt-4 leading-7 text-text-secondary">
+              Fluentia uses your level to choose the right scenario difficulty and coaching tone. The assessment takes about two minutes.
+            </p>
+            <Button id="mode-locked-assessment" className="mt-7 w-full sm:w-auto" size="lg" onClick={() => router.push("/assessment")}>
+              Take Assessment
+              <ArrowRight aria-hidden="true" className="h-5 w-5" />
+            </Button>
+          </GlassCard>
+        </div>
+      </main>
+    );
+  }
 
   const choose = (id: string) => {
     setMode(id as Mode);

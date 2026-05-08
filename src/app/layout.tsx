@@ -32,7 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                   <Sidebar />
                 </div>
                 
-                <div className="flex flex-1 flex-col overflow-hidden">
+                <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
                   <Header />
                   <main className="relative isolate flex-1 overflow-y-auto pb-28 md:pb-32 lg:pb-8">
                     <FallingPattern className="absolute inset-0 z-[-1]" />
@@ -42,7 +42,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 </div>
 
                 {/* Mobile Sidebar (Fixed at bottom) */}
-                <div className="fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 lg:hidden">
+                <div className="fixed bottom-3 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 lg:hidden">
                   <Sidebar mobileOnly />
                 </div>
               </div>

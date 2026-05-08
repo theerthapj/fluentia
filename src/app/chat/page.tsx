@@ -23,7 +23,6 @@ import { registerViolation } from "@/lib/moderation/escalation";
 import { uid } from "@/lib/utils";
 import type { ConversationKind, ConversationResponse, Message } from "@/types";
 import { useFluvi } from "@/context/FluviContext";
-import { FluviCharacter, FluviThinkingDots } from "@/components/fluvi/FluviCharacter";
 import { FluviFeedbackPanel } from "@/components/fluvi/FluviFeedbackPanel";
 import type { FeedbackResult } from "@/types/fluvi.types";
 
@@ -48,7 +47,7 @@ function ChatContent() {
   const [fluviFeedback, setFluviFeedback] = useState<FeedbackResult | null>(null);
 
   // Fluvi state triggers — additive, does not replace any existing logic
-  const { state: fluviState, startThinking, stopThinking, triggerCorrect, triggerIncorrect, triggerWarning } = useFluvi();
+  const { startThinking, stopThinking, triggerCorrect, triggerIncorrect, triggerWarning } = useFluvi();
 
   const kind = (params.get("kind") as ConversationKind | null) ?? state.activeConversationKind ?? "scenario";
   const scenarioId = params.get("scenario");
@@ -207,7 +206,17 @@ function ChatContent() {
     }
   };
 
-  if (!hydrated) return null;
+  if (!hydrated) {
+    return (
+      <main className="flex min-h-screen flex-col bg-bg-primary">
+        <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 px-4 py-6 pb-72 lg:pb-56">
+          <div className="h-20 rounded-3xl border border-border bg-surface/60" />
+          <div className="h-28 rounded-3xl border border-border bg-surface/60" />
+          <div className="h-40 rounded-3xl border border-border bg-surface/60" />
+        </section>
+      </main>
+    );
+  }
 
   const title = kind === "free-chat" ? "Free Chat" : kind === "pronunciation" ? exercise?.title ?? "Pronunciation Practice" : scenario?.title ?? "Scenario Practice";
   const canWrapUp = kind === "pronunciation" ? userTurns >= 1 : userTurns >= 2;
@@ -215,7 +224,7 @@ function ChatContent() {
   return (
     <main className="flex min-h-screen flex-col bg-bg-primary">
       <ScenarioHeader scenario={scenario} mode={mode} advanced={advanced} kind={kind} title={title} />
-      <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 px-4 py-6 pb-56">
+      <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 px-4 py-6 pb-72 lg:pb-56">
         <Breadcrumb current="Chat" />
 
         {/* Fluvi is now embedded in ChatBubble and FluviFeedbackPanel */}
@@ -248,7 +257,7 @@ function ChatContent() {
           ) : null}
         </div>
       </section>
-      <div className="fixed inset-x-0 bottom-0 z-20">
+      <div className="fixed inset-x-0 bottom-24 z-30 lg:bottom-0">
         <div className="border-t border-border bg-bg-primary/90 px-4 py-4 backdrop-blur">
           <FluentiaAnimatedChat
             scenarioTitle={title}

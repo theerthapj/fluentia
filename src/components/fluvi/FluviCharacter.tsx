@@ -4,7 +4,7 @@
 // All animatable parts have unique IDs. SVG viewBox is exactly "0 0 200 220".
 // Colors use CSS variables from FluviTheme — no hardcoded hex inside fills.
 
-import { motion, useAnimation, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, useAnimation, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { useFluvi } from '@/context/FluviContext';
 import { getFluviCSSVars } from './FluviTheme';
@@ -95,14 +95,6 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
     void pupilControls.start({ x: 2, y: -2, transition: { duration: 0.6, ease: 'easeInOut' } });
   }, [mode, headControls, pupilControls, prefersReducedMotion]);
 
-  // ── CORRECT FEEDBACK: variant-based ───────────────────────────
-  useEffect(() => {
-    if (mode !== 'correct_feedback') return;
-    const variant = state.correctVariantQueue[0];
-    void runCorrectVariant(variant);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode]);
-
   async function runCorrectVariant(variant: CorrectVariant) {
     if (prefersReducedMotion) return;
     switch (variant) {
@@ -157,6 +149,14 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
     // Head nod after any correct
     void headControls.start({ rotate: [0, 3, 0], transition: { duration: 0.8, ease: 'easeInOut' } });
   }
+
+  // ── CORRECT FEEDBACK: variant-based ───────────────────────────
+  useEffect(() => {
+    if (mode !== 'correct_feedback') return;
+    const variant = state.correctVariantQueue[0];
+    void runCorrectVariant(variant);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
 
   // ── INCORRECT: mild sadness → encouragement ───────────────────
   useEffect(() => {
