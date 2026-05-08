@@ -275,7 +275,7 @@ function ChatContent() {
           ) : null}
         </div>
       </section>
-      <div className="fixed inset-x-0 bottom-24 z-30 lg:bottom-0">
+      <div className="fixed inset-x-0 bottom-24 z-30 lg:left-72 lg:bottom-0">
         <div className="border-t border-border bg-bg-primary/90 px-4 py-4 backdrop-blur">
           <FluentiaAnimatedChat
             scenarioTitle={title}

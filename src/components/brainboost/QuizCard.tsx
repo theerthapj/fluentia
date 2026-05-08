@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -206,9 +206,12 @@ function IdiomCard({ question, onAnswer }: { question: IdiomQuestion; onAnswer: 
 // ─── Main QuizCard ────────────────────────────────────────────────────────────
 export function QuizCard({ question, questionNumber, total, onAnswer }: QuizCardProps) {
   const [feedback, setFeedback] = useState<{ correct: boolean; emoji: string } | null>(null);
+  const answerLockedRef = useRef(false);
   const { triggerCorrect, triggerIncorrect } = useFluvi();
 
   const handleAnswer = (correct: boolean) => {
+    if (answerLockedRef.current) return;
+    answerLockedRef.current = true;
     const emoji = correct ? pickRandom(correctEmojis) : pickRandom(wrongEmojis);
     if (correct) triggerCorrect();
     else triggerIncorrect();

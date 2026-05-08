@@ -10,6 +10,7 @@ import { useAppState } from "@/components/providers/AppStateProvider";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { ProgressStepper } from "@/components/shared/ProgressStepper";
+import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
 import { assessmentQuestions, levelCopy, scoreAssessment } from "@/lib/constants";
 import { checkModeration } from "@/lib/moderation/checker";
 import { validateTextInput } from "@/lib/validation";
@@ -27,7 +28,20 @@ function loadProgress(): SavedProgress | null {
     const raw = window.localStorage.getItem(PROGRESS_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as SavedProgress;
-    if (typeof parsed.step === "number" && Array.isArray(parsed.answers)) return parsed;
+    if (!parsed || typeof parsed !== "object") return null;
+    if (!Number.isInteger(parsed.step) || !Array.isArray(parsed.answers)) return null;
+
+    const validQuestionIds = new Set<string>(assessmentQuestions.map((question) => question.id));
+    return {
+      step: Math.min(Math.max(parsed.step, 0), assessmentQuestions.length - 1),
+      answers: parsed.answers.filter(
+        (answer): answer is AssessmentAnswer =>
+          Boolean(answer) &&
+          typeof answer.questionId === "string" &&
+          typeof answer.value === "string" &&
+          validQuestionIds.has(answer.questionId),
+      ),
+    };
   } catch {}
   return null;
 }
@@ -53,7 +67,7 @@ export default function AssessmentPage() {
     if (typeof window === "undefined") return null;
     return loadProgress();
   }, []);
-  const initialQuestion = assessmentQuestions[restored?.step ?? 0];
+  const initialQuestion = assessmentQuestions[restored?.step ?? 0] ?? assessmentQuestions[0];
   const initialAnswer = restored?.answers.find((answer) => answer.questionId === initialQuestion.id);
 
   const [step, setStep] = useState(restored?.step ?? 0);
@@ -69,7 +83,7 @@ export default function AssessmentPage() {
   const bannerMessage = params.get("message");
 
   const syncDraftForStep = useCallback((nextStep: number, nextAnswers: AssessmentAnswer[]) => {
-    const nextQuestion = assessmentQuestions[nextStep];
+    const nextQuestion = assessmentQuestions[nextStep] ?? assessmentQuestions[0];
     const existing = nextAnswers.find((answer) => answer.questionId === nextQuestion.id);
     if ("options" in nextQuestion) {
       setSelectedOption(existing?.value ?? null);
@@ -166,6 +180,9 @@ export default function AssessmentPage() {
     return (
       <main className="mesh-gradient grid min-h-screen place-items-center px-5 py-10">
         <GlassCard className="max-w-xl p-7 text-center sm:p-10">
+          <div className="mx-auto mb-2 flex justify-center">
+            <FluviCharacter size={92} />
+          </div>
           <CheckCircle2 aria-hidden="true" className="mx-auto h-12 w-12 text-success" />
           <h1 className="mt-5 text-4xl font-bold">Assessment Complete</h1>
           <div className="mt-5"><LevelBadge level={result.level} /></div>
@@ -195,7 +212,15 @@ export default function AssessmentPage() {
             transition={{ duration: 0.25 }}
           >
             <GlassCard className="mt-8 p-6 sm:p-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">{question.category}</p>
+              <div className="mb-6 flex items-center gap-4">
+                <div className="shrink-0">
+                  <FluviCharacter size={72} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">{question.category}</p>
+                  <p className="mt-1 text-sm leading-6 text-text-secondary">Take your time. Honest answers help shape better practice.</p>
+                </div>
+              </div>
               <h1 className="mt-3 text-3xl font-semibold">{question.prompt}</h1>
 
               {"options" in question ? (

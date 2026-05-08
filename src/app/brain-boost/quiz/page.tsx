@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Suspense, useCallback, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Brain } from "lucide-react";
@@ -25,21 +25,27 @@ function QuizContent() {
   const [roundKey, setRoundKey] = useState(0);
 
   const meta = quizMeta[quizType];
-  const score = answers.filter(Boolean).length;
+  const currentQuestion = questions[currentIndex];
+  const normalizedAnswers = useMemo(() => answers.slice(0, questions.length), [answers, questions.length]);
+  const score = normalizedAnswers.filter(Boolean).length;
+  const showScore = finished || (!currentQuestion && questions.length > 0);
 
   const handleAnswer = useCallback(
     (correct: boolean) => {
       setAnswers((previous) => {
+        if (previous.length !== currentIndex || previous.length >= questions.length) {
+          return previous;
+        }
         const next = [...previous, correct];
-        if (next.length === questions.length) {
+        if (next.length >= questions.length) {
           window.setTimeout(() => setFinished(true), 300);
         } else {
-          window.setTimeout(() => setCurrentIndex((index) => index + 1), 250);
+          window.setTimeout(() => setCurrentIndex(next.length), 250);
         }
         return next;
       });
     },
-    [questions.length],
+    [currentIndex, questions.length],
   );
 
   const handlePlayAgain = () => {
@@ -64,9 +70,9 @@ function QuizContent() {
             <Brain className="h-5 w-5 shrink-0 text-accent-primary" aria-hidden />
             <span className="gradient-text truncate font-bold">BrainBoost Zone</span>
           </div>
-          {!finished ? (
+          {!showScore ? (
             <span className="shrink-0 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-text-secondary">
-              {score}/{answers.length}
+              {score}/{normalizedAnswers.length}
             </span>
           ) : null}
         </div>
@@ -80,29 +86,43 @@ function QuizContent() {
         </div>
 
         <div className="glass-card p-6" key={roundKey}>
-          <AnimatePresence mode="wait">
-            {!finished ? (
-              <motion.div
-                key={`q-${currentIndex}`}
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }}
-                transition={{ duration: 0.2 }}
+          {questions.length === 0 ? (
+            <div className="py-10 text-center">
+              <p className="text-lg font-semibold text-text-primary">This quiz is unavailable right now.</p>
+              <p className="mt-2 text-sm text-text-secondary">Please choose another BrainBoost activity.</p>
+              <button
+                type="button"
+                onClick={() => router.push("/brain-boost")}
+                className="mt-6 rounded-full bg-accent-primary px-5 py-3 text-sm font-bold text-bg-primary transition hover:bg-teal-300"
               >
-                <QuizCard question={questions[currentIndex]} questionNumber={currentIndex + 1} total={questions.length} onAnswer={handleAnswer} />
-              </motion.div>
-            ) : (
-              <motion.div key="scorecard" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-                <ScoreCard
-                  quizType={quizType}
-                  questions={questions}
-                  answers={answers}
-                  onPlayAgain={handlePlayAgain}
-                  onBackToHub={() => router.push("/brain-boost")}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+                Back to BrainBoost
+              </button>
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              {!showScore && currentQuestion ? (
+                <motion.div
+                  key={`q-${currentIndex}`}
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -24 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <QuizCard question={currentQuestion} questionNumber={currentIndex + 1} total={questions.length} onAnswer={handleAnswer} />
+                </motion.div>
+              ) : (
+                <motion.div key="scorecard" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+                  <ScoreCard
+                    quizType={quizType}
+                    questions={questions}
+                    answers={normalizedAnswers}
+                    onPlayAgain={handlePlayAgain}
+                    onBackToHub={() => router.push("/brain-boost")}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
         </div>
       </div>
     </main>

@@ -48,7 +48,11 @@ export function AmbientBackground() {
       className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
       style={{ opacity: isFocusMode ? 0 : 0.08 }}
     >
-      <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
+      <Canvas
+        className="pointer-events-none"
+        camera={{ position: [0, 0, 6], fov: 60 }}
+        style={{ pointerEvents: "none" }}
+      >
         <Particles paused={isFocusMode} />
       </Canvas>
     </div>

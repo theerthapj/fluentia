@@ -6,6 +6,7 @@ import { Lightbulb, X } from "lucide-react";
 export function InlineCoachingTip({ tip, onDismiss }: { tip: string; onDismiss: () => void }) {
   return (
     <motion.div
+      id="inline-coaching-tip"
       initial={{ opacity: 0, x: -18 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}

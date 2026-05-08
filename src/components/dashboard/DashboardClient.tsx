@@ -12,8 +12,6 @@ import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { relativeTime } from "@/lib/utils";
 
-import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
-
 export function DashboardClient() {
   const router = useRouter();
   const { state, hydrated, restoreSession } = useAppState();
@@ -41,8 +39,8 @@ export function DashboardClient() {
     return (
       <main className="mesh-gradient min-h-screen px-5 py-8">
         <div className="mx-auto max-w-3xl">
-          <GlassCard className="relative overflow-hidden border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-7 backdrop-blur-sm sm:p-10">
-            <div className="relative z-10">
+          <GlassCard className="border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-7 backdrop-blur-sm sm:p-10">
+            <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Dashboard Locked</p>
               <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">Complete your assessment to unlock progress.</h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg">
@@ -56,9 +54,6 @@ export function DashboardClient() {
                 <ArrowRight aria-hidden="true" className="h-5 w-5" />
               </Link>
             </div>
-            <div className="pointer-events-none absolute -bottom-8 -right-8 opacity-20 md:hidden">
-              <FluviCharacter size={160} />
-            </div>
           </GlassCard>
         </div>
       </main>
@@ -69,8 +64,8 @@ export function DashboardClient() {
     <main className="mesh-gradient min-h-screen px-5 py-8">
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <div className="flex-1">
-          <GlassCard className="p-6 sm:p-8 relative overflow-hidden">
-            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between relative z-10">
+          <GlassCard className="p-6 sm:p-8">
+            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
               <div>
                 <h1 className="text-4xl font-bold">Welcome back, Learner</h1>
                 <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -88,10 +83,6 @@ export function DashboardClient() {
                   Open Free Chat
                 </Button>
               </div>
-            </div>
-            {/* Fluvi tucked in bottom-right corner — decorative only */}
-            <div className="hidden md:block absolute -bottom-2 right-6 opacity-30 pointer-events-none">
-              <FluviCharacter size={80} />
             </div>
           </GlassCard>
 

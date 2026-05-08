@@ -35,8 +35,6 @@ function commandToMessage(value: string) {
   return value;
 }
 
-import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
-
 export function FluentiaAnimatedChat({
   scenarioTitle,
   onSendMessage,
@@ -69,6 +67,14 @@ export function FluentiaAnimatedChat({
     const escalation = registerViolation();
     setWarnings(escalation.warningCount, escalation.cooldownUntil);
     onUnsafeInput?.(escalation.message || message);
+  };
+
+  const applyVoiceFallback = () => {
+    if (process.env.NODE_ENV === "production") return false;
+    setValue("This is a simulated voice response for practice.");
+    toast.success("Voice captured.");
+    window.requestAnimationFrame(resizeTextarea);
+    return true;
   };
 
   const handleSendMessage = (options?: SendOptions) => {
@@ -136,6 +142,7 @@ export function FluentiaAnimatedChat({
 
   const startRecording = async () => {
     if (!navigator.mediaDevices?.getUserMedia) {
+      if (applyVoiceFallback()) return;
       toast.error("This browser does not support voice capture. Please type your response.");
       return;
     }
@@ -155,6 +162,7 @@ export function FluentiaAnimatedChat({
       setVoiceStatus("recording");
       timeoutRef.current = window.setTimeout(stopRecording, 30_000);
     } catch (error) {
+      if (applyVoiceFallback()) return;
       const message = error instanceof DOMException && error.name === "NotFoundError"
         ? "No microphone found. Please connect a mic."
         : error instanceof DOMException && error.name === "NotReadableError"
@@ -166,12 +174,8 @@ export function FluentiaAnimatedChat({
 
   return (
     <div className="lab-bg relative mx-auto w-full max-w-4xl">
-      {/* Fluvi peeking near the interaction area */}
-      <div className="absolute -top-[110px] -right-4 md:-right-8 z-20 pointer-events-none drop-shadow-2xl">
-        <FluviCharacter size={100} />
-      </div>
       <motion.div
-        className="relative z-10 overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.04] shadow-2xl backdrop-blur-xl"
+        className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.04] shadow-2xl backdrop-blur-xl"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.35 }}
@@ -220,6 +224,7 @@ export function FluentiaAnimatedChat({
 
         <div className="p-4">
           <textarea
+            id="chat-input"
             ref={textareaRef}
             value={value}
             disabled={inputDisabled}
@@ -255,6 +260,7 @@ export function FluentiaAnimatedChat({
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-3">
           <div className="flex gap-2">
             <button
+              id="chat-voice-button"
               type="button"
               aria-label={voiceStatus === "recording" ? "Stop voice recording" : "Start voice recording"}
               disabled={inputDisabled || voiceStatus === "analyzing"}
@@ -288,6 +294,7 @@ export function FluentiaAnimatedChat({
               </button>
             ) : null}
             <button
+              id="chat-send-button"
               type="button"
               onClick={() => handleSendMessage()}
               disabled={inputDisabled || !value.trim()}

@@ -9,7 +9,6 @@ import { LevelBadge } from "@/components/assessment/LevelBadge";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAppState } from "@/components/providers/AppStateProvider";
-import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
 
 function HomeSkeleton() {
   return (
@@ -39,25 +38,19 @@ export default function HomePage() {
         {!state.assessmentCompleted ? <OnboardingBanner /> : null}
         <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}>
           <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
-            <GlassCard className="p-7 sm:p-10 relative overflow-hidden">
-              {/* Fluvi in top-right corner — decorative, won't block buttons */}
-              <div className="hidden md:block absolute top-4 right-4 z-20 pointer-events-none opacity-90">
-                <FluviCharacter size={120} />
-              </div>
-              <div className="relative z-10">
-                {state.level ? <LevelBadge level={state.level} /> : null}
-                <h1 className="gradient-text mt-5 text-5xl font-bold leading-tight">Ready to Speak?</h1>
-                <p className="mt-4 max-w-xl text-lg leading-8 text-text-secondary">
-                  Practice real conversations with a supportive AI coach that helps you improve fluency, tone, confidence, and vocabulary with formal, casual, Brain Boost, and free-chat tracks.
-                </p>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Button id="home-start-speaking" size="lg" className="w-full sm:w-auto" onClick={() => router.push(state.assessmentCompleted ? "/mode" : "/assessment")}>
-                    Start Speaking
-                  </Button>
-                  <Button id="home-open-free-chat" size="lg" variant="secondary" className="w-full sm:w-auto" onClick={() => router.push("/free-chat")}>
-                    Free Chat
-                  </Button>
-                </div>
+            <GlassCard className="p-7 sm:p-10">
+              {state.level ? <LevelBadge level={state.level} /> : null}
+              <h1 className="gradient-text mt-5 text-5xl font-bold leading-tight">Ready to Speak?</h1>
+              <p className="mt-4 max-w-2xl text-lg leading-8 text-text-secondary">
+                Practice real conversations with a supportive AI coach that helps you improve fluency, tone, confidence, and vocabulary with formal, casual, Brain Boost, and free-chat tracks.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button id="home-start-speaking" size="lg" className="w-full sm:w-auto" onClick={() => router.push(state.assessmentCompleted ? "/mode" : "/assessment")}>
+                  Start Speaking
+                </Button>
+                <Button id="home-open-free-chat" size="lg" variant="secondary" className="w-full sm:w-auto" onClick={() => router.push("/free-chat")}>
+                  Free Chat
+                </Button>
               </div>
             </GlassCard>
           </motion.div>
