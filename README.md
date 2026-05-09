@@ -1,23 +1,77 @@
 # Fluentia
 
-Fluentia is a premium AI English speaking coach prototype focused on helping students build real speaking confidence through scenario practice, tone-aware coaching, and supportive feedback.
+Fluentia is an AI English speaking coach built with Next.js App Router, React, TypeScript, Tailwind CSS, Vitest, and Playwright. The current app focuses on assessment, scenario practice, free chat, voice capture, feedback, progress tracking, and local demo persistence.
 
-## Local Preview
-- Install dependencies with `npm install`.
-- Start the web app with `npm run dev`.
-- The default preview target is `http://127.0.0.1:4173`.
+## Requirements
+
+- Node.js 22.x
+- npm 10.x
+
+## Local Setup
+
+```powershell
+npm install
+npm run dev
+```
+
+The Next dev server defaults to `http://localhost:3000`. The Playwright e2e runner starts its own server at `http://127.0.0.1:3210`.
+
+## Environment
+
+Copy `.env.example` to `.env.local` and fill only the services you need.
+
+| Variable | Required | Purpose |
+|---|---:|---|
+| `NEXT_PUBLIC_AI_MODE` | No | Optional client-visible mode label for deployments. |
+| `NEXT_PUBLIC_SUPABASE_URL` | No | Optional Supabase project URL. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | No | Optional Supabase browser anon key. |
+| `SUPABASE_SERVICE_ROLE_KEY` | No | Reserved for server-only Supabase workflows. Do not expose it client-side. |
+| `UPSTASH_REDIS_REST_URL` | No | Reserved for production rate-limit storage. The app has an in-memory local fallback. |
+| `UPSTASH_REDIS_REST_TOKEN` | No | Reserved for production rate-limit storage. |
+| `OPENAI_API_KEY` | No | Enables live AI responses and voice transcription. Without it, chat uses the simulated coach and transcription returns a clear unavailable state. |
+| `OPENAI_CHAT_MODEL` | No | Chat model override. Defaults to `gpt-4o-mini`. |
+| `OPENAI_TRANSCRIPTION_MODEL` | No | Transcription model override. Defaults to `whisper-1`. |
+
+Never commit real secret values.
+
+## Scripts
+
+```powershell
+npm run lint
+npm run test
+npm run build
+npm run test:e2e
+```
+
+- `lint` runs ESLint.
+- `test` runs Vitest unit/component tests.
+- `build` creates a production Next.js build.
+- `test:e2e` runs Playwright journeys through `scripts/run-e2e.mjs`.
 
 ## Project Shape
-- `src/` contains the Vite + React web app.
-- `shared/` contains reusable moderation logic and AI-facing TypeScript contracts.
-- `mobile/FluentiaPrototype.tsx` remains the React Native handoff sketch.
-- `prototype/` keeps the original static reference implementation and earlier smoke assets.
 
-## Quality Checks
-- `npm run build` verifies the TypeScript + Vite bundle.
-- `npm run smoke` runs the Playwright journey and moderation checks once dependencies are installed.
+- `src/app` contains Next.js routes and API handlers.
+- `src/components` contains UI, layout, chat, dashboard, settings, and onboarding components.
+- `src/lib` contains scenario data, AI providers, validation, moderation, Supabase helpers, and server request guards.
+- `src/__tests__` contains Vitest coverage.
+- `e2e` contains Playwright journeys.
+- `qa-evidence` and `FLUENTIA_QA_REPORT.md` are QA artifacts from the latest audit.
+
+## Local Data Model
+
+This prototype stores assessment results, preferences, conversation state, sessions, and moderation warning state in browser `localStorage`. The persisted state is versioned and bounded for local use, but production accounts should move durable progress, server-side cooldowns, and analytics into a backend store.
+
+Use **Reset Demo** from the sidebar to clear local app state and moderation warnings.
+
+## AI And Voice Behavior
+
+- With no `OPENAI_API_KEY`, conversation coaching falls back to the built-in simulated provider.
+- With `OPENAI_API_KEY`, `/api/conversation` calls OpenAI chat completions and falls back to simulated feedback if the live provider fails.
+- Voice capture only sends audio to `/api/transcribe` after the user explicitly starts recording.
+- `/api/transcribe` returns a non-blocking missing-key error when live transcription is not configured.
 
 ## Product Docs
+
 - `00_Project_Overview.md`
 - `02_PRD.md`
 - `03_UI_UX_Design_Document.md`
@@ -27,3 +81,5 @@ Fluentia is a premium AI English speaking coach prototype focused on helping stu
 - `07_Security_Document.md`
 - `08_Architecture_Testing_Deployment.md`
 - `PROTOTYPE_ARCHITECTURE.md`
+
+Some historical product documents still describe prototype-era decisions. Treat this README and the current source tree as the authoritative local development guide.

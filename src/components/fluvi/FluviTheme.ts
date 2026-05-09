@@ -33,8 +33,19 @@ const THEMES: Record<UserLevel, FluviTheme> = {
   },
 };
 
-export function getFluviTheme(level: UserLevel): FluviTheme {
-  return THEMES[level];
+export function getFluviTheme(level: UserLevel, energy = 0): FluviTheme {
+  const base = THEMES[level];
+  const boost = Math.max(0, Math.min(1, energy));
+  return {
+    ...base,
+    featherSpread: Math.min(1, base.featherSpread + boost * 0.16),
+    saturation: Math.min(1.35, base.saturation + boost * 0.16),
+    brightness: Math.min(1.22, base.brightness + boost * 0.12),
+    glowColor:
+      boost > 0.66
+        ? 'rgba(251, 191, 36, 0.42)'
+        : base.glowColor,
+  };
 }
 
 export function getFluviCSSVars(theme: FluviTheme): Record<string, string> {

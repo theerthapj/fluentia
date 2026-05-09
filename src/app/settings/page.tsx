@@ -5,7 +5,23 @@ import { LevelPreferenceSelector } from "@/components/settings/LevelPreferenceSe
 import { GlassCard } from "@/components/shared/GlassCard";
 
 export default function SettingsPage() {
-  const { state, updatePreferences } = useAppState();
+  const { state, hydrated, updatePreferences } = useAppState();
+
+  if (!hydrated) {
+    return (
+      <main className="mesh-gradient min-h-screen px-5 py-8">
+        <div className="mx-auto max-w-4xl space-y-6">
+          <GlassCard className="p-6 sm:p-8">
+            <div className="h-10 w-2/3 rounded-2xl bg-white/10" />
+            <div className="mt-4 h-4 w-full rounded-full bg-white/10" />
+          </GlassCard>
+          <GlassCard className="p-6">
+            <div className="h-28 rounded-2xl bg-white/10" />
+          </GlassCard>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="mesh-gradient min-h-screen px-5 py-8">

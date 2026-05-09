@@ -23,13 +23,12 @@ export function FluviIntroGate() {
     return () => window.clearTimeout(timer);
   }, [state.hasSeenIntro]);
 
-  // Typewriter effect — starts after character reveal animation completes
+  // Text appears after the character reveal so the first-run moment stays brisk.
   useEffect(() => {
     if (!textVisible) return;
-    if (charIndex >= INTRO_TEXT.length) return;
-    const t = setTimeout(() => setCharIndex((i) => i + 1), 30);
+    const t = setTimeout(() => setCharIndex(INTRO_TEXT.length), 300);
     return () => clearTimeout(t);
-  }, [textVisible, charIndex]);
+  }, [textVisible]);
 
   function handleDismiss() {
     setVisible(false);

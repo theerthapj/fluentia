@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, Square } from "lucide-react";
 import { toast } from "sonner";
+import { useFluvi } from "@/context/FluviContext";
 import { cn } from "@/lib/utils";
 
 export function VoiceSimButton({
@@ -15,9 +16,37 @@ export function VoiceSimButton({
   disabled?: boolean;
 }) {
   const [status, setStatus] = useState<"idle" | "recording" | "analyzing">("idle");
+  const { startSpeaking, stopSpeaking, setVoiceAmplitude } = useFluvi();
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timeoutRef = useRef<number | null>(null);
+  const amplitudeTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (status !== "recording") {
+      if (amplitudeTimerRef.current) {
+        window.clearInterval(amplitudeTimerRef.current);
+        amplitudeTimerRef.current = null;
+      }
+      setVoiceAmplitude(0);
+      stopSpeaking();
+      return;
+    }
+
+    startSpeaking();
+    amplitudeTimerRef.current = window.setInterval(() => {
+      setVoiceAmplitude(0.25 + Math.random() * 0.7);
+    }, 140);
+
+    return () => {
+      if (amplitudeTimerRef.current) {
+        window.clearInterval(amplitudeTimerRef.current);
+        amplitudeTimerRef.current = null;
+      }
+      setVoiceAmplitude(0);
+      stopSpeaking();
+    };
+  }, [setVoiceAmplitude, startSpeaking, status, stopSpeaking]);
 
   const transcribe = async (blob: Blob) => {
     setStatus("analyzing");

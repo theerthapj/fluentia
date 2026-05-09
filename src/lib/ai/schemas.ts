@@ -9,7 +9,7 @@ export const PreferredInputModeSchema = z.enum(["text", "voice"]);
 export const MessageSchema = z.object({
   id: z.string(),
   role: z.enum(["user", "ai", "system"]),
-  content: z.string().min(1),
+  content: z.string().min(1).max(2400),
   createdAt: z.string(),
 });
 
@@ -93,7 +93,7 @@ export const ConversationRequestSchema = z.object({
   exerciseId: z.string().optional().nullable(),
   mode: ModeSchema.nullable(),
   level: LevelSchema,
-  history: z.array(MessageSchema),
+  history: z.array(MessageSchema).max(30),
   requestWrapUp: z.boolean().optional(),
 });
 

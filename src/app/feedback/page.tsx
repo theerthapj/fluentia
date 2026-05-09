@@ -16,6 +16,14 @@ import { getPronunciationExercise } from "@/lib/constants";
 import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
 import { useFluvi } from "@/context/FluviContext";
 
+function hashSessionKey(value: string) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = Math.imul(31, hash) + value.charCodeAt(index);
+  }
+  return Math.abs(hash).toString(36);
+}
+
 export default function FeedbackPage() {
   const router = useRouter();
   const { state, addSession } = useAppState();
@@ -34,9 +42,14 @@ export default function FeedbackPage() {
       state.activeConversationKind === "pronunciation"
         ? getPronunciationExercise(state.selectedExerciseId).title
         : state.selectedScenario?.title ?? "Free Chat";
-    const sessionId = `${state.activeConversationKind}-${state.selectedScenario?.id ?? state.selectedExerciseId ?? "free"}-${feedback.fluencyScore}-${state.conversationHistory.length}`;
+    const sessionKey = [
+      state.activeConversationKind,
+      state.selectedScenario?.id ?? state.selectedExerciseId ?? "free",
+      feedback.fluencyScore,
+      ...state.conversationHistory.map((message) => `${message.id}:${message.role}:${message.content}`),
+    ].join(":");
     const added = addSession({
-      id: sessionId,
+      id: `${state.activeConversationKind}-${hashSessionKey(sessionKey)}`,
       scenarioId: state.selectedScenario?.id ?? state.selectedExerciseId ?? null,
       scenarioTitle,
       mode: state.selectedMode,

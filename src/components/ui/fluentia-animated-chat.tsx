@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Command as CommandIcon, Languages, Loader2, Mic, MessageSquare, Send, Sparkles, Square, X, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { useFluvi } from "@/context/FluviContext";
 import { checkModeration } from "@/lib/moderation/checker";
 import { registerViolation } from "@/lib/moderation/escalation";
 import { cn } from "@/lib/utils";
@@ -83,7 +84,8 @@ export function FluentiaAnimatedChat({
   onUnsafeInput,
 }: FluentiaAnimatedChatProps) {
   const router = useRouter();
-  const { setWarnings } = useAppState();
+  const { state, setWarnings } = useAppState();
+  const { startSpeaking, stopSpeaking, setVoiceAmplitude, triggerWarning } = useFluvi();
   const [value, setValue] = useState("");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(0);
@@ -91,12 +93,40 @@ export function FluentiaAnimatedChat({
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timeoutRef = useRef<number | null>(null);
+  const amplitudeTimerRef = useRef<number | null>(null);
   const speechRecognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const voiceBaseValueRef = useRef("");
   const browserTranscriptRef = useRef("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const inputDisabled = disabled || loading;
+  const prefersVoice = state.preferences.preferredInputMode === "voice";
+
+  useEffect(() => {
+    if (voiceStatus !== "recording") {
+      if (amplitudeTimerRef.current) {
+        window.clearInterval(amplitudeTimerRef.current);
+        amplitudeTimerRef.current = null;
+      }
+      setVoiceAmplitude(0);
+      stopSpeaking();
+      return;
+    }
+
+    startSpeaking();
+    amplitudeTimerRef.current = window.setInterval(() => {
+      setVoiceAmplitude(0.28 + Math.random() * 0.68);
+    }, 140);
+
+    return () => {
+      if (amplitudeTimerRef.current) {
+        window.clearInterval(amplitudeTimerRef.current);
+        amplitudeTimerRef.current = null;
+      }
+      setVoiceAmplitude(0);
+      stopSpeaking();
+    };
+  }, [setVoiceAmplitude, startSpeaking, stopSpeaking, voiceStatus]);
 
   const resizeTextarea = () => {
     const textarea = textareaRef.current;
@@ -120,6 +150,7 @@ export function FluentiaAnimatedChat({
   const reportUnsafe = (message: string) => {
     const escalation = registerViolation();
     setWarnings(escalation.warningCount, escalation.cooldownUntil);
+    triggerWarning();
     onUnsafeInput?.(escalation.message || message);
   };
 
@@ -359,7 +390,7 @@ export function FluentiaAnimatedChat({
               resizeTextarea();
               setShowCommandPalette(event.target.value.trim().startsWith("/"));
             }}
-            placeholder={`Message ${scenarioTitle}...`}
+            placeholder={prefersVoice ? `Use voice or type for ${scenarioTitle}...` : `Message ${scenarioTitle}...`}
             rows={3}
             className="min-h-20 w-full resize-none border-none bg-transparent text-text-primary outline-none placeholder:text-text-secondary/45 disabled:cursor-not-allowed disabled:opacity-60"
             onKeyDown={(event) => {
@@ -393,6 +424,7 @@ export function FluentiaAnimatedChat({
               onClick={() => (voiceStatus === "recording" ? stopRecording() : startRecording())}
               className={cn(
                 "grid h-10 w-10 place-items-center rounded-full text-text-secondary transition hover:text-accent-primary disabled:opacity-50",
+                prefersVoice && "bg-accent-primary/15 text-accent-primary ring-1 ring-accent-primary/40",
                 voiceStatus === "recording" && "pulse-teal bg-error/20 text-error",
               )}
             >

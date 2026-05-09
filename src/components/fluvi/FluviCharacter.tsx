@@ -19,7 +19,7 @@ interface FluviCharacterProps {
 
 export function FluviCharacter({ size = 200, className = '', showLabel = false }: FluviCharacterProps) {
   const { state } = useFluvi();
-  const { mode, theme, voiceAmplitude, consecutiveErrors, reactionMessage, reactionKey } = state;
+  const { mode, theme, energy, voiceAmplitude, consecutiveErrors, reactionMessage, reactionKey } = state;
   const prefersReducedMotion = useReducedMotion();
   const [localBubble, setLocalBubble] = useState<string | null>(null);
   const [bubbleAlign, setBubbleAlign] = useState<'left' | 'center' | 'right'>('center');
@@ -141,6 +141,18 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
       transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
     });
   }, [mode, voiceAmplitude, beakUpperControls, beakLowerControls, glowControls, headControls, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (mode !== 'speaking') return;
+    if (prefersReducedMotion) return;
+    const blink = window.setInterval(() => {
+      void eyeControls.start({
+        scaleY: [1, 0.14, 1],
+        transition: { duration: 0.22, ease: 'easeInOut' },
+      });
+    }, 2600);
+    return () => window.clearInterval(blink);
+  }, [mode, eyeControls, prefersReducedMotion]);
 
   // ── THINKING: look up/sideways ─────────────────────────────────
   useEffect(() => {
@@ -437,9 +449,14 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
       <svg
         viewBox="0 0 200 220"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ width: size, height: size }}
         aria-label="Fluvi the peacock learning companion"
         role="img"
+        className="transition-[filter] duration-700"
+        style={{
+          width: size,
+          height: size,
+          filter: `saturate(${theme.saturation}) brightness(${theme.brightness}) drop-shadow(0 0 ${8 + energy * 14}px var(--fluvi-glow))`,
+        }}
       >
         <defs>
           <radialGradient id="fluvi-bodyGrad" cx="35%" cy="30%" r="75%">

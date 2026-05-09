@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import { STORAGE_KEY, WARNINGS_KEY } from "@/lib/constants";
 import type {
   AppPreferences,
@@ -39,6 +40,76 @@ const initialState: AppState = {
   preferences: defaultPreferences,
 };
 
+const STORAGE_VERSION = 2;
+const MAX_SESSIONS = 30;
+const MAX_CONVERSATION_MESSAGES = 80;
+
+type PersistedAppState = {
+  version: number;
+  state: Partial<AppState>;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object");
+}
+
+function isMessage(value: unknown): value is Message {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    (value.role === "user" || value.role === "ai" || value.role === "system") &&
+    typeof value.content === "string" &&
+    typeof value.createdAt === "string"
+  );
+}
+
+function isSession(value: unknown): value is SessionRecord {
+  if (!isRecord(value)) return false;
+  return typeof value.id === "string" && typeof value.scenarioTitle === "string" && Array.isArray(value.messages);
+}
+
+function trimMessages(messages: Message[]) {
+  return messages.slice(-MAX_CONVERSATION_MESSAGES);
+}
+
+function normalizeStoredState(value: unknown): AppState {
+  const source = isRecord(value) && "version" in value && isRecord((value as PersistedAppState).state)
+    ? (value as PersistedAppState).state
+    : isRecord(value)
+      ? (value as Partial<AppState>)
+      : {};
+
+  const preferences = isRecord(source.preferences)
+    ? {
+        ...defaultPreferences,
+        ...source.preferences,
+      }
+    : defaultPreferences;
+
+  return {
+    ...initialState,
+    ...source,
+    conversationHistory: Array.isArray(source.conversationHistory) ? trimMessages(source.conversationHistory.filter(isMessage)) : [],
+    sessions: Array.isArray(source.sessions) ? source.sessions.filter(isSession).slice(0, MAX_SESSIONS) : [],
+    preferences: {
+      listeningEnabled: typeof preferences.listeningEnabled === "boolean" ? preferences.listeningEnabled : defaultPreferences.listeningEnabled,
+      playbackSpeed: preferences.playbackSpeed === "slow" || preferences.playbackSpeed === "fast" ? preferences.playbackSpeed : "normal",
+      preferredInputMode: preferences.preferredInputMode === "voice" ? "voice" : "text",
+    },
+  };
+}
+
+function toPersistedState(state: AppState): PersistedAppState {
+  return {
+    version: STORAGE_VERSION,
+    state: {
+      ...state,
+      conversationHistory: trimMessages(state.conversationHistory),
+      sessions: state.sessions.slice(0, MAX_SESSIONS),
+    },
+  };
+}
+
 interface AppStateContextValue {
   state: AppState;
   hydrated: boolean;
@@ -65,34 +136,55 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>(initialState);
   const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
+  const persistState = useCallback((nextState: AppState) => {
     try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as Partial<AppState>;
-        setState({
-          ...initialState,
-          ...parsed,
-          preferences: { ...defaultPreferences, ...parsed.preferences },
-        });
-      }
-    } finally {
-      setHydrated(true);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(toPersistedState(nextState)));
+    } catch (error) {
+      console.warn("Unable to persist Fluentia state.", error);
     }
   }, []);
 
   useEffect(() => {
-    if (hydrated) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [hydrated, state]);
+    let cancelled = false;
+    let nextState: AppState | null = null;
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        nextState = normalizeStoredState(JSON.parse(stored));
+      }
+    } catch {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
+
+    window.setTimeout(() => {
+      if (cancelled) return;
+      if (nextState) {
+        flushSync(() => setState(nextState));
+      }
+      setHydrated(true);
+    }, 0);
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    persistState(state);
+  }, [hydrated, persistState, state]);
 
   const patch = useCallback(
     (next: Partial<AppState>) =>
       setState((current) => {
         const keys = Object.keys(next) as Array<keyof AppState>;
         const hasChanges = keys.some((key) => current[key] !== next[key]);
-        return hasChanges ? { ...current, ...next } : current;
+        if (!hasChanges) return current;
+        const nextState = { ...current, ...next };
+        persistState(nextState);
+        return nextState;
       }),
-    [],
+    [persistState],
   );
 
   const updatePreferences = useCallback(
@@ -100,14 +192,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setState((current) => {
         const keys = Object.keys(next) as Array<keyof AppPreferences>;
         const hasChanges = keys.some((key) => current.preferences[key] !== next[key]);
-        return hasChanges
-          ? {
-              ...current,
-              preferences: { ...current.preferences, ...next },
-            }
-          : current;
+        if (!hasChanges) return current;
+        const nextState = {
+          ...current,
+          preferences: { ...current.preferences, ...next },
+        };
+        persistState(nextState);
+        return nextState;
       }),
-    [],
+    [persistState],
   );
 
   const value = useMemo<AppStateContextValue>(
@@ -126,14 +219,16 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setScenario: (selectedScenario) => patch({ selectedScenario }),
       setExercise: (selectedExerciseId) => patch({ selectedExerciseId }),
       setConversationKind: (activeConversationKind) => patch({ activeConversationKind }),
-      setConversationHistory: (conversationHistory) => patch({ conversationHistory }),
+      setConversationHistory: (conversationHistory) => patch({ conversationHistory: trimMessages(conversationHistory) }),
       setLastFeedback: (lastFeedback) => patch({ lastFeedback }),
       addSession: (session) => {
         let added = false;
         setState((current) => {
           if (current.sessions.some((item) => item.id === session.id)) return current;
           added = true;
-          return { ...current, sessions: [session, ...current.sessions].slice(0, 30) };
+          const nextState = { ...current, sessions: [session, ...current.sessions].slice(0, MAX_SESSIONS) };
+          persistState(nextState);
+          return nextState;
         });
         return added;
       },
@@ -150,10 +245,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       resetDemo: () => {
         window.localStorage.removeItem(STORAGE_KEY);
         window.localStorage.removeItem(WARNINGS_KEY);
+        persistState(initialState);
         setState(initialState);
       },
     }),
-    [hydrated, patch, state, updatePreferences],
+    [hydrated, patch, persistState, state, updatePreferences],
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

@@ -1,4 +1,5 @@
 import { generateFeedback } from "@/lib/ai/simulated";
+import { API_GUARD_LIMITS, fetchWithTimeout } from "@/lib/server/request-guards";
 import type { ConversationRequest } from "@/types";
 
 export function shouldUseLiveProvider() {
@@ -31,14 +32,14 @@ export const liveProvider = {
     if (!apiKey) return generateFeedback(request);
 
     const baseFeedback = generateFeedback(request);
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: process.env.OPENAI_CHAT_MODEL?.trim() || "gpt-4o-mini",
         temperature: 0.7,
         response_format: { type: "json_object" },
         messages: [
@@ -53,7 +54,7 @@ export const liveProvider = {
           },
         ],
       }),
-    });
+    }, API_GUARD_LIMITS.conversationTimeoutMs);
 
     if (!response.ok) {
       throw new Error(`Live provider failed with status ${response.status}`);

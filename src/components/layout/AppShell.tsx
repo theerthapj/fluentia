@@ -4,6 +4,9 @@ import { useSyncExternalStore } from "react";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { FluviAppBridge } from "@/components/fluvi/FluviAppBridge";
+import { FloatingFluviCompanion } from "@/components/fluvi/FloatingFluviCompanion";
+import { FluviIntroGate } from "@/components/fluvi/FluviIntro";
 import { FallingPattern } from "@/components/ui/falling-pattern";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +36,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-bg-primary">
+      <FluviAppBridge />
+      <FluviIntroGate />
       <div
         className={cn(
           "relative z-50 hidden shrink-0 transition-[width] duration-300 lg:sticky lg:top-0 lg:block lg:h-screen",
@@ -54,6 +59,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="fixed bottom-3 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 lg:hidden">
         <Sidebar mobileOnly />
       </div>
+      <FloatingFluviCompanion />
     </div>
   );
 }

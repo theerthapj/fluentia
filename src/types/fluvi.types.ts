@@ -45,6 +45,7 @@ export interface FluviState {
   hasSeenIntro: boolean;
   userLevel: UserLevel;
   theme: FluviTheme;
+  energy: number; // 0-1, increases as learner performance improves
   isVoiceActive: boolean;
   voiceAmplitude: number;  // 0–1, real-time
 }
@@ -64,6 +65,7 @@ export interface FluviAction {
     | 'SET_VOICE_AMPLITUDE'
     | 'COMPLETE_INTRO'
     | 'SET_LEVEL'
+    | 'SET_ENERGY'
     | 'RESET_TO_IDLE';
   payload?: unknown;
 }

@@ -171,7 +171,7 @@ function ChatContent() {
           exerciseId: exercise?.id ?? null,
           mode,
           level,
-          history: nextMessages,
+          history: nextMessages.slice(-30),
           requestWrapUp,
         }),
       });

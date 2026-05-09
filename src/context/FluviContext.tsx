@@ -11,7 +11,9 @@ import {
   getRandomMessage,
   GRAMMAR_SUCCESS_MESSAGES,
   PRONUNCIATION_SUCCESS_MESSAGES,
+  THINKING_MESSAGES,
   TRY_AGAIN_MESSAGES,
+  WARNING_MESSAGES,
 } from '@/components/fluvi/FluviMessages';
 
 const FLUVI_STORAGE_KEY = 'fluvi_state';
@@ -24,9 +26,10 @@ const INITIAL_STATE: FluviState = {
   reactionKey: 0,
   consecutiveCorrect: 0,
   consecutiveErrors: 0,
-  hasSeenIntro: true,
+  hasSeenIntro: false,
   userLevel: 'beginner',
   theme: getFluviTheme('beginner'),
+  energy: 0,
   isVoiceActive: false,
   voiceAmplitude: 0,
 };
@@ -84,7 +87,12 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
       };
 
     case 'TRIGGER_WARNING':
-      return { ...state, mode: 'warning', reactionMessage: null, reactionKey: state.reactionKey + 1 };
+      return {
+        ...state,
+        mode: 'warning',
+        reactionMessage: getRandomMessage(WARNING_MESSAGES, 'warning'),
+        reactionKey: state.reactionKey + 1,
+      };
 
     case 'TRIGGER_CELEBRATION':
       return { ...state, mode: 'celebration', reactionMessage: null, reactionKey: state.reactionKey + 1 };
@@ -96,7 +104,7 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
       return { ...state, mode: 'idle', reactionMessage: null, isVoiceActive: false, voiceAmplitude: 0 };
 
     case 'START_THINKING':
-      return { ...state, mode: 'thinking', reactionMessage: getRandomMessage(['Thinking...'], 'thinking-bubble') };
+      return { ...state, mode: 'thinking', reactionMessage: getRandomMessage(THINKING_MESSAGES, 'thinking-bubble') };
 
     case 'STOP_THINKING':
       return { ...state, mode: 'idle', reactionMessage: null };
@@ -109,7 +117,12 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
 
     case 'SET_LEVEL': {
       const level = action.payload as UserLevel;
-      return { ...state, userLevel: level, theme: getFluviTheme(level) };
+      return { ...state, userLevel: level, theme: getFluviTheme(level, state.energy) };
+    }
+
+    case 'SET_ENERGY': {
+      const energy = Math.max(0, Math.min(1, Number(action.payload) || 0));
+      return { ...state, energy, theme: getFluviTheme(state.userLevel, energy) };
     }
 
     case 'RESET_TO_IDLE':
@@ -150,11 +163,13 @@ export function FluviProvider({ children }: { children: React.ReactNode }) {
         if (!saved) return init;
         const parsed = JSON.parse(saved) as Partial<FluviState>;
         const level: UserLevel = parsed.userLevel ?? 'beginner';
+        const energy = typeof parsed.energy === 'number' ? parsed.energy : init.energy;
         return {
           ...init,
-          hasSeenIntro: true,
+          hasSeenIntro: parsed.hasSeenIntro ?? init.hasSeenIntro,
           userLevel: level,
-          theme: getFluviTheme(level),
+          energy,
+          theme: getFluviTheme(level, energy),
         };
       } catch {
         return init;
@@ -167,12 +182,12 @@ export function FluviProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem(
         FLUVI_STORAGE_KEY,
-        JSON.stringify({ hasSeenIntro: state.hasSeenIntro, userLevel: state.userLevel }),
+        JSON.stringify({ hasSeenIntro: state.hasSeenIntro, userLevel: state.userLevel, energy: state.energy }),
       );
     } catch {
       // localStorage may not be available; fail silently
     }
-  }, [state.hasSeenIntro, state.userLevel]);
+  }, [state.energy, state.hasSeenIntro, state.userLevel]);
 
   // Auto-reset transient states after their display duration
   useEffect(() => {

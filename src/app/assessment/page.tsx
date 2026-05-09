@@ -189,7 +189,9 @@ export default function AssessmentPage() {
           <p className="mt-4 text-text-secondary">
             {levelCopy[result.level]} Your score was {result.total}/10. You can change your level anytime from Dashboard or Settings.
           </p>
-          <Button id="assessment-continue" className="mt-8 w-full" size="lg" onClick={() => router.push("/mode")}>Continue to Practice</Button>
+          {!showPlan ? (
+            <Button id="assessment-continue" className="mt-8 w-full" size="lg" onClick={() => router.push("/mode")}>Continue to Practice</Button>
+          ) : null}
         </GlassCard>
         {showPlan ? <LearningPlanModal level={result.level} onBegin={() => router.push("/mode")} /> : null}
       </main>

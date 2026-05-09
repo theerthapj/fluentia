@@ -1,16 +1,30 @@
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { LevelBadge } from "@/components/assessment/LevelBadge";
 import { Button } from "@/components/shared/Button";
 import type { Level } from "@/types";
 
 export function LearningPlanModal({ level, onBegin }: { level: Level; onBegin: () => void }) {
+  const dialogRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    dialogRef.current?.focus();
+  }, []);
+
   return (
     <div className="fixed inset-0 z-[80] grid place-items-center bg-bg-primary/80 px-5 backdrop-blur">
-      <section className="glass-card max-w-lg p-7 text-center">
+      <section
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="learning-plan-title"
+        tabIndex={-1}
+        className="glass-card max-w-lg p-7 text-center outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+      >
         <LevelBadge level={level} />
-        <h2 className="mt-5 text-3xl font-bold">Your Learning Plan</h2>
+        <h2 id="learning-plan-title" className="mt-5 text-3xl font-bold">Your Learning Plan</h2>
         <ul className="mt-6 grid gap-3 text-left text-text-secondary">
           {["Scenario-based conversation practice", "AI feedback on every response", "Track your progress over time"].map((item) => (
             <li key={item} className="flex gap-3">
