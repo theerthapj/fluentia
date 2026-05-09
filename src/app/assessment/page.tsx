@@ -186,7 +186,9 @@ export default function AssessmentPage() {
           <CheckCircle2 aria-hidden="true" className="mx-auto h-12 w-12 text-success" />
           <h1 className="mt-5 text-4xl font-bold">Assessment Complete</h1>
           <div className="mt-5"><LevelBadge level={result.level} /></div>
-          <p className="mt-4 text-text-secondary">{levelCopy[result.level]} Your score was {result.total}/10.</p>
+          <p className="mt-4 text-text-secondary">
+            {levelCopy[result.level]} Your score was {result.total}/10. You can change your level anytime from Dashboard or Settings.
+          </p>
           <Button id="assessment-continue" className="mt-8 w-full" size="lg" onClick={() => router.push("/mode")}>Continue to Practice</Button>
         </GlassCard>
         {showPlan ? <LearningPlanModal level={result.level} onBegin={() => router.push("/mode")} /> : null}

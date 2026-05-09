@@ -1,17 +1,22 @@
 "use client";
 
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { LevelPreferenceSelector } from "@/components/settings/LevelPreferenceSelector";
 import { GlassCard } from "@/components/shared/GlassCard";
 
 export default function SettingsPage() {
-  const { state, updatePreferences, resetDemo } = useAppState();
+  const { state, updatePreferences } = useAppState();
 
   return (
     <main className="mesh-gradient min-h-screen px-5 py-8">
       <div className="mx-auto max-w-4xl space-y-6">
         <GlassCard className="p-6 sm:p-8">
           <h1 className="text-4xl font-bold">Settings</h1>
-          <p className="mt-3 text-text-secondary">Control listening, playback speed, and preferred input mode across the app.</p>
+          <p className="mt-3 text-text-secondary">Control level, listening, playback speed, and preferred input mode across the app.</p>
+        </GlassCard>
+
+        <GlassCard className="p-6">
+          <LevelPreferenceSelector idPrefix="settings-level" />
         </GlassCard>
 
         <GlassCard className="p-6">
@@ -66,13 +71,6 @@ export default function SettingsPage() {
         <GlassCard className="p-6">
           <h2 className="text-2xl font-semibold">App Data</h2>
           <p className="mt-3 text-text-secondary">Fluentia currently stores assessment progress, sessions, preferences, and moderation state locally on this device.</p>
-          <button
-            id="settings-reset-demo"
-            onClick={resetDemo}
-            className="mt-5 rounded-full border border-error/40 px-5 py-3 font-semibold text-error transition hover:bg-error/10"
-          >
-            Reset Local Demo Data
-          </button>
         </GlassCard>
       </div>
     </main>

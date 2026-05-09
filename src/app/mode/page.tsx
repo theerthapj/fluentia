@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { ArrowRight, Briefcase, Coffee } from "lucide-react";
@@ -64,8 +65,11 @@ export default function ModePage() {
         <Breadcrumb current="Choose Mode" />
         <h1 className="gradient-text text-4xl font-bold">Choose Your Practice Mode</h1>
         <p className="mt-3 text-text-secondary">Match your coaching tone to the real-world situation.</p>
-        <div className="mt-4 rounded-2xl border border-border bg-surface/40 p-4 text-sm text-text-secondary">
-          Your current level is <strong className="text-text-primary">{state.level ?? "beginner"}</strong>, so you will see 10 scenarios for each selected mode.
+        <div className="mt-4 rounded-lg border border-border bg-surface/40 p-4 text-sm text-text-secondary">
+          Your current level is <strong className="text-text-primary">{state.level ?? "beginner"}</strong>, so you will see 10 scenarios for each selected mode.{" "}
+          <Link href="/settings" className="font-semibold text-accent-primary transition hover:text-teal-300">
+            Change level
+          </Link>
         </div>
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           {practiceOptions.map(({ id, title, description, Icon }) => (

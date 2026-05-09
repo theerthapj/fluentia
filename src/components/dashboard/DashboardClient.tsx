@@ -1,20 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, MessageSquare } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { LevelBadge } from "@/components/assessment/LevelBadge";
-import { SessionRow } from "@/components/dashboard/SessionRow";
-import { StatCard } from "@/components/dashboard/StatCard";
 import { SuggestedScenarios } from "@/components/dashboard/SuggestedScenarios";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { LevelPreferenceSelector } from "@/components/settings/LevelPreferenceSelector";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { relativeTime } from "@/lib/utils";
 
 export function DashboardClient() {
   const router = useRouter();
-  const { state, hydrated, restoreSession } = useAppState();
+  const { state, hydrated } = useAppState();
 
   if (!hydrated) {
     return (
@@ -31,8 +30,6 @@ export function DashboardClient() {
   }
 
   const sessions = state.sessions ?? [];
-  const average = sessions.length ? sessions.reduce((sum, session) => sum + session.fluencyScore, 0) / sessions.length : 0;
-  const uniqueScenarios = new Set(sessions.map((session) => session.scenarioTitle)).size;
   const lastPracticed = sessions[0]?.completedAt;
 
   if (!state.assessmentCompleted) {
@@ -41,10 +38,10 @@ export function DashboardClient() {
         <div className="mx-auto max-w-3xl">
           <GlassCard className="border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-7 backdrop-blur-sm sm:p-10">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Dashboard Locked</p>
-              <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">Complete your assessment to unlock progress.</h1>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Choose Your Level</p>
+              <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">Start with the level that fits you.</h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg">
-                Your dashboard needs a baseline level before it can show scores, recommended scenarios, and progress trends.
+                Take the quick assessment for a recommendation, or choose Beginner, Intermediate, or Advanced yourself.
               </p>
               <Link
                 href="/assessment"
@@ -54,6 +51,9 @@ export function DashboardClient() {
                 <ArrowRight aria-hidden="true" className="h-5 w-5" />
               </Link>
             </div>
+          </GlassCard>
+          <GlassCard className="mt-6 p-6">
+            <LevelPreferenceSelector idPrefix="dashboard-locked-level" />
           </GlassCard>
         </div>
       </main>
@@ -86,33 +86,8 @@ export function DashboardClient() {
             </div>
           </GlassCard>
 
-          <section id="progress" className="mt-6 grid gap-5 md:grid-cols-3">
-            <StatCard id="dashboard-sessions-count" value={sessions.length} label="Sessions Completed" />
-            <StatCard id="dashboard-average-score" value={sessions.length ? average.toFixed(1) : "0.0"} label="Average Fluency Score" />
-            <StatCard id="dashboard-scenarios-tried" value={uniqueScenarios} label="Practice Tracks Tried" />
-          </section>
-
           <GlassCard className="mt-6 p-6">
-            <h2 className="text-2xl font-semibold">Recent Sessions</h2>
-            <div className="mt-5 grid gap-3">
-              {sessions.length ? (
-                sessions.slice(0, 5).map((session) => (
-                  <SessionRow
-                    key={session.id}
-                    session={session}
-                    onView={() => {
-                      restoreSession(session);
-                      router.push("/feedback");
-                    }}
-                  />
-                ))
-              ) : (
-                <div className="grid place-items-center rounded-2xl border border-dashed border-border p-10 text-center">
-                  <MessageSquare aria-hidden="true" className="h-12 w-12 text-accent-primary" />
-                  <p className="mt-4 text-text-secondary">No sessions yet. Start your first practice.</p>
-                </div>
-              )}
-            </div>
+            <LevelPreferenceSelector idPrefix="dashboard-level" />
           </GlassCard>
 
           <section className="mt-6">

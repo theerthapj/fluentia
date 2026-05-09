@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import {
   ArrowLeft,
   BarChart3,
@@ -26,7 +25,7 @@ const items = [
   { href: "/brain-boost", label: "Brain Boost Zone", Icon: Brain, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { href: "/mode", label: "Practice", Icon: MessageSquare, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { href: "/free-chat", label: "Free Chat", Icon: Waves, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
-  { href: "/dashboard#progress", label: "Progress", Icon: BarChart3, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
+  { href: "/progress", label: "Progress", Icon: BarChart3, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
   { href: "/settings", label: "Settings", Icon: Settings, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
 ];
 
@@ -40,17 +39,6 @@ export function Sidebar({ collapsed = false, mobileOnly = false, onToggleCollaps
   const pathname = usePathname();
   const router = useRouter();
   const { resetDemo } = useAppState();
-  const [currentHash, setCurrentHash] = useState("");
-
-  useEffect(() => {
-    const handleHashChange = () => setCurrentHash(window.location.hash);
-    const frame = window.requestAnimationFrame(handleHashChange);
-    window.addEventListener("hashchange", handleHashChange);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, [pathname]);
 
   // On mobile, we only show the GradientMenu (floating dock)
   if (mobileOnly) {
@@ -90,13 +78,7 @@ export function Sidebar({ collapsed = false, mobileOnly = false, onToggleCollaps
       <nav aria-label="Main Navigation" className="relative z-10 flex-1 overflow-y-auto pr-1">
         <ul className="grid gap-3">
           {items.map(({ href, label, Icon, from, to }) => {
-            let active = false;
-            if (href.includes("#")) {
-              const [path, hash] = href.split("#");
-              active = pathname === path && currentHash === "#" + hash;
-            } else {
-              active = (pathname === href || (href === "/brain-boost" && pathname.startsWith("/brain-boost"))) && (!currentHash || currentHash === "");
-            }
+            const active = pathname === href || (href === "/brain-boost" && pathname.startsWith("/brain-boost"));
             return (
               <li key={href}>
                 <Link

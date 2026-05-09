@@ -87,6 +87,7 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
   useEffect(() => {
     if (mode !== 'idle') return;
     if (prefersReducedMotion) return;
+    let active = true;
 
     breatheTimer.current = setInterval(() => {
       void bodyControls.start({
@@ -102,14 +103,19 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
     const scheduleBlink = () => {
       const delay = 3500 + Math.random() * 4500;
       blinkTimer.current = setTimeout(async () => {
-        await eyeControls.start({ scaleY: 0.1, transition: { duration: 0.1, ease: 'easeInOut' } });
-        await eyeControls.start({ scaleY: 1, transition: { duration: 0.15, ease: 'easeInOut' } });
-        scheduleBlink();
+        if (!active) return;
+        try {
+          await eyeControls.start({ scaleY: 0.1, transition: { duration: 0.1, ease: 'easeInOut' } });
+          if (!active) return;
+          await eyeControls.start({ scaleY: 1, transition: { duration: 0.15, ease: 'easeInOut' } });
+          if (active) scheduleBlink();
+        } catch {}
       }, delay);
     };
     scheduleBlink();
 
     return () => {
+      active = false;
       if (breatheTimer.current) clearInterval(breatheTimer.current);
       if (blinkTimer.current) clearTimeout(blinkTimer.current);
     };

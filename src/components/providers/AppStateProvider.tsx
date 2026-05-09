@@ -43,6 +43,7 @@ interface AppStateContextValue {
   state: AppState;
   hydrated: boolean;
   setAssessment: (level: Level, scores: AssessmentScores) => void;
+  setPreferredLevel: (level: Level) => void;
   setMode: (mode: Mode) => void;
   setScenario: (scenario: Scenario | null) => void;
   setExercise: (exerciseId: string | null) => void;
@@ -114,6 +115,13 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       state,
       hydrated,
       setAssessment: (level, scores) => patch({ level, assessmentScores: scores, assessmentCompleted: true }),
+      setPreferredLevel: (level) =>
+        patch({
+          level,
+          assessmentCompleted: true,
+          selectedScenario: null,
+          selectedExerciseId: null,
+        }),
       setMode: (selectedMode) => patch({ selectedMode }),
       setScenario: (selectedScenario) => patch({ selectedScenario }),
       setExercise: (selectedExerciseId) => patch({ selectedExerciseId }),

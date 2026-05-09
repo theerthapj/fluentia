@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, Brain, Home, LayoutDashboard, MessageSquare, Settings, Waves } from "lucide-react";
@@ -12,38 +12,18 @@ const menuItems = [
   { title: "Boost", href: "/brain-boost", icon: <Brain />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { title: "Speak", href: "/mode", icon: <MessageSquare />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { title: "Chat", href: "/free-chat", icon: <Waves />, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
-  { title: "Stats", href: "/dashboard#progress", icon: <BarChart3 />, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
+  { title: "Progress", href: "/progress", icon: <BarChart3 />, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
   { title: "Settings", href: "/settings", icon: <Settings />, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
 ];
 
 export function GradientMenu() {
   const pathname = usePathname();
-  const [currentHash, setCurrentHash] = useState("");
-
-  useEffect(() => {
-    const handleHashChange = () => setCurrentHash(window.location.hash);
-    const frame = window.requestAnimationFrame(handleHashChange);
-    window.addEventListener("hashchange", handleHashChange);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, [pathname]);
 
   return (
     <nav aria-label="Quick navigation" className="flex items-center justify-center bg-transparent py-4">
       <ul className="flex max-w-full gap-2 overflow-x-auto px-1 pb-1 sm:gap-4">
         {menuItems.map(({ title, href, icon, from, to }) => {
-          // Fix for hash links: handle active state properly
-          const pathPart = href.split("#")[0];
-          const hashPart = href.includes("#") ? "#" + href.split("#")[1] : "";
-          
-          let isActive = false;
-          if (href.includes("#")) {
-            isActive = pathname === pathPart && currentHash === hashPart;
-          } else {
-            isActive = (pathname === href || (href === "/brain-boost" && pathname.startsWith("/brain-boost"))) && (!currentHash || currentHash === "");
-          }
+          const isActive = pathname === href || (href === "/brain-boost" && pathname.startsWith("/brain-boost"));
           return (
             <li key={href} className="group relative shrink-0">
               <Link

@@ -15,12 +15,21 @@ interface QuizCardProps {
   onAnswer: (correct: boolean) => void;
 }
 
+interface FeedbackDetails {
+  message?: string;
+  correctPhrase?: string;
+  explanation?: string;
+  durationMs?: number;
+}
+
+type AnswerHandler = (correct: boolean, details?: FeedbackDetails) => void;
+
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 // ─── Odd Word Sub-component ───────────────────────────────────────────────────
-function OddWordCard({ question, onAnswer }: { question: OddWordQuestion; onAnswer: (c: boolean) => void }) {
+function OddWordCard({ question, onAnswer }: { question: OddWordQuestion; onAnswer: AnswerHandler }) {
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
 
@@ -62,7 +71,7 @@ function OddWordCard({ question, onAnswer }: { question: OddWordQuestion; onAnsw
 }
 
 // ─── Spelling Sub-component ───────────────────────────────────────────────────
-function SpellingCard({ question, onAnswer }: { question: SpellingQuestion; onAnswer: (c: boolean) => void }) {
+function SpellingCard({ question, onAnswer }: { question: SpellingQuestion; onAnswer: AnswerHandler }) {
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
 
@@ -104,7 +113,7 @@ function SpellingCard({ question, onAnswer }: { question: SpellingQuestion; onAn
 }
 
 // ─── Fix Idiom Sub-component ──────────────────────────────────────────────────
-function IdiomCard({ question, onAnswer }: { question: IdiomQuestion; onAnswer: (c: boolean) => void }) {
+function IdiomCard({ question, onAnswer }: { question: IdiomQuestion; onAnswer: AnswerHandler }) {
   const [placed, setPlaced] = useState<string[]>([]);
   const [available, setAvailable] = useState<string[]>([...question.scrambled]);
   const [revealed, setRevealed] = useState(false);
@@ -127,7 +136,19 @@ function IdiomCard({ question, onAnswer }: { question: IdiomQuestion; onAnswer: 
     const correct = placed.join(" ") === question.correct.join(" ");
     setIsCorrect(correct);
     setRevealed(true);
-    setTimeout(() => onAnswer(correct), 1600);
+    setTimeout(() => {
+      if (correct) {
+        onAnswer(true);
+        return;
+      }
+
+      onAnswer(false, {
+        message: "Good try! The correct phrase is:",
+        correctPhrase: question.correct.join(" "),
+        explanation: question.explanation,
+        durationMs: 4000,
+      });
+    }, 1600);
   };
 
   const reset = () => {
@@ -205,21 +226,21 @@ function IdiomCard({ question, onAnswer }: { question: IdiomQuestion; onAnswer: 
 
 // ─── Main QuizCard ────────────────────────────────────────────────────────────
 export function QuizCard({ question, questionNumber, total, onAnswer }: QuizCardProps) {
-  const [feedback, setFeedback] = useState<{ correct: boolean; emoji: string } | null>(null);
+  const [feedback, setFeedback] = useState<({ correct: boolean; emoji: string } & FeedbackDetails) | null>(null);
   const answerLockedRef = useRef(false);
   const { triggerCorrect, triggerIncorrect } = useFluvi();
 
-  const handleAnswer = (correct: boolean) => {
+  const handleAnswer: AnswerHandler = (correct, details) => {
     if (answerLockedRef.current) return;
     answerLockedRef.current = true;
     const emoji = correct ? pickRandom(correctEmojis) : pickRandom(wrongEmojis);
     if (correct) triggerCorrect();
-    else triggerIncorrect();
-    setFeedback({ correct, emoji });
+    else triggerIncorrect(details?.message);
+    setFeedback({ correct, emoji, ...details });
     setTimeout(() => {
       setFeedback(null);
       onAnswer(correct);
-    }, 1200);
+    }, details?.durationMs ?? 1200);
   };
 
   const prompt =
@@ -243,8 +264,18 @@ export function QuizCard({ question, questionNumber, total, onAnswer }: QuizCard
           >
             <span className="text-6xl">{feedback.emoji}</span>
             <p className={cn("mt-2 text-xl font-bold", feedback.correct ? "text-success" : "text-warning")}>
-              {feedback.correct ? "Correct!" : "Not quite!"}
+              {feedback.correct ? "Correct!" : feedback.message ?? "Not quite!"}
             </p>
+            {feedback.correctPhrase ? (
+              <p className="mt-3 max-w-sm px-6 text-center text-lg font-bold text-text-primary">
+                {feedback.correctPhrase}
+              </p>
+            ) : null}
+            {feedback.explanation ? (
+              <p className="mt-2 max-w-md px-6 text-center text-sm leading-relaxed text-text-secondary">
+                {feedback.explanation}
+              </p>
+            ) : null}
           </motion.div>
         )}
       </AnimatePresence>

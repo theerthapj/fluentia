@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { AmbientBackground } from "@/components/home/AmbientBackground";
 import { OnboardingBanner } from "@/components/onboarding/OnboardingBanner";
 import { LevelBadge } from "@/components/assessment/LevelBadge";
@@ -27,7 +26,7 @@ function HomeSkeleton() {
 
 export default function HomePage() {
   const router = useRouter();
-  const { state, hydrated, resetDemo } = useAppState();
+  const { state, hydrated } = useAppState();
 
   if (!hydrated) return <HomeSkeleton />;
 
@@ -54,18 +53,6 @@ export default function HomePage() {
               </div>
             </GlassCard>
           </motion.div>
-          <motion.button
-            id="home-reset-demo"
-            variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-            onClick={() => {
-              resetDemo();
-              toast.success("Demo data reset.");
-              router.refresh();
-            }}
-            className="mx-auto mt-8 block rounded-full px-4 py-2 text-sm text-text-secondary hover:text-text-primary"
-          >
-            Reset Demo
-          </motion.button>
         </motion.div>
       </div>
     </main>

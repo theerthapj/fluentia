@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.clear());
+});
+
 test("voice capture streams transcript text into the input", async ({ page }) => {
+  test.setTimeout(60_000);
+
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "mediaDevices", {
       configurable: true,
@@ -50,6 +56,9 @@ test("voice capture streams transcript text into the input", async ({ page }) =>
     });
   });
   await page.goto("/chat?kind=scenario&scenario=casual-beginner-favorite-food");
+  await expect(page.locator("#chat-input")).toBeVisible({ timeout: 20_000 });
   await page.locator("#chat-voice-button").click();
   await expect(page.locator("#chat-input")).toHaveValue(/I like pizza/, { timeout: 3000 });
+  await page.locator("#chat-voice-button").dispatchEvent("click");
+  await expect(page.locator("#chat-voice-button")).toHaveAttribute("aria-label", "Start voice recording");
 });

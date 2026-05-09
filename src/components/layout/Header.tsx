@@ -16,6 +16,7 @@ function getBackTarget(pathname: string) {
   if (pathname.startsWith("/scenarios")) return "/mode";
   if (pathname.startsWith("/chat")) return "/free-chat";
   if (pathname.startsWith("/feedback")) return "/dashboard";
+  if (pathname.startsWith("/progress")) return "/home";
   if (pathname.startsWith("/settings")) return "/home";
   if (pathname.startsWith("/free-chat")) return "/home";
   return "/home";
@@ -33,6 +34,7 @@ export function Header() {
 
   const getTitle = () => {
     if (pathname.startsWith("/dashboard")) return "Dashboard";
+    if (pathname.startsWith("/progress")) return "Progress";
     if (pathname.startsWith("/brain-boost")) return "Brain Boost Zone";
     if (pathname.startsWith("/mode")) return "Practice Mode";
     if (pathname.startsWith("/scenarios")) return "Choose Scenario";
@@ -44,27 +46,28 @@ export function Header() {
     return "";
   };
 
-  const showBackButton = pathname !== "/home" && pathname !== "/dashboard";
+  const showBackButton = pathname !== "/home" && pathname !== "/dashboard" && pathname !== "/progress";
   const backTarget = getBackTarget(pathname);
   const nextPlaybackSpeed = speedOrder[(speedOrder.indexOf(state.preferences.playbackSpeed) + 1) % speedOrder.length];
 
   return (
     <header className="sticky top-0 z-40 h-20 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
-      <nav aria-label="Global Header" className="flex h-full min-w-0 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 items-center gap-4 lg:gap-8">
-          {/* Main App Identity */}
-          <Link href="/home" className="gradient-text shrink-0 text-base font-black tracking-tighter transition-transform hover:scale-105 sm:text-2xl lg:text-3xl">
-            Fluentia
-          </Link>
-          
-          <div className="hidden h-8 w-px bg-border md:block" />
-          
-          <span className="hidden text-xs font-bold uppercase tracking-[0.2em] text-text-secondary md:block">
+      <nav aria-label="Global Header" className="grid h-full min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="min-w-0">
+          <span className="hidden truncate text-xs font-bold uppercase tracking-[0.2em] text-text-secondary md:block">
             {getTitle()}
           </span>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+        <Link
+          href="/home"
+          aria-label="Fluentia home"
+          className="gradient-text whitespace-nowrap text-2xl font-black tracking-normal transition-transform hover:scale-105 sm:text-3xl lg:text-4xl"
+        >
+          Fluentia
+        </Link>
+
+        <div className="flex min-w-0 shrink-0 items-center justify-end gap-2 sm:gap-4">
           {/* Top Right Corner Status Section */}
           <div className="mr-1 flex items-center gap-2 sm:mr-2 sm:gap-3 lg:mr-4">
             {/* Status Indicators in a horizontal row */}
