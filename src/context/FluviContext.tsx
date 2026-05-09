@@ -3,7 +3,7 @@
 // STEP 5: Fluvi Global Context Provider
 // All Fluvi state lives here. Do not merge with AppStateProvider.
 
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useState } from 'react';
 import type { FluviState, FluviAction, UserLevel, CorrectVariant } from '@/types/fluvi.types';
 import { getFluviTheme } from '@/components/fluvi/FluviTheme';
 import { buildVariantQueue, getNextVariant } from '@/components/fluvi/FluviAnimations';
@@ -115,6 +115,19 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
     case 'COMPLETE_INTRO':
       return { ...state, hasSeenIntro: true };
 
+    case 'HYDRATE_PERSISTED': {
+      const payload = action.payload as Partial<Pick<FluviState, 'hasSeenIntro' | 'userLevel' | 'energy'>> | undefined;
+      const level = payload?.userLevel ?? state.userLevel;
+      const energy = Math.max(0, Math.min(1, Number(payload?.energy) || 0));
+      return {
+        ...state,
+        hasSeenIntro: payload?.hasSeenIntro ?? state.hasSeenIntro,
+        userLevel: level,
+        energy,
+        theme: getFluviTheme(level, energy),
+      };
+    }
+
     case 'SET_LEVEL': {
       const level = action.payload as UserLevel;
       return { ...state, userLevel: level, theme: getFluviTheme(level, state.energy) };
@@ -152,33 +165,35 @@ interface FluviContextValue {
 const FluviContext = createContext<FluviContextValue | null>(null);
 
 export function FluviProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(
-    fluviReducer,
-    INITIAL_STATE,
-    (init): FluviState => {
-      // Server-side render guard
-      if (typeof window === 'undefined') return init;
-      try {
-        const saved = localStorage.getItem(FLUVI_STORAGE_KEY);
-        if (!saved) return init;
+  const [state, dispatch] = useReducer(fluviReducer, INITIAL_STATE);
+  const [storageHydrated, setStorageHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(FLUVI_STORAGE_KEY);
+      if (saved) {
         const parsed = JSON.parse(saved) as Partial<FluviState>;
-        const level: UserLevel = parsed.userLevel ?? 'beginner';
-        const energy = typeof parsed.energy === 'number' ? parsed.energy : init.energy;
-        return {
-          ...init,
-          hasSeenIntro: parsed.hasSeenIntro ?? init.hasSeenIntro,
-          userLevel: level,
-          energy,
-          theme: getFluviTheme(level, energy),
-        };
-      } catch {
-        return init;
+        const userLevel: UserLevel =
+          parsed.userLevel === 'advanced' || parsed.userLevel === 'intermediate' ? parsed.userLevel : 'beginner';
+        dispatch({
+          type: 'HYDRATE_PERSISTED',
+          payload: {
+            hasSeenIntro: parsed.hasSeenIntro,
+            userLevel,
+            energy: typeof parsed.energy === 'number' ? parsed.energy : INITIAL_STATE.energy,
+          },
+        });
       }
-    },
-  );
+    } catch {
+      localStorage.removeItem(FLUVI_STORAGE_KEY);
+    } finally {
+      setStorageHydrated(true);
+    }
+  }, []);
 
   // Persist only the fields that should survive page reloads
   useEffect(() => {
+    if (!storageHydrated) return;
     try {
       localStorage.setItem(
         FLUVI_STORAGE_KEY,
@@ -187,7 +202,7 @@ export function FluviProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // localStorage may not be available; fail silently
     }
-  }, [state.energy, state.hasSeenIntro, state.userLevel]);
+  }, [state.energy, state.hasSeenIntro, state.userLevel, storageHydrated]);
 
   // Auto-reset transient states after their display duration
   useEffect(() => {

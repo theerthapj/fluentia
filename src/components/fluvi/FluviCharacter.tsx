@@ -180,7 +180,7 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
     void featherControls.start({
       rotate: [-2, 7, -2],
       scale: [1, 1.1, 1],
-      transition: { duration: 1.1, type: 'spring', stiffness: 180, damping: 12 },
+      transition: { duration: 1.1, ease: 'easeInOut' },
     });
     void glowControls.start({
       opacity: [0, 0.45, 0],
@@ -349,7 +349,7 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
     void featherControls.start({
       rotate: [-4, 12, -5, 0],
       scale: [1, 1.12, 1.04, 1],
-      transition: { duration: 1.6, type: 'spring', stiffness: 170, damping: 11 },
+      transition: { duration: 1.6, ease: 'easeInOut' },
     });
     void bodyControls.start({
       x: [0, -5, 5, -3, 0],

@@ -64,6 +64,7 @@ export interface FluviAction {
     | 'STOP_THINKING'
     | 'SET_VOICE_AMPLITUDE'
     | 'COMPLETE_INTRO'
+    | 'HYDRATE_PERSISTED'
     | 'SET_LEVEL'
     | 'SET_ENERGY'
     | 'RESET_TO_IDLE';
