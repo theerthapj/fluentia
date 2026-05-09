@@ -87,7 +87,23 @@ export default function FeedbackPage() {
       <div className="mx-auto max-w-6xl">
         <Breadcrumb current="Feedback" />
         <h1 className="gradient-text text-4xl font-bold">Detailed Feedback</h1>
-        <div className="mt-8 grid gap-5 lg:grid-cols-[320px_1fr]">
+        <GlassCard className="mt-8 p-6">
+          <div className="grid gap-5 lg:grid-cols-[1fr_1fr_1.2fr]">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-success">Top Strength</p>
+              <p className="mt-2 text-lg font-semibold">{feedback.strengths[0] ?? "You kept the conversation moving."}</p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-warning">Top Fix</p>
+              <p className="mt-2 text-lg font-semibold">{feedback.improvements[0] ?? feedback.quickTip}</p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent-primary">Natural Rewrite</p>
+              <p className="mt-2 text-lg leading-7 text-text-secondary">{feedback.simpleRewrite}</p>
+            </div>
+          </div>
+        </GlassCard>
+        <div className="mt-5 grid gap-5 lg:grid-cols-[320px_1fr]">
           <GlassCard className="grid place-items-center p-7">
             <ScoreRing score={feedback.fluencyScore} />
             <div className="mt-6 w-full"><ConfidenceMeter value={feedback.confidencePercent} label={feedback.confidenceLevel} /></div>

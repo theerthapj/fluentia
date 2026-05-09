@@ -69,6 +69,13 @@ const learningCommands = [
   { icon: MessageSquare, label: "New Scenario", prefix: "/scenarios", desc: "Switch practice situation." },
 ];
 
+const quickPrompts = [
+  "Correct my grammar.",
+  "Make this more natural.",
+  "Give me a harder follow-up.",
+  "Show a simpler version.",
+];
+
 function commandToMessage(value: string) {
   if (value.startsWith("/explain")) return "Please explain the grammar in my last response and give me one clear correction.";
   if (value.startsWith("/improve")) return "Please improve the flow of my last response and show me a more natural spoken version.";
@@ -233,6 +240,19 @@ export function FluentiaAnimatedChat({
     window.requestAnimationFrame(resizeTextarea);
   };
 
+  const sendQuickPrompt = (prompt: string, options?: SendOptions) => {
+    if (inputDisabled) return;
+    const moderation = checkModeration(prompt);
+    if (!moderation.safe) {
+      reportUnsafe(moderation.warning ?? "Please rephrase respectfully.");
+      return;
+    }
+    onSendMessage(prompt, options);
+    setValue("");
+    setShowCommandPalette(false);
+    window.requestAnimationFrame(resizeTextarea);
+  };
+
   const selectCommand = (prefix: string) => {
     if (prefix === "/scenarios") {
       setValue(prefix);
@@ -378,6 +398,30 @@ export function FluentiaAnimatedChat({
             </motion.div>
           ) : null}
         </AnimatePresence>
+
+        <div className="flex gap-2 overflow-x-auto border-b border-border px-4 py-3">
+          {quickPrompts.map((prompt) => (
+            <button
+              key={prompt}
+              type="button"
+              disabled={inputDisabled}
+              onClick={() => sendQuickPrompt(prompt)}
+              className="shrink-0 rounded-full border border-border bg-white/[0.04] px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-accent-primary/50 hover:text-text-primary disabled:opacity-50"
+            >
+              {prompt}
+            </button>
+          ))}
+          {canWrapUp ? (
+            <button
+              type="button"
+              disabled={inputDisabled}
+              onClick={() => sendQuickPrompt("Please wrap up this session and give me final feedback.", { requestWrapUp: true })}
+              className="shrink-0 rounded-full border border-accent-primary/40 bg-accent-primary/10 px-3 py-2 text-xs font-semibold text-accent-primary transition hover:bg-accent-primary hover:text-bg-primary disabled:opacity-50"
+            >
+              End session
+            </button>
+          ) : null}
+        </div>
 
         <div className="p-4">
           <textarea
