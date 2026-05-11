@@ -357,48 +357,6 @@ export function FluentiaAnimatedChat({
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.35 }}
       >
-        <AnimatePresence>
-          {showCommandPalette ? (
-            <motion.div
-              className="absolute bottom-full left-4 right-4 z-50 mb-4 overflow-hidden rounded-xl border border-border bg-bg-primary/95 shadow-2xl"
-              initial={{ opacity: 0, y: 10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            >
-              <div className="flex items-center justify-between border-b border-border px-4 py-3">
-                <span className="text-sm font-semibold text-text-primary">Learning commands</span>
-                <button type="button" aria-label="Close command palette" onClick={() => setShowCommandPalette(false)} className="rounded-full p-1 text-text-secondary hover:text-text-primary">
-                  <X aria-hidden="true" className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="grid gap-1 p-2">
-                {learningCommands.map((command, index) => {
-                  const Icon = command.icon;
-                  return (
-                    <button
-                      key={command.prefix}
-                      type="button"
-                      onMouseEnter={() => setActiveSuggestion(index)}
-                      onClick={() => selectCommand(command.prefix)}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-3 text-left transition",
-                        activeSuggestion === index ? "bg-accent-primary/12 text-text-primary" : "text-text-secondary hover:bg-white/5",
-                      )}
-                    >
-                      <Icon aria-hidden="true" className="h-4 w-4 text-accent-primary" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-semibold">{command.label}</span>
-                        <span className="block truncate text-xs text-text-secondary">{command.desc}</span>
-                      </span>
-                      <span className="rounded-full border border-border px-2 py-1 text-xs text-text-secondary">{command.prefix}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-
         <div className="flex gap-2 overflow-x-auto border-b border-border px-4 py-3">
           {quickPrompts.map((prompt) => (
             <button
@@ -458,6 +416,50 @@ export function FluentiaAnimatedChat({
           />
         </div>
 
+        <AnimatePresence>
+          {showCommandPalette ? (
+            <motion.div
+              id="learning-commands"
+              className="mx-4 mb-3 overflow-hidden rounded-xl border border-border bg-bg-primary/95 shadow-2xl"
+              initial={{ opacity: 0, height: 0, y: 8 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: 8 }}
+              transition={{ duration: 0.18 }}
+            >
+              <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                <span className="text-sm font-semibold text-text-primary">Learning commands</span>
+                <button type="button" aria-label="Close command palette" onClick={() => setShowCommandPalette(false)} className="rounded-full p-1 text-text-secondary hover:text-text-primary">
+                  <X aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="grid gap-1 p-2">
+                {learningCommands.map((command, index) => {
+                  const Icon = command.icon;
+                  return (
+                    <button
+                      key={command.prefix}
+                      type="button"
+                      onMouseEnter={() => setActiveSuggestion(index)}
+                      onClick={() => selectCommand(command.prefix)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-3 text-left transition",
+                        activeSuggestion === index ? "bg-accent-primary/12 text-text-primary" : "text-text-secondary hover:bg-white/5",
+                      )}
+                    >
+                      <Icon aria-hidden="true" className="h-4 w-4 text-accent-primary" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-semibold">{command.label}</span>
+                        <span className="block truncate text-xs text-text-secondary">{command.desc}</span>
+                      </span>
+                      <span className="rounded-full border border-border px-2 py-1 text-xs text-text-secondary">{command.prefix}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-3">
           <div className="flex gap-2">
             <button
@@ -477,8 +479,13 @@ export function FluentiaAnimatedChat({
             <button
               type="button"
               aria-label="Open learning commands"
+              aria-controls="learning-commands"
+              aria-expanded={showCommandPalette}
               onClick={() => setShowCommandPalette((current) => !current)}
-              className="grid h-10 w-10 place-items-center rounded-full text-text-secondary transition hover:text-accent-primary"
+              className={cn(
+                "grid h-10 w-10 place-items-center rounded-full text-text-secondary transition hover:text-accent-primary",
+                showCommandPalette && "bg-accent-primary/15 text-accent-primary ring-1 ring-accent-primary/40",
+              )}
             >
               <CommandIcon aria-hidden="true" className="h-5 w-5" />
             </button>

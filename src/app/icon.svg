@@ -1,14 +1,65 @@
-<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="6" fill="#8B5CF6"/>
-  <text
-    x="16"
-    y="22.5"
-    fill="#FFFFFF"
-    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-    font-size="20"
-    font-weight="700"
-    text-anchor="middle"
-  >
-    F
-  </text>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fluentia">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#081327" />
+      <stop offset="1" stop-color="#020817" />
+    </linearGradient>
+    <linearGradient id="body" x1="12" y1="18" x2="36" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1FE4FF" />
+      <stop offset="0.52" stop-color="#0877E6" />
+      <stop offset="1" stop-color="#0640A8" />
+    </linearGradient>
+    <linearGradient id="feather" x1="36" y1="10" x2="58" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#25F5D2" />
+      <stop offset="1" stop-color="#05AFA9" />
+    </linearGradient>
+    <linearGradient id="wing" x1="26" y1="38" x2="43" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#30F0D0" />
+      <stop offset="1" stop-color="#0A77B8" />
+    </linearGradient>
+    <radialGradient id="eye" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(25 27) rotate(83) scale(6 5)">
+      <stop stop-color="#ffffff" />
+      <stop offset="0.45" stop-color="#ffffff" />
+      <stop offset="0.46" stop-color="#07213C" />
+      <stop offset="1" stop-color="#020817" />
+    </radialGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#bg)" />
+
+  <path d="M37.5 20.5C39.8 12 48.8 9.3 53.2 14.5C57.4 19.4 52.3 28.3 43.6 28.8C51 31.3 55.8 38.4 52.2 44.1C48.5 50.1 38.8 47.7 35.2 39.2C31.2 47 21.9 47.8 19.2 41.4C16.5 35 23.2 29.2 31.5 30.2C25.6 25.2 26.3 16.5 32.8 14.8C35.3 14.2 37 16.6 37.5 20.5Z" fill="url(#feather)" />
+  <path d="M41.2 17.8C42.9 14.1 47 13.1 49.3 15.6C51.6 18.2 48.9 22.3 44.2 23.2C42.6 21.8 41.8 19.8 41.2 17.8Z" fill="#B8F6B2" opacity="0.92" />
+  <path d="M46.4 33C50.2 33.8 52.2 37.5 50.5 40.2C48.6 43.2 43.9 42 41.5 38.2C42.1 35.9 43.9 34.4 46.4 33Z" fill="#A6F7AC" opacity="0.78" />
+  <path d="M38.4 43.3C41.4 45.9 41.2 50 38.3 51.3C35.3 52.7 31.8 49.2 32.3 44.6C34 43.5 36.1 43.2 38.4 43.3Z" fill="#0B4EA9" opacity="0.52" />
+  <path d="M44.1 18.7C45.4 17.1 47.2 16.8 48.3 17.9C49.5 19.1 48.3 21.1 45.7 21.7C44.9 20.8 44.4 19.8 44.1 18.7Z" fill="#0B3CA0" opacity="0.9" />
+  <path d="M47.1 35.6C49 36.2 49.8 38 48.9 39.2C48 40.6 45.8 40 44.4 38.2C44.9 37.1 45.8 36.3 47.1 35.6Z" fill="#0B3CA0" opacity="0.86" />
+
+  <path d="M15.4 39.9C15.4 27.9 20.9 17.5 29.3 17.5C36.5 17.5 41.1 24 41.1 31.2C41.1 37.5 37.4 40.8 31.3 40.8C29.1 40.8 26.5 40.3 23.8 39.3C24 46.8 20.4 52.6 15.4 52.6C10.9 52.6 8.7 48.1 10.4 44.5C11.3 42.6 13 41.1 15.4 39.9Z" fill="url(#body)" />
+  <path d="M13.5 35.2C12.5 28.6 14.7 22.9 19.3 20.1C23.1 17.8 28 18.2 32.3 20.9C27.8 20 24.6 22.7 22.6 27.4C20.6 32.2 19.6 37.3 20.2 43C17.3 41.1 14.7 38.6 13.5 35.2Z" fill="#1BD8FF" opacity="0.35" />
+
+  <path d="M25.6 20.8C24.8 15.4 27.4 8.8 31.8 8.8C36.4 8.8 37.8 14.8 34.7 19.4" stroke="#14E2D0" stroke-width="2.7" stroke-linecap="round" />
+  <path d="M20.6 20.2C17.5 16 17.5 11.9 20.5 10.5C24.6 8.6 28.1 13.1 27.6 19.4" stroke="#15D5EA" stroke-width="2.7" stroke-linecap="round" />
+  <path d="M33.9 19.8C36.8 15.3 41.1 14.5 42.7 17.1C44.7 20.4 40.7 23.8 35.6 23" stroke="#18DBC7" stroke-width="2.7" stroke-linecap="round" />
+  <circle cx="31.8" cy="8.9" r="3.3" fill="#24EAD2" />
+  <circle cx="19.7" cy="10.7" r="3" fill="#23D8E2" />
+  <circle cx="42.5" cy="17.2" r="3" fill="#1FE3C9" />
+
+  <ellipse cx="25.6" cy="28.1" rx="7.6" ry="8.4" fill="#FFF4C8" />
+  <ellipse cx="26.2" cy="28.3" rx="5.4" ry="6" fill="#ffffff" />
+  <ellipse cx="26.5" cy="28.5" rx="4.1" ry="4.7" fill="#07213C" />
+  <circle cx="28.2" cy="26.5" r="1.5" fill="#ffffff" />
+  <ellipse cx="35.8" cy="28.5" rx="4.4" ry="5.3" fill="#ffffff" />
+  <ellipse cx="35.9" cy="28.8" rx="3" ry="3.8" fill="#08213D" />
+  <circle cx="37.2" cy="26.9" r="1.2" fill="#ffffff" />
+
+  <path d="M34 32.3C39 31.6 43.3 33.4 43.5 36.1C43.7 39.6 37.4 38.8 32.7 34.2C32.1 33.6 32.7 32.5 34 32.3Z" fill="#FFC740" />
+  <path d="M35 34.8C37 36.8 40.7 37.5 42 36.3C41.3 38.9 38 40.8 34.7 38.8C32.8 37.6 32.4 35.7 35 34.8Z" fill="#C85A1C" />
+  <path d="M28 21C30.5 18.4 34 18.4 36.7 21" stroke="#08213D" stroke-width="2.3" stroke-linecap="round" opacity="0.85" />
+
+  <path d="M27.7 42.4C33.4 38.8 42.2 40.7 46.8 47.7C41.7 52.5 31.4 53.7 23.5 49.5C24.1 46.7 25.4 44.4 27.7 42.4Z" fill="url(#wing)" />
+  <path d="M31.6 45.1C35.8 44.3 39.3 45.4 42.3 48C37.8 50.1 31.9 50.2 26.6 48.3C27.8 46.8 29.5 45.7 31.6 45.1Z" fill="#20DCC7" opacity="0.5" />
+
+  <rect x="42.1" y="30.5" width="2.8" height="8.4" rx="1.4" fill="#ffffff" />
+  <rect x="47.2" y="26.7" width="2.8" height="16" rx="1.4" fill="#ffffff" />
+  <rect x="52.3" y="31.5" width="2.8" height="6.2" rx="1.4" fill="#ffffff" />
 </svg>
