@@ -105,6 +105,8 @@ export function FluentiaAnimatedChat({
   const voiceBaseValueRef = useRef("");
   const browserTranscriptRef = useRef("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const commandPaletteRef = useRef<HTMLDivElement | null>(null);
+  const commandButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const inputDisabled = disabled || loading;
   const prefersVoice = state.preferences.preferredInputMode === "voice";
@@ -134,6 +136,27 @@ export function FluentiaAnimatedChat({
       stopSpeaking();
     };
   }, [setVoiceAmplitude, startSpeaking, stopSpeaking, voiceStatus]);
+
+  useEffect(() => {
+    if (!showCommandPalette) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (commandPaletteRef.current?.contains(target) || commandButtonRef.current?.contains(target)) return;
+      setShowCommandPalette(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setShowCommandPalette(false);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showCommandPalette]);
 
   const resizeTextarea = () => {
     const textarea = textareaRef.current;
@@ -240,6 +263,11 @@ export function FluentiaAnimatedChat({
     window.requestAnimationFrame(resizeTextarea);
   };
 
+  const openCommandPalette = () => {
+    setActiveSuggestion((current) => (current >= 0 ? current : 0));
+    setShowCommandPalette(true);
+  };
+
   const sendQuickPrompt = (prompt: string, options?: SendOptions) => {
     if (inputDisabled) return;
     const moderation = checkModeration(prompt);
@@ -260,7 +288,7 @@ export function FluentiaAnimatedChat({
       router.push("/scenarios");
       return;
     }
-    setValue(prefix);
+    setValue(`${prefix} `);
     setShowCommandPalette(false);
     textareaRef.current?.focus();
     window.requestAnimationFrame(resizeTextarea);
@@ -352,7 +380,7 @@ export function FluentiaAnimatedChat({
   return (
     <div className="lab-bg relative mx-auto w-full max-w-4xl">
       <motion.div
-        className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.04] shadow-2xl backdrop-blur-xl"
+        className="relative overflow-visible rounded-3xl border border-white/[0.08] bg-white/[0.04] shadow-2xl backdrop-blur-xl"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.35 }}
@@ -360,7 +388,11 @@ export function FluentiaAnimatedChat({
         <AnimatePresence>
           {showCommandPalette ? (
             <motion.div
-              className="absolute bottom-full left-4 right-4 z-50 mb-4 overflow-hidden rounded-xl border border-border bg-bg-primary/95 shadow-2xl"
+              id="learning-command-palette"
+              ref={commandPaletteRef}
+              role="menu"
+              aria-label="Learning commands"
+              className="absolute bottom-[calc(100%+0.75rem)] left-2 right-2 z-50 max-h-72 overflow-hidden rounded-2xl border border-border bg-bg-primary/95 shadow-2xl backdrop-blur-xl sm:left-4 sm:right-4 sm:max-h-80"
               initial={{ opacity: 0, y: 10, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.98 }}
@@ -371,17 +403,18 @@ export function FluentiaAnimatedChat({
                   <X aria-hidden="true" className="h-4 w-4" />
                 </button>
               </div>
-              <div className="grid gap-1 p-2">
+              <div className="grid max-h-56 gap-1 overflow-y-auto p-2">
                 {learningCommands.map((command, index) => {
                   const Icon = command.icon;
                   return (
                     <button
                       key={command.prefix}
                       type="button"
+                      role="menuitem"
                       onMouseEnter={() => setActiveSuggestion(index)}
                       onClick={() => selectCommand(command.prefix)}
                       className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-3 text-left transition",
+                        "flex min-w-0 items-center gap-3 rounded-xl px-3 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70",
                         activeSuggestion === index ? "bg-accent-primary/12 text-text-primary" : "text-text-secondary hover:bg-white/5",
                       )}
                     >
@@ -430,9 +463,11 @@ export function FluentiaAnimatedChat({
             value={value}
             disabled={inputDisabled}
             onChange={(event) => {
-              setValue(event.target.value);
+              const nextValue = event.target.value;
+              setValue(nextValue);
               resizeTextarea();
-              setShowCommandPalette(event.target.value.trim().startsWith("/"));
+              if (nextValue.trim().startsWith("/")) openCommandPalette();
+              else setShowCommandPalette(false);
             }}
             placeholder={prefersVoice ? `Use voice or type for ${scenarioTitle}...` : `Message ${scenarioTitle}...`}
             rows={3}
@@ -453,7 +488,10 @@ export function FluentiaAnimatedChat({
                 event.preventDefault();
                 handleSendMessage();
               }
-              if (event.key === "/") setShowCommandPalette(true);
+              if (event.key === "/") openCommandPalette();
+            }}
+            onFocus={() => {
+              if (value.trim().startsWith("/")) openCommandPalette();
             }}
           />
         </div>
@@ -475,10 +513,24 @@ export function FluentiaAnimatedChat({
               {voiceStatus === "analyzing" ? <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" /> : voiceStatus === "recording" ? <Square aria-hidden="true" className="h-5 w-5" /> : <Mic aria-hidden="true" className="h-5 w-5" />}
             </button>
             <button
+              id="chat-command-button"
+              ref={commandButtonRef}
               type="button"
               aria-label="Open learning commands"
-              onClick={() => setShowCommandPalette((current) => !current)}
-              className="grid h-10 w-10 place-items-center rounded-full text-text-secondary transition hover:text-accent-primary"
+              aria-controls="learning-command-palette"
+              aria-expanded={showCommandPalette}
+              title="Open learning commands"
+              onClick={() => {
+                setShowCommandPalette((current) => {
+                  const next = !current;
+                  if (next) setActiveSuggestion(0);
+                  return next;
+                });
+              }}
+              className={cn(
+                "grid h-10 w-10 place-items-center rounded-full text-text-secondary transition hover:text-accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70",
+                showCommandPalette && "bg-accent-primary/15 text-accent-primary ring-1 ring-accent-primary/40",
+              )}
             >
               <CommandIcon aria-hidden="true" className="h-5 w-5" />
             </button>
