@@ -19,6 +19,15 @@ export function FluviIntroGate() {
   // Only show if the user hasn't seen the intro yet
   useEffect(() => {
     if (state.hasSeenIntro) return;
+
+    try {
+      const saved = window.localStorage.getItem('fluvi_state');
+      const parsed = saved ? JSON.parse(saved) as { hasSeenIntro?: unknown } : null;
+      if (parsed?.hasSeenIntro === true) {
+        return;
+      }
+    } catch {}
+
     const timer = window.setTimeout(() => setVisible(true), 0);
     return () => window.clearTimeout(timer);
   }, [state.hasSeenIntro]);
