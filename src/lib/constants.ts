@@ -1588,17 +1588,52 @@ export function levelFromScore(total: number): Level {
   return "advanced";
 }
 
+function countMatches(text: string, patterns: RegExp[]) {
+  return patterns.reduce((count, pattern) => count + (pattern.test(text) ? 1 : 0), 0);
+}
+
 export function scoreText(text: string) {
-  const words = text.trim().split(/\s+/).filter(Boolean);
+  const trimmed = text.trim();
+  const words = trimmed.split(/\s+/).filter(Boolean);
   const total = words.length;
   if (total < 5) return 0;
 
-  const uniqueRatio = new Set(words.map((word) => word.toLowerCase())).size / total;
-  if (uniqueRatio < 0.3) return 0;
+  const normalized = trimmed.toLowerCase();
+  const uniqueRatio = new Set(words.map((word) => word.toLowerCase().replace(/[^a-z']/g, ""))).size / total;
+  const sentences = trimmed.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean);
+  const hasSentenceBoundary = /[.!?]\s*$/.test(trimmed) || sentences.length > 1;
+  const hasSubjectSignal = /\b(i|you|he|she|it|we|they|my|the|a|an|this|that|there|people|someone)\b/i.test(trimmed);
+  const hasFiniteVerb = /\b(am|is|are|was|were|be|been|being|have|has|had|do|does|did|can|could|will|would|should|may|might|must|go|goes|went|make|made|work|worked|study|studied|learn|learned|prepare|prepared|enjoy|enjoyed|meet|met|help|helped|start|started|finish|finished|speak|spoke|arrive|arrives|arrived|review|reviews|reviewed)\b/i.test(trimmed);
+  const hasCoherenceSignal = /\b(first|then|after|before|because|so|and|but|also|finally|when|while|usually|every|daily|therefore|however)\b/i.test(trimmed);
+  const hasRepeatedWords = /\b([a-z']+)\b(?:\s+\1\b){2,}/i.test(normalized);
+  const severeGrammarIssues = countMatches(normalized, [
+    /\bi\s+(?:is|are|has)\b/,
+    /\b(?:he|she|it)\s+(?:go|do|have|make|speak|study|work)\b/,
+    /\b(?:they|we|you)\s+(?:is|was|has)\b/,
+    /\b(?:am|is|are|was|were)\s+(?:go|make|study|work|speak|prepare|meet)\b/,
+    /\bthe\s+the\b/,
+    /\ba\s+[aeiou]/,
+  ]);
+  const fragmentIssues = countMatches(normalized, [
+    /\bme\s+(?:go|went|am|is)\b/,
+    /\bmy\s+morning\s+(?:go|going|very)\b/,
+    /\bno\s+(?:have|can|is)\b/,
+  ]);
 
-  const lengthScore = total > 20 ? 1.0 : total > 10 ? 0.5 : 0.0;
-  const varietyScore = uniqueRatio > 0.7 ? 1.0 : uniqueRatio > 0.4 ? 0.5 : 0.0;
-  return Math.round(lengthScore + varietyScore);
+  if (hasRepeatedWords || uniqueRatio < 0.35 || !hasSubjectSignal || !hasFiniteVerb) return 0;
+  if (severeGrammarIssues + fragmentIssues >= 2) return 0;
+
+  let score = 0;
+  score += severeGrammarIssues === 0 && fragmentIssues === 0 ? 0.8 : 0.25;
+  score += hasSentenceBoundary ? 0.35 : 0.1;
+  score += hasCoherenceSignal ? 0.35 : total >= 10 ? 0.2 : 0;
+  score += uniqueRatio >= 0.55 ? 0.25 : 0.1;
+  score += sentences.every((sentence) => sentence.split(/\s+/).filter(Boolean).length >= 4) ? 0.15 : 0;
+  score += total >= 9 && total <= 55 ? 0.1 : 0;
+
+  if (fragmentIssues > 0 || severeGrammarIssues > 0) return 0;
+  if (!hasSentenceBoundary) return score >= 0.85 ? 1 : 0;
+  return score >= 1.55 ? 2 : score >= 0.85 ? 1 : 0;
 }
 
 export function scoreAssessment(answers: AssessmentAnswer[]) {

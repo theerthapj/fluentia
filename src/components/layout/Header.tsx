@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Gauge, MessageSquare, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, Gauge, Home, MessageSquare, SlidersHorizontal } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
@@ -31,7 +31,7 @@ export function Header() {
   const router = useRouter();
   const { state, updatePreferences } = useAppState();
   const [mobileControlsOpen, setMobileControlsOpen] = useState(false);
-  const homeHref = hasCompletedAssessment(state) ? "/dashboard" : "/home";
+  const backHomeHref = hasCompletedAssessment(state) ? "/dashboard" : "/home";
 
   // Hide header on landing page
   if (pathname === "/") return null;
@@ -51,7 +51,7 @@ export function Header() {
   };
 
   const showBackButton = pathname !== "/home" && pathname !== "/dashboard" && pathname !== "/progress";
-  const backTarget = getBackTarget(pathname) === "/home" ? homeHref : getBackTarget(pathname);
+  const backTarget = getBackTarget(pathname) === "/home" ? backHomeHref : getBackTarget(pathname);
   const nextPlaybackSpeed = speedOrder[(speedOrder.indexOf(state.preferences.playbackSpeed) + 1) % speedOrder.length];
   const toggleListening = () => {
     updatePreferences({ listeningEnabled: !state.preferences.listeningEnabled });
@@ -72,8 +72,8 @@ export function Header() {
         </div>
 
         <Link
-          href={homeHref}
-          aria-label="Fluentia home"
+          href="/"
+          aria-label="Go to Fluentia home page"
           className="gradient-text whitespace-nowrap text-2xl font-black tracking-normal transition-transform hover:scale-105 sm:text-3xl lg:text-4xl"
         >
           Fluentia
@@ -146,6 +146,17 @@ export function Header() {
                 <span>{state.preferences.playbackSpeed}</span>
               </button>
             </div>
+
+            <button
+              id="header-home-button"
+              type="button"
+              onClick={() => router.push("/")}
+              aria-label="Go to Home"
+              title="Home"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/5 text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70"
+            >
+              <Home className="h-5 w-5" aria-hidden />
+            </button>
 
             <button
               onClick={() => {

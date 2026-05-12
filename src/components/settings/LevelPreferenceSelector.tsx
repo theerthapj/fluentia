@@ -41,6 +41,10 @@ export function LevelPreferenceSelector({ idPrefix = "level-preference" }: { idP
   const assessmentLevel = state.assessmentSource === "assessment" ? state.level : null;
 
   const chooseLevel = (level: Level) => {
+    if (!assessmentReady) {
+      router.push("/assessment");
+      return;
+    }
     if (level === state.level && assessmentReady) return;
     setPreferredLevel(level);
     dispatch({ type: "SET_LEVEL", payload: level });
@@ -53,7 +57,9 @@ export function LevelPreferenceSelector({ idPrefix = "level-preference" }: { idP
         <div>
           <h2 className="text-2xl font-semibold">Learning Level</h2>
           <p className="mt-2 text-sm leading-6 text-text-secondary">
-            Choose the scenario difficulty that feels right today. You can change it anytime.
+            {assessmentReady
+              ? "Choose the scenario difficulty that feels right today. You can change it anytime."
+              : "Complete the assessment first so Fluentia can recommend the right starting level."}
           </p>
         </div>
         {assessmentLevel ? (
@@ -72,9 +78,11 @@ export function LevelPreferenceSelector({ idPrefix = "level-preference" }: { idP
               id={`${idPrefix}-${level}`}
               type="button"
               aria-pressed={active}
+              aria-disabled={!assessmentReady}
               onClick={() => chooseLevel(level)}
               className={cn(
                 "min-h-32 rounded-lg border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70",
+                !assessmentReady && "cursor-not-allowed opacity-55",
                 active
                   ? "border-accent-primary bg-accent-primary/15 text-text-primary shadow-[0_0_24px_rgba(20,184,166,0.14)]"
                   : "border-border bg-surface/45 text-text-secondary hover:border-accent-primary/50 hover:bg-accent-primary/8 hover:text-text-primary",
@@ -106,7 +114,16 @@ export function LevelPreferenceSelector({ idPrefix = "level-preference" }: { idP
             Retake Assessment
           </Button>
         </div>
-      ) : null}
+      ) : (
+        <div className="flex flex-col gap-2 rounded-lg border border-accent-primary/25 bg-accent-primary/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm leading-6 text-text-secondary">
+            Level changes unlock after your first assessment.
+          </p>
+          <Button id={`${idPrefix}-start-assessment`} type="button" onClick={() => router.push("/assessment")}>
+            Take Assessment
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -39,10 +39,10 @@ export function DashboardClient() {
         <div className="mx-auto max-w-3xl">
           <GlassCard className="border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-7 backdrop-blur-sm sm:p-10">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Choose Your Level</p>
-              <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">Start with the level that fits you.</h1>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Assessment Required</p>
+              <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">Start with a personalized level check.</h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg">
-                Take the quick assessment for a recommendation, or choose Beginner, Intermediate, or Advanced yourself.
+                Take the quick assessment so Fluentia can place you accurately before practice opens.
               </p>
               <Link
                 href="/assessment"

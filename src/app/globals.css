@@ -214,6 +214,35 @@ a {
   100% { opacity: 1; transform: scale(1); }
 }
 
+@keyframes ambient-drift {
+  0% { transform: translate3d(-10px, 8px, 0) scale(0.82); }
+  100% { transform: translate3d(12px, -14px, 0) scale(1.12); }
+}
+
+.ambient-particle {
+  position: absolute;
+  left: var(--ambient-left);
+  top: var(--ambient-top);
+  width: var(--ambient-size);
+  height: var(--ambient-size);
+  border-radius: 9999px;
+  background-color: var(--ambient-color);
+  opacity: 0.34;
+  filter: blur(1px);
+  animation-name: ambient-drift;
+  animation-duration: var(--ambient-duration);
+  animation-delay: var(--ambient-delay);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-particle {
+    animation: none !important;
+  }
+}
+
 @utility delay-100 {
   animation-delay: 100ms;
 }

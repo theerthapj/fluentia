@@ -3,10 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Brain, LayoutDashboard, MessageSquare, Settings, Waves } from "lucide-react";
+import { BarChart3, Brain, Home, LayoutDashboard, MessageSquare, Settings, Waves } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
+  { title: "Home", href: "/", icon: <Home />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { title: "Dashboard", href: "/dashboard", icon: <LayoutDashboard />, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
   { title: "Speak", href: "/mode", icon: <MessageSquare />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { title: "Boost", href: "/brain-boost", icon: <Brain />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
@@ -28,6 +29,7 @@ export function GradientMenu() {
               <Link
                 href={href}
                 aria-label={title}
+                aria-current={isActive ? "page" : undefined}
                 style={{ "--gradient-from": from, "--gradient-to": to } as React.CSSProperties}
                 className={cn(
                   "group relative flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 shadow-xl backdrop-blur-md transition-all duration-300 sm:h-[56px] sm:w-[56px] sm:hover:w-[152px]",

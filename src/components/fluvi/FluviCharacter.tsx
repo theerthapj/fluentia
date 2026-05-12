@@ -15,14 +15,16 @@ interface FluviCharacterProps {
   size?: number;
   className?: string;
   showLabel?: boolean;
+  introReveal?: boolean;
 }
 
-export function FluviCharacter({ size = 200, className = '', showLabel = false }: FluviCharacterProps) {
+export function FluviCharacter({ size = 200, className = '', showLabel = false, introReveal = false }: FluviCharacterProps) {
   const { state } = useFluvi();
   const { mode, theme, energy, voiceAmplitude, consecutiveErrors, reactionMessage, reactionKey } = state;
   const prefersReducedMotion = useReducedMotion();
   const [localBubble, setLocalBubble] = useState<string | null>(null);
   const [bubbleAlign, setBubbleAlign] = useState<'left' | 'center' | 'right'>('center');
+  const [introOpen, setIntroOpen] = useState(!introReveal);
 
   const headControls = useAnimation();
   const beakUpperControls = useAnimation();
@@ -41,6 +43,12 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
 
   const activeBubble = localBubble ?? (size >= 72 ? reactionMessage : null);
   const shouldShowThinkingDots = mode === 'thinking' && !localBubble;
+
+  useEffect(() => {
+    if (!introReveal) return;
+    const timer = window.setTimeout(() => setIntroOpen(true), 120);
+    return () => window.clearTimeout(timer);
+  }, [introReveal]);
 
   const placeBubble = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -395,8 +403,8 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
       ref={rootRef}
       tabIndex={0}
       aria-label="Say hello to Fluvi"
-      onMouseEnter={showGreeting}
-      onClick={showGreeting}
+      onMouseEnter={introReveal ? undefined : showGreeting}
+      onClick={introReveal ? undefined : showGreeting}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
@@ -407,8 +415,8 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
       style={{
         width: size,
         height: size + 24,
-        cursor: 'pointer',
-        pointerEvents: 'auto',
+        cursor: introReveal ? 'default' : 'pointer',
+        pointerEvents: introReveal ? 'none' : 'auto',
         ...(cssVars as React.CSSProperties),
       }}
     >
@@ -486,7 +494,7 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
           {/* Outer Ring of Feathers */}
           {Array.from({ length: 15 }, (_, i) => {
             const angle = -105 + i * (210 / 14); // spread
-            const spread = theme.featherSpread;
+            const spread = introReveal ? (introOpen ? 1 : 0.04) : theme.featherSpread;
             const actualAngle = angle * spread;
             const featherLength = 95 - Math.abs(i - 7) * 3;
             return (
@@ -498,6 +506,10 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
                 style={{
                   transformOrigin: '100px 150px',
                   transform: `rotate(${actualAngle}deg)`,
+                  transition: introReveal
+                    ? `transform 2200ms cubic-bezier(0.16, 1, 0.3, 1) ${i * 42}ms, opacity 900ms ease ${i * 26}ms`
+                    : undefined,
+                  opacity: introReveal && !introOpen ? 0.38 : 1,
                 }}
               >
                 {/* Main green leaf */}
@@ -517,7 +529,7 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
           {/* Inner Ring of Feathers */}
           {Array.from({ length: 11 }, (_, i) => {
             const angle = -80 + i * (160 / 10);
-            const spread = theme.featherSpread;
+            const spread = introReveal ? (introOpen ? 1 : 0.06) : theme.featherSpread;
             const actualAngle = angle * spread;
             const featherLength = 65 - Math.abs(i - 5) * 2;
             return (
@@ -529,6 +541,10 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false }
                 style={{
                   transformOrigin: '100px 150px',
                   transform: `rotate(${actualAngle}deg)`,
+                  transition: introReveal
+                    ? `transform 1900ms cubic-bezier(0.16, 1, 0.3, 1) ${260 + i * 38}ms, opacity 900ms ease ${i * 24}ms`
+                    : undefined,
+                  opacity: introReveal && !introOpen ? 0.45 : 1,
                 }}
               >
                 <path

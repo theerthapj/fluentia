@@ -47,6 +47,7 @@ const initialState: AppState = {
 const STORAGE_VERSION = 2;
 const MAX_SESSIONS = 30;
 const MAX_CONVERSATION_MESSAGES = 80;
+const REMOTE_PROGRESS_ENDPOINT = "/api/progress";
 
 type PersistedAppState = {
   version: number;
@@ -142,6 +143,10 @@ function toPersistedState(state: AppState): PersistedAppState {
   };
 }
 
+function shouldUseRemoteSync(userId: string | null) {
+  return Boolean(userId && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
 interface AppStateContextValue {
   state: AppState;
   hydrated: boolean;
@@ -169,6 +174,22 @@ export function AppStateProvider({ children, userId = null }: { children: React.
   const [state, setState] = useState<AppState>(() => createInitialState(userId));
   const [hydratedStorageKey, setHydratedStorageKey] = useState<string | null>(null);
   const hydrated = hydratedStorageKey === storageKey;
+  const remoteSyncEnabled = shouldUseRemoteSync(userId);
+
+  const persistRemoteState = useCallback((nextState: AppState) => {
+    if (!remoteSyncEnabled) return;
+    const payload = JSON.stringify(toPersistedState(nextState));
+    window
+      .fetch(REMOTE_PROGRESS_ENDPOINT, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        keepalive: payload.length < 60_000,
+      })
+      .catch((error) => {
+        console.warn("Unable to sync Fluentia progress to the account backend.", error);
+      });
+  }, [remoteSyncEnabled]);
 
   const persistState = useCallback((nextState: AppState) => {
     try {
@@ -176,30 +197,47 @@ export function AppStateProvider({ children, userId = null }: { children: React.
     } catch (error) {
       console.warn("Unable to persist Fluentia state.", error);
     }
-  }, [storageKey]);
+    persistRemoteState(nextState);
+  }, [persistRemoteState, storageKey]);
 
   useEffect(() => {
     let cancelled = false;
-    let nextState: AppState = createInitialState(userId);
-    try {
-      const stored = window.localStorage.getItem(storageKey) ?? (!userId ? window.localStorage.getItem(STORAGE_KEY) : null);
-      if (stored) {
-        nextState = normalizeStoredState(JSON.parse(stored), userId);
+    const hydrate = async () => {
+      let nextState: AppState = createInitialState(userId);
+      try {
+        const stored = window.localStorage.getItem(storageKey) ?? (!userId ? window.localStorage.getItem(STORAGE_KEY) : null);
+        if (stored) {
+          nextState = normalizeStoredState(JSON.parse(stored), userId);
+        }
+      } catch {
+        window.localStorage.removeItem(storageKey);
       }
-    } catch {
-      window.localStorage.removeItem(storageKey);
-    }
 
-    window.setTimeout(() => {
-      if (cancelled) return;
-      flushSync(() => setState(nextState));
-      setHydratedStorageKey(storageKey);
-    }, 0);
+      if (remoteSyncEnabled) {
+        try {
+          const response = await window.fetch(REMOTE_PROGRESS_ENDPOINT, { cache: "no-store" });
+          if (response.ok) {
+            const remote = (await response.json()) as { state?: unknown };
+            if (remote.state) nextState = normalizeStoredState(remote.state, userId);
+          }
+        } catch (error) {
+          console.warn("Using local Fluentia progress because account sync is unavailable.", error);
+        }
+      }
+
+      window.setTimeout(() => {
+        if (cancelled) return;
+        flushSync(() => setState(nextState));
+        setHydratedStorageKey(storageKey);
+      }, 0);
+    };
+
+    void hydrate();
 
     return () => {
       cancelled = true;
     };
-  }, [storageKey, userId]);
+  }, [remoteSyncEnabled, storageKey, userId]);
 
   useEffect(() => {
     if (!hydrated) return;

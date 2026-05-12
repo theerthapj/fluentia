@@ -18,6 +18,7 @@ const fadeUp = {
 export function LandingPageClient() {
   const { state, hydrated } = useAppState();
   const startHref = hydrated && hasCompletedAssessment(state) ? "/dashboard" : "/assessment";
+  const startLabel = hydrated && hasCompletedAssessment(state) ? "Continue Learning" : "Start Practicing Free";
 
   return (
     <main className="bg-bg-primary text-text-primary">
@@ -44,9 +45,15 @@ export function LandingPageClient() {
             Fluentia is an AI speaking coach that listens, coaches, and guides you through real conversations with stronger accessibility, safer feedback, and production-ready practice flows.
           </motion.p>
           <motion.div variants={fadeUp} className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link id="landing-start-practicing" href={startHref}>
-              <Button id="landing-start-practicing-button" size="lg">Start Practicing Free</Button>
-            </Link>
+            {hydrated ? (
+              <Link id="landing-start-practicing" href={startHref}>
+                <Button id="landing-start-practicing-button" size="lg">{startLabel}</Button>
+              </Link>
+            ) : (
+              <Button id="landing-start-practicing-button" size="lg" disabled className="min-w-48 opacity-70">
+                Preparing...
+              </Button>
+            )}
             <a
               id="landing-see-how"
               href="#how-it-works"
@@ -139,9 +146,15 @@ export function LandingPageClient() {
         <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} className="mx-auto max-w-6xl rounded-3xl bg-gradient-to-r from-accent-primary to-accent-secondary p-8 text-bg-primary sm:p-12">
           <CheckCircle2 aria-hidden="true" className="h-9 w-9" />
           <h2 className="mt-5 max-w-3xl text-3xl font-bold sm:text-4xl">Ready to stop hesitating and start speaking?</h2>
-          <Link id="landing-final-cta" href={startHref} className="mt-7 inline-flex rounded-full bg-bg-primary px-6 py-4 font-semibold text-text-primary transition hover:bg-surface">
-            Start for Free
-          </Link>
+          {hydrated ? (
+            <Link id="landing-final-cta" href={startHref} className="mt-7 inline-flex rounded-full bg-bg-primary px-6 py-4 font-semibold text-text-primary transition hover:bg-surface">
+              {startLabel}
+            </Link>
+          ) : (
+            <span id="landing-final-cta" aria-disabled="true" className="mt-7 inline-flex rounded-full bg-bg-primary/80 px-6 py-4 font-semibold text-text-secondary">
+              Preparing...
+            </span>
+          )}
         </motion.div>
       </section>
     </main>

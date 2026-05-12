@@ -1,12 +1,14 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppStateProvider, useAppState } from "@/components/providers/AppStateProvider";
 import { LevelPreferenceSelector } from "@/components/settings/LevelPreferenceSelector";
 import { FluviProvider } from "@/context/FluviContext";
 
+const pushMock = vi.fn();
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
-    push: vi.fn(),
+    push: pushMock,
   }),
 }));
 
@@ -33,14 +35,16 @@ function renderSelector() {
 describe("LevelPreferenceSelector", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    pushMock.mockClear();
   });
 
-  it("lets learners manually choose a level and unlock practice", () => {
+  it("keeps manual level changes locked until assessment is completed", async () => {
     renderSelector();
 
+    await waitFor(() => expect(screen.getByTestId("level-state")).toHaveTextContent("none:false"));
     fireEvent.click(screen.getByRole("button", { name: /Intermediate/ }));
 
-    expect(screen.getByTestId("level-state")).toHaveTextContent("intermediate:true");
-    expect(screen.getByRole("button", { name: /Intermediate/ })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("level-state")).toHaveTextContent("none:false");
+    expect(pushMock).toHaveBeenCalledWith("/assessment");
   });
 });

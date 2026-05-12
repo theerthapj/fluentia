@@ -5,6 +5,21 @@ test("settings preferences persist and affect chat input affordance", async ({ p
   await page.evaluate(() => {
     window.localStorage.clear();
     window.localStorage.setItem("fluvi_state", JSON.stringify({ hasSeenIntro: true, userLevel: "beginner", energy: 0 }));
+    window.localStorage.setItem(
+      "fluentia_app_state_guest",
+      JSON.stringify({
+        version: 2,
+        state: {
+          userId: null,
+          level: "beginner",
+          assessmentCompleted: true,
+          assessmentCompletedAt: new Date().toISOString(),
+          assessmentSource: "assessment",
+          assessmentScores: { grammar: 2, vocabulary: 2, fluency: 1, pronunciation: 1, composition: 1, total: 7 },
+          preferences: { listeningEnabled: true, playbackSpeed: "normal", preferredInputMode: "text" },
+        },
+      }),
+    );
   });
 
   await page.goto("/settings");

@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   BarChart3,
   Brain,
+  Home,
   LayoutDashboard,
   MessageSquare,
   PanelLeftClose,
@@ -19,6 +20,7 @@ import { GradientMenu } from "@/components/ui/gradient-menu";
 import { cn } from "@/lib/utils";
 
 const items = [
+  { href: "/", label: "Home", Icon: Home, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
   { href: "/mode", label: "Practice", Icon: MessageSquare, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { href: "/brain-boost", label: "Brain Boost", Icon: Brain, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
@@ -37,7 +39,7 @@ export function Sidebar({ collapsed = false, mobileOnly = false, onToggleCollaps
   const pathname = usePathname();
   const router = useRouter();
   const { resetDemo } = useAppState();
-  const showDemoReset = process.env.NODE_ENV !== "production";
+  const showDemoReset = process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_ENABLE_DEMO_RESET === "true";
 
   // On mobile, we only show the GradientMenu (floating dock)
   if (mobileOnly) {
@@ -58,7 +60,7 @@ export function Sidebar({ collapsed = false, mobileOnly = false, onToggleCollaps
     >
       <div className={cn("relative z-20 flex items-center", collapsed ? "mb-7 justify-center" : "mb-5 justify-between")}>
         {!collapsed ? (
-          <Link href="/dashboard" className="gradient-text truncate text-xl font-black tracking-tighter">
+          <Link href="/" aria-label="Go to Fluentia home page" className="gradient-text truncate text-xl font-black tracking-tighter">
             Fluentia
           </Link>
         ) : null}
@@ -76,7 +78,7 @@ export function Sidebar({ collapsed = false, mobileOnly = false, onToggleCollaps
       <nav aria-label="Main Navigation" className={cn("relative z-30 flex-1", collapsed ? "overflow-visible pt-1" : "overflow-y-auto pr-1")}>
         <ul className={cn("grid", collapsed ? "gap-4" : "gap-3")}>
           {items.map(({ href, label, Icon, from, to }) => {
-            const active = pathname === href || (href === "/brain-boost" && pathname.startsWith("/brain-boost"));
+            const active = pathname === href || (href !== "/" && href === "/brain-boost" && pathname.startsWith("/brain-boost"));
             return (
               <li key={href} className={cn(collapsed && "relative h-14 w-14 overflow-visible")}>
                 <Link

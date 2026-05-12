@@ -1,7 +1,5 @@
 "use client";
 
-import { Float, Sphere } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 
@@ -10,29 +8,36 @@ function seededValue(seed: number) {
   return raw - Math.floor(raw);
 }
 
-function Particles({ paused }: { paused: boolean }) {
+function Particles() {
   const points = useMemo(
     () =>
       Array.from({ length: 50 }, (_, index) => ({
         id: index,
-        position: [
-          (seededValue(index + 1) - 0.5) * 12,
-          (seededValue(index + 11) - 0.5) * 8,
-          (seededValue(index + 21) - 0.5) * 8,
-        ] as [number, number, number],
-        scale: seededValue(index + 31) * 0.06 + 0.025,
+        left: `${(seededValue(index + 1) * 100).toFixed(3)}%`,
+        top: `${(seededValue(index + 11) * 100).toFixed(3)}%`,
+        size: `${(seededValue(index + 31) * 18 + 6).toFixed(3)}px`,
+        delay: `${(seededValue(index + 41) * -12).toFixed(3)}s`,
+        duration: `${(seededValue(index + 51) * 8 + 10).toFixed(3)}s`,
         color: index % 2 === 0 ? "#14B8A6" : "#3B82F6",
       })),
     [],
   );
+
   return (
     <>
       {points.map((point) => (
-        <Float key={point.id} speed={paused ? 0 : 0.7} rotationIntensity={paused ? 0 : 0.2} floatIntensity={paused ? 0 : 0.8}>
-          <Sphere args={[1, 12, 12]} position={point.position} scale={point.scale}>
-            <meshBasicMaterial color={point.color} transparent opacity={0.34} />
-          </Sphere>
-        </Float>
+        <span
+          key={point.id}
+          className="ambient-particle"
+          style={{
+            "--ambient-left": point.left,
+            "--ambient-top": point.top,
+            "--ambient-size": point.size,
+            "--ambient-color": point.color,
+            "--ambient-duration": point.duration,
+            "--ambient-delay": point.delay,
+          } as React.CSSProperties}
+        />
       ))}
     </>
   );
@@ -45,16 +50,10 @@ export function AmbientBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden transition-opacity duration-700"
       style={{ opacity: isFocusMode ? 0 : 0.08 }}
     >
-      <Canvas
-        className="pointer-events-none"
-        camera={{ position: [0, 0, 6], fov: 60 }}
-        style={{ pointerEvents: "none" }}
-      >
-        <Particles paused={isFocusMode} />
-      </Canvas>
+      <Particles />
     </div>
   );
 }

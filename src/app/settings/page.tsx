@@ -86,7 +86,9 @@ export default function SettingsPage() {
 
         <GlassCard className="p-6">
           <h2 className="text-2xl font-semibold">App Data</h2>
-          <p className="mt-3 text-text-secondary">Fluentia currently stores assessment progress, sessions, preferences, and moderation state locally on this device.</p>
+          <p className="mt-3 text-text-secondary">
+            Signed-in accounts sync assessment results, sessions, preferences, and moderation state to the account backend when Supabase is configured. Local browser storage remains available as a fast offline fallback for this device.
+          </p>
         </GlassCard>
       </div>
     </main>

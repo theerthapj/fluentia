@@ -10,7 +10,7 @@ import { useFluvi } from '@/context/FluviContext';
 
 const INTRO_TEXT = "Hi, I'm Fluvi 🦚. I'm here to help you speak English with confidence. Let's learn together!";
 
-export function FluviIntroGate() {
+export function FluviIntroGate({ onVisibilityChange }: { onVisibilityChange?: (visible: boolean) => void }) {
   const { state, dispatch } = useFluvi();
   const [visible, setVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
@@ -31,6 +31,11 @@ export function FluviIntroGate() {
     const timer = window.setTimeout(() => setVisible(true), 0);
     return () => window.clearTimeout(timer);
   }, [state.hasSeenIntro]);
+
+  useEffect(() => {
+    onVisibilityChange?.(visible && !state.hasSeenIntro);
+    return () => onVisibilityChange?.(false);
+  }, [onVisibilityChange, state.hasSeenIntro, visible]);
 
   // Text appears after the character reveal so the first-run moment stays brisk.
   useEffect(() => {
@@ -54,19 +59,30 @@ export function FluviIntroGate() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } }}
-          className="fixed inset-0 z-50 flex items-center justify-center"
+          className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden"
           style={{
-            background: 'rgba(15, 23, 42, 0.96)',
-            backdropFilter: 'blur(12px)',
+            background: 'radial-gradient(circle at 50% 42%, rgba(20,184,166,0.18), rgba(2,6,23,0.97) 54%, rgba(0,0,0,0.99))',
+            backdropFilter: 'blur(18px)',
           }}
         >
-          <div className="flex flex-col items-center gap-8 max-w-sm px-6 text-center">
+          <motion.div
+            aria-hidden="true"
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.7, 0.35] }}
+            transition={{ duration: 2.6, ease: 'easeOut' }}
+            style={{
+              background:
+                'linear-gradient(115deg, transparent 0%, rgba(94,234,212,0.08) 42%, rgba(255,255,255,0.18) 49%, rgba(94,234,212,0.08) 56%, transparent 100%)',
+            }}
+          />
+          <div className="relative flex flex-col items-center gap-8 max-w-sm px-6 text-center">
 
             {/* Teal glow halo behind character */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 0.3, scale: 1.5 }}
-              transition={{ duration: 2, ease: 'easeOut' }}
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={{ opacity: [0, 0.34, 0.2], scale: [0.7, 2.4, 2.1] }}
+              transition={{ duration: 2.8, ease: 'easeOut' }}
               className="absolute rounded-full pointer-events-none"
               style={{
                 width: 180,
@@ -77,12 +93,12 @@ export function FluviIntroGate() {
 
             {/* Signature reveal: feathers open slowly with a spring */}
             <motion.div
-              initial={{ scale: 0.4, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1.8, ease: [0.34, 1.56, 0.64, 1] }}
+              initial={{ scale: 0.45, opacity: 0, y: 24, filter: 'blur(10px)' }}
+              animate={{ scale: 1, opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 2.35, ease: [0.16, 1, 0.3, 1] }}
               onAnimationComplete={() => setTextVisible(true)}
             >
-              <FluviCharacter size={180} showLabel={false} />
+              <FluviCharacter size={220} showLabel={false} introReveal />
             </motion.div>
 
             {/* Typewriter intro text — appears after character is fully revealed */}

@@ -11,22 +11,20 @@ import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { ProgressStepper } from "@/components/shared/ProgressStepper";
 import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
-import { hasCompletedAssessment } from "@/lib/assessment-state";
+import { getAssessmentProgressStorageKey, hasCompletedAssessment } from "@/lib/assessment-state";
 import { assessmentQuestions, levelCopy, scoreAssessment } from "@/lib/constants";
 import { checkModeration } from "@/lib/moderation/checker";
 import { validateTextInput } from "@/lib/validation";
 import type { AssessmentAnswer, Level } from "@/types";
-
-const PROGRESS_KEY = "fluentia_assessment_progress";
 
 interface SavedProgress {
   step: number;
   answers: AssessmentAnswer[];
 }
 
-function loadProgress(): SavedProgress | null {
+function loadProgress(progressKey: string): SavedProgress | null {
   try {
-    const raw = window.localStorage.getItem(PROGRESS_KEY);
+    const raw = window.localStorage.getItem(progressKey);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as SavedProgress;
     if (!parsed || typeof parsed !== "object") return null;
@@ -47,15 +45,15 @@ function loadProgress(): SavedProgress | null {
   return null;
 }
 
-function saveProgress(step: number, answers: AssessmentAnswer[]) {
+function saveProgress(progressKey: string, step: number, answers: AssessmentAnswer[]) {
   try {
-    window.localStorage.setItem(PROGRESS_KEY, JSON.stringify({ step, answers }));
+    window.localStorage.setItem(progressKey, JSON.stringify({ step, answers }));
   } catch {}
 }
 
-function clearProgress() {
+function clearProgress(progressKey: string) {
   try {
-    window.localStorage.removeItem(PROGRESS_KEY);
+    window.localStorage.removeItem(progressKey);
   } catch {}
 }
 
@@ -64,12 +62,13 @@ export default function AssessmentPage() {
   const params = useSearchParams();
   const { state, hydrated, setAssessment } = useAppState();
   const retakeRequested = params.get("retake") === "1";
+  const progressKey = useMemo(() => getAssessmentProgressStorageKey(state.userId), [state.userId]);
 
   const restored = useMemo(() => {
     if (typeof window === "undefined") return null;
     if (retakeRequested) return null;
-    return loadProgress();
-  }, [retakeRequested]);
+    return loadProgress(progressKey);
+  }, [progressKey, retakeRequested]);
   const initialQuestion = assessmentQuestions[restored?.step ?? 0] ?? assessmentQuestions[0];
   const initialAnswer = restored?.answers.find((answer) => answer.questionId === initialQuestion.id);
 
@@ -86,8 +85,8 @@ export default function AssessmentPage() {
   const bannerMessage = params.get("message");
 
   useEffect(() => {
-    if (retakeRequested) clearProgress();
-  }, [retakeRequested]);
+    if (retakeRequested) clearProgress(progressKey);
+  }, [progressKey, retakeRequested]);
 
   useEffect(() => {
     if (!hydrated || retakeRequested || result) return;
@@ -112,8 +111,8 @@ export default function AssessmentPage() {
   }, [textValue, question]);
 
   useEffect(() => {
-    saveProgress(step, answers);
-  }, [step, answers]);
+    saveProgress(progressKey, step, answers);
+  }, [answers, progressKey, step]);
 
   const saveAnswer = useCallback(
     async (value: string) => {
@@ -131,7 +130,7 @@ export default function AssessmentPage() {
         return;
       }
 
-      clearProgress();
+      clearProgress(progressKey);
       const response = await fetch("/api/assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -142,7 +141,7 @@ export default function AssessmentPage() {
       setResult({ level: scored.level, total: scored.scores.total });
       setShowPlan(true);
     },
-    [answers, question.id, step, setAssessment, syncDraftForStep],
+    [answers, progressKey, question.id, step, setAssessment, syncDraftForStep],
   );
 
   const handleTextSubmit = useCallback(() => {
@@ -180,13 +179,13 @@ export default function AssessmentPage() {
   }, [answers, question, step, syncDraftForStep, textValue]);
 
   const handleStartOver = useCallback(() => {
-    clearProgress();
+    clearProgress(progressKey);
     setStep(0);
     setAnswers([]);
     syncDraftForStep(0, []);
     setDirection(1);
     setModerationWarning(null);
-  }, [syncDraftForStep]);
+  }, [progressKey, syncDraftForStep]);
 
   if (!hydrated) {
     return (
