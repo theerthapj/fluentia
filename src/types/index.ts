@@ -134,7 +134,7 @@ export interface ConversationResponse {
   feedback?: FeedbackPayload;
   warning?: string;
   category?: string;
-  provider?: "live" | "simulated";
+  provider?: "live";
 }
 
 export interface AppState {

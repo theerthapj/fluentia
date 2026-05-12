@@ -15,45 +15,6 @@ type SendOptions = {
   requestWrapUp?: boolean;
 };
 
-type BrowserSpeechRecognitionAlternative = {
-  transcript: string;
-};
-
-type BrowserSpeechRecognitionResult = {
-  readonly isFinal: boolean;
-  readonly 0: BrowserSpeechRecognitionAlternative | undefined;
-};
-
-type BrowserSpeechRecognitionResultList = {
-  readonly length: number;
-  item?: (index: number) => BrowserSpeechRecognitionResult;
-  readonly [index: number]: BrowserSpeechRecognitionResult | undefined;
-};
-
-type BrowserSpeechRecognitionEvent = {
-  readonly resultIndex: number;
-  readonly results: BrowserSpeechRecognitionResultList;
-};
-
-type BrowserSpeechRecognition = {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onend: (() => void) | null;
-  onerror: (() => void) | null;
-  onresult: ((event: BrowserSpeechRecognitionEvent) => void) | null;
-  start: () => void;
-  stop: () => void;
-  abort?: () => void;
-};
-
-type BrowserSpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
-
-type WindowWithSpeechRecognition = Window & {
-  SpeechRecognition?: BrowserSpeechRecognitionConstructor;
-  webkitSpeechRecognition?: BrowserSpeechRecognitionConstructor;
-};
-
 type FluentiaAnimatedChatProps = {
   scenarioTitle: string;
   onSendMessage: (text: string, options?: SendOptions) => void;
@@ -101,9 +62,7 @@ export function FluentiaAnimatedChat({
   const chunksRef = useRef<Blob[]>([]);
   const timeoutRef = useRef<number | null>(null);
   const amplitudeTimerRef = useRef<number | null>(null);
-  const speechRecognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const voiceBaseValueRef = useRef("");
-  const browserTranscriptRef = useRef("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandPaletteRef = useRef<HTMLDivElement | null>(null);
   const commandButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -184,61 +143,6 @@ export function FluentiaAnimatedChat({
     onUnsafeInput?.(escalation.message || message);
   };
 
-  const getSpeechRecognition = () => {
-    const speechWindow = window as WindowWithSpeechRecognition;
-    return speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
-  };
-
-  const startBrowserSpeechDraft = () => {
-    const SpeechRecognition = getSpeechRecognition();
-    if (!SpeechRecognition) return false;
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = navigator.language || "en-US";
-      browserTranscriptRef.current = "";
-      voiceBaseValueRef.current = value;
-
-      recognition.onresult = (event) => {
-        let finalTranscript = browserTranscriptRef.current;
-        let interimTranscript = "";
-        for (let index = event.resultIndex; index < event.results.length; index += 1) {
-          const result = event.results.item?.(index) ?? event.results[index];
-          const transcript = result?.[0]?.transcript ?? "";
-          if (result?.isFinal) finalTranscript = `${finalTranscript} ${transcript}`.trim();
-          else interimTranscript = `${interimTranscript} ${transcript}`.trim();
-        }
-        browserTranscriptRef.current = finalTranscript;
-        setInputValue(mergeVoiceText(voiceBaseValueRef.current, `${finalTranscript} ${interimTranscript}`));
-      };
-
-      recognition.onerror = () => {
-        speechRecognitionRef.current = null;
-      };
-      recognition.onend = () => {
-        speechRecognitionRef.current = null;
-      };
-      recognition.start();
-      speechRecognitionRef.current = recognition;
-      return true;
-    } catch {
-      speechRecognitionRef.current = null;
-      return false;
-    }
-  };
-
-  const stopBrowserSpeechDraft = () => {
-    const recognition = speechRecognitionRef.current;
-    speechRecognitionRef.current = null;
-    try {
-      recognition?.stop();
-    } catch {
-      recognition?.abort?.();
-    }
-  };
-
   const handleSendMessage = (options?: SendOptions) => {
     const trimmed = value.trim();
     if (!trimmed || inputDisabled) return;
@@ -304,15 +208,13 @@ export function FluentiaAnimatedChat({
       if (data.transcript) {
         setInputValue(mergeVoiceText(voiceBaseValueRef.current, data.transcript));
         toast.success("Voice captured.");
-      } else if (browserTranscriptRef.current.trim()) {
-        toast.success("Voice captured.");
       } else if (data.configured === false) {
         toast.error("Add OPENAI_API_KEY in .env.local, then restart the dev server to enable voice transcription.");
       } else {
-        toast.error("Voice transcription is unavailable right now. Please type your response.");
+        toast.error(data.error ?? "Whisper transcription is unavailable right now. Please type your response.");
       }
     } catch {
-      toast.error("Voice transcription is unavailable right now. Please type your response.");
+      toast.error("Whisper transcription is unavailable right now. Please type your response.");
     } finally {
       setVoiceStatus("idle");
     }
@@ -320,7 +222,6 @@ export function FluentiaAnimatedChat({
 
   const stopRecording = () => {
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    stopBrowserSpeechDraft();
     const recorder = recorderRef.current;
     if (recorder && recorder.state !== "inactive") {
       recorder.stop();
@@ -328,22 +229,14 @@ export function FluentiaAnimatedChat({
     }
 
     setVoiceStatus("idle");
-    if (browserTranscriptRef.current.trim()) toast.success("Voice captured.");
-    else toast.error("Voice transcription is unavailable right now. Please type your response.");
+    toast.error("Whisper transcription is unavailable right now. Please type your response.");
   };
 
   const startRecording = async () => {
     voiceBaseValueRef.current = value;
-    browserTranscriptRef.current = "";
-    const browserDraftStarted = startBrowserSpeechDraft();
 
     if (!navigator.mediaDevices?.getUserMedia) {
-      if (browserDraftStarted) {
-        setVoiceStatus("recording");
-        timeoutRef.current = window.setTimeout(stopRecording, 30_000);
-      } else {
-        toast.error("This browser does not support voice capture. Please type your response.");
-      }
+      toast.error("This browser does not support microphone recording for Whisper. Please type your response.");
       return;
     }
     try {
@@ -363,11 +256,6 @@ export function FluentiaAnimatedChat({
       setVoiceStatus("recording");
       timeoutRef.current = window.setTimeout(stopRecording, 30_000);
     } catch (error) {
-      if (browserDraftStarted) {
-        setVoiceStatus("recording");
-        timeoutRef.current = window.setTimeout(stopRecording, 30_000);
-        return;
-      }
       const message = error instanceof DOMException && error.name === "NotFoundError"
         ? "No microphone found. Please connect a mic."
         : error instanceof DOMException && error.name === "NotReadableError"

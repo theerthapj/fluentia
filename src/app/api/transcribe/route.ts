@@ -51,8 +51,10 @@ export async function POST(request: Request) {
   }
 
   const upstream = new FormData();
+  const audioFileName = (audio as Blob & { name?: string }).name?.trim();
+  const audioName = audioFileName || "fluentia-recording.webm";
   upstream.append("model", process.env.OPENAI_TRANSCRIPTION_MODEL?.trim() || "whisper-1");
-  upstream.append("file", audio, "fluentia-recording.webm");
+  upstream.append("file", audio, audioName);
 
   let response: Response;
   try {

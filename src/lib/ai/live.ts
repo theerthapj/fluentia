@@ -1,10 +1,6 @@
-import { generateFeedback } from "@/lib/ai/simulated";
+import { FeedbackPayloadSchema } from "@/lib/ai/schemas";
 import { API_GUARD_LIMITS, fetchWithTimeout } from "@/lib/server/request-guards";
-import type { ConversationRequest } from "@/types";
-
-export function shouldUseLiveProvider() {
-  return Boolean(process.env.OPENAI_API_KEY);
-}
+import type { ConversationRequest, FeedbackPayload } from "@/types";
 
 function buildSystemPrompt(request: ConversationRequest) {
   const practiceLabel =
@@ -20,18 +16,18 @@ function buildSystemPrompt(request: ConversationRequest) {
     `Mode: ${request.mode ?? "none"}.`,
     `Conversation kind: ${request.kind}.`,
     "Reply in a warm, encouraging tone.",
-    "Return strict JSON with keys: aiReply, quickTip, strengths, improvements, pronunciationNotes, vocabularySuggestions, simpleRewrite, advancedRewrite, encouragementMessage.",
-    "Keep strengths and improvements to 3 items each.",
+    "Return strict JSON matching this shape: aiReply string, quickTip string, fluencyScore number 0-10, confidenceLevel one of low/medium/high, confidencePercent number 0-100, toneLabel string, strengths string array, improvements string array, grammarCorrections array of objects with original/corrected/explanation, pronunciationNotes string array, vocabularySuggestions array of objects with word/alternative/context, simpleRewrite string, advancedRewrite string, encouragementMessage string, safetyStatus safe.",
+    "Use at least 2 strengths, 2 improvements, 1 grammar correction, 1 pronunciation note, and 2 vocabulary suggestions.",
+    "Keep aiReply concise and continue the practice conversation.",
     "Do not include markdown.",
   ].join(" ");
 }
 
 export const liveProvider = {
   async analyzeTurn(request: ConversationRequest) {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) return generateFeedback(request);
+    const apiKey = process.env.OPENAI_API_KEY?.trim();
+    if (!apiKey) throw new Error("OPENAI_API_KEY is not configured.");
 
-    const baseFeedback = generateFeedback(request);
     const response = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -68,19 +64,7 @@ export const liveProvider = {
       throw new Error("Live provider returned no content");
     }
 
-    const parsed = JSON.parse(content) as Partial<ReturnType<typeof generateFeedback>>;
-
-    return {
-      ...baseFeedback,
-      aiReply: parsed.aiReply ?? baseFeedback.aiReply,
-      quickTip: parsed.quickTip ?? baseFeedback.quickTip,
-      strengths: parsed.strengths?.length ? parsed.strengths.slice(0, 3) : baseFeedback.strengths,
-      improvements: parsed.improvements?.length ? parsed.improvements.slice(0, 3) : baseFeedback.improvements,
-      pronunciationNotes: parsed.pronunciationNotes?.length ? parsed.pronunciationNotes : baseFeedback.pronunciationNotes,
-      vocabularySuggestions: parsed.vocabularySuggestions?.length ? parsed.vocabularySuggestions : baseFeedback.vocabularySuggestions,
-      simpleRewrite: parsed.simpleRewrite ?? baseFeedback.simpleRewrite,
-      advancedRewrite: parsed.advancedRewrite ?? baseFeedback.advancedRewrite,
-      encouragementMessage: parsed.encouragementMessage ?? baseFeedback.encouragementMessage,
-    };
+    const parsed = JSON.parse(content) as FeedbackPayload;
+    return FeedbackPayloadSchema.parse(parsed);
   },
 };

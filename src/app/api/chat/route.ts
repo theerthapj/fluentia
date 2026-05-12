@@ -1,21 +1,97 @@
-// STEP 12: /src/app/api/chat/route.ts
 // Fluvi-specific chat API route.
-// The existing conversation API is at /api/conversation/ — this is a NEW, separate route.
-// Server-side only — no API keys in client code.
+// Server-side only: no API keys in client code.
 
 import { NextResponse } from 'next/server';
 import { buildFluviSystemPrompt } from '@/lib/ai/fluvi-system-prompt';
+import { API_GUARD_LIMITS, fetchWithTimeout } from '@/lib/server/request-guards';
 
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+
+type ChatMessage = { role: 'user' | 'assistant'; content: string };
+type OpenAIChatResult = { ok: true; text: string } | { ok: false; status: number; error: string };
 
 interface FluviChatRequest {
   message: string;
   mode: 'formal' | 'casual';
   level: 'beginner' | 'intermediate' | 'advanced';
   scenario: string;
-  history?: { role: 'user' | 'assistant'; content: string }[];
+  history?: ChatMessage[];
   requestFeedback?: boolean;
+}
+
+function openAIError(error: string, status: number) {
+  return NextResponse.json(
+    {
+      safe: false,
+      reply: null,
+      isFeedback: false,
+      provider: 'openai',
+      error,
+    },
+    { status },
+  );
+}
+
+function missingKeyError() {
+  return NextResponse.json({
+    safe: false,
+    reply: null,
+    isFeedback: false,
+    provider: 'openai',
+    error: 'OPENAI_API_KEY is not configured.',
+  }, { status: 503 });
+}
+
+function cleanJsonText(text: string) {
+  return text.trim().replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+}
+
+async function callOpenAI({
+  apiKey,
+  systemPrompt,
+  messages,
+  requestFeedback,
+}: {
+  apiKey: string;
+  systemPrompt: string;
+  messages: ChatMessage[];
+  requestFeedback: boolean;
+}): Promise<OpenAIChatResult> {
+  let response: Response;
+  try {
+    response = await fetchWithTimeout(
+      OPENAI_API_URL,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: process.env.OPENAI_CHAT_MODEL?.trim() || 'gpt-4o-mini',
+          temperature: 0.7,
+          max_tokens: requestFeedback ? 1024 : 512,
+          ...(requestFeedback ? { response_format: { type: 'json_object' } } : {}),
+          messages: [{ role: 'system', content: systemPrompt }, ...messages],
+        }),
+      },
+      API_GUARD_LIMITS.conversationTimeoutMs,
+    );
+  } catch {
+    return { ok: false, status: 504, error: 'OpenAI chat provider timed out.' };
+  }
+
+  if (!response.ok) {
+    return { ok: false, status: 502, error: `OpenAI chat failed with status ${response.status}.` };
+  }
+
+  const data = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const text = data.choices?.[0]?.message?.content?.trim();
+
+  if (!text) return { ok: false, status: 502, error: 'OpenAI chat returned no content.' };
+  return { ok: true, text };
 }
 
 export async function POST(request: Request) {
@@ -28,88 +104,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      // Graceful fallback: return a safe default rather than crashing
-      return NextResponse.json({
-        safe: true,
-        reply: "I'm having a little trouble connecting right now. Please try again in a moment! 🦚",
-        isFeedback: false,
-      });
-    }
+    const openAiKey = process.env.OPENAI_API_KEY?.trim();
+    if (!openAiKey) return missingKeyError();
 
     const systemPrompt = buildFluviSystemPrompt(mode ?? 'casual', level ?? 'beginner', scenario ?? 'General practice');
-
-    // Build conversation history for Claude
-    const messages: { role: 'user' | 'assistant'; content: string }[] = [
+    const messages: ChatMessage[] = [
       ...history,
       {
         role: 'user',
-        content: requestFeedback
-          ? `Please analyze my response and return JSON feedback: "${message}"`
-          : message,
+        content: requestFeedback ? `Please analyze my response and return JSON feedback: "${message}"` : message,
       },
     ];
 
-    const response = await fetch(CLAUDE_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: requestFeedback ? 1024 : 512,
-        system: systemPrompt,
-        messages,
-      }),
-    });
+    const result = await callOpenAI({ apiKey: openAiKey, systemPrompt, messages, requestFeedback });
+    if (!result.ok) return openAIError(result.error, result.status);
+    const replyText = result.text;
 
-    if (!response.ok) {
-      // Non-crashing fallback
-      return NextResponse.json({
-        safe: true,
-        reply: "Fluvi is taking a short break. Let's continue in a moment! 🦚",
-        isFeedback: false,
-      });
-    }
-
-    const data = (await response.json()) as {
-      content: { type: string; text: string }[];
-    };
-
-    const textContent = data.content.find((c) => c.type === 'text');
-    if (!textContent) {
-      return NextResponse.json({
-        safe: true,
-        reply: "Fluvi couldn't quite hear that. Try again!",
-        isFeedback: false,
-      });
-    }
-
-    const replyText = textContent.text.trim();
-
-    // Detect if this is a JSON feedback response
     if (requestFeedback) {
       try {
-        // Strip markdown code fences if present
-        const cleaned = replyText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-        const parsed = JSON.parse(cleaned);
-        return NextResponse.json({ safe: true, feedback: parsed, isFeedback: true });
+        const parsed = JSON.parse(cleanJsonText(replyText));
+        return NextResponse.json({ safe: true, feedback: parsed, isFeedback: true, provider: 'openai' });
       } catch {
-        // JSON parse failed — return as plain reply
-        return NextResponse.json({ safe: true, reply: replyText, isFeedback: false });
+        return NextResponse.json({ safe: true, reply: replyText, isFeedback: false, provider: 'openai' });
       }
     }
 
-    return NextResponse.json({ safe: true, reply: replyText, isFeedback: false });
+    return NextResponse.json({ safe: true, reply: replyText, isFeedback: false, provider: 'openai' });
   } catch {
-    // Top-level error guard — never crash the UI
-    return NextResponse.json({
-      safe: true,
-      reply: "Fluvi is thinking... please try again! 🦚",
-      isFeedback: false,
-    });
+    return openAIError('OpenAI chat is unavailable.', 502);
   }
 }
