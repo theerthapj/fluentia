@@ -28,7 +28,7 @@ Copy `.env.example` to `.env.local` and fill only the services you need.
 | `SUPABASE_SERVICE_ROLE_KEY` | No | Reserved for server-only Supabase workflows. Do not expose it client-side. |
 | `UPSTASH_REDIS_REST_URL` | No | Reserved for production rate-limit storage. The app has an in-memory local fallback. |
 | `UPSTASH_REDIS_REST_TOKEN` | No | Reserved for production rate-limit storage. |
-| `OPENAI_API_KEY` | No | Enables live AI responses and voice transcription. Without it, chat uses the simulated coach and transcription returns a clear unavailable state. |
+| `OPENAI_API_KEY` | Yes for live use | Enables OpenAI chat responses and Whisper voice transcription. Without it, chat and transcription return clear unavailable states. |
 | `OPENAI_CHAT_MODEL` | No | Chat model override. Defaults to `gpt-4o-mini`. |
 | `OPENAI_TRANSCRIPTION_MODEL` | No | Transcription model override. Defaults to `whisper-1`. |
 
@@ -65,8 +65,8 @@ Use **Reset Demo** from the sidebar to clear local app state and moderation warn
 
 ## AI And Voice Behavior
 
-- With no `OPENAI_API_KEY`, conversation coaching falls back to the built-in simulated provider.
-- With `OPENAI_API_KEY`, `/api/conversation` calls OpenAI chat completions and falls back to simulated feedback if the live provider fails.
+- Fluentia no longer returns simulated coaching responses from the app chat APIs.
+- With `OPENAI_API_KEY`, `/api/conversation` and `/api/chat` call OpenAI chat completions and return a visible provider error if OpenAI is unavailable.
 - Voice capture only sends audio to `/api/transcribe` after the user explicitly starts recording.
 - `/api/transcribe` returns a non-blocking missing-key error when live transcription is not configured.
 

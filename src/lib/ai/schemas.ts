@@ -103,7 +103,7 @@ export const ConversationResponseSchema = z.object({
   feedback: FeedbackPayloadSchema.optional(),
   warning: z.string().optional(),
   category: z.string().optional(),
-  provider: z.enum(["live", "simulated"]).optional(),
+  provider: z.enum(["live"]).optional(),
 });
 
 export type ConversationRequestInput = z.infer<typeof ConversationRequestSchema>;

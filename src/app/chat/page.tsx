@@ -41,7 +41,6 @@ function ChatContent() {
   } = useAppState();
   const [loading, setLoading] = useState(false);
   const [safety, setSafety] = useState<string | null>(null);
-  const [providerLabel, setProviderLabel] = useState<"live" | "simulated" | null>(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const [tipVisible, setTipVisible] = useState(true);
   const [fluviFeedback, setFluviFeedback] = useState<FeedbackResult | null>(null);
@@ -180,7 +179,6 @@ function ChatContent() {
         setSafety(data.warning ?? "Please rephrase your response.");
         return;
       }
-      setProviderLabel(data.provider ?? null);
       setLastFeedback(data.feedback);
       setTipVisible(true);
       setConversationHistory([...nextMessages, data.aiMessage]);
@@ -248,9 +246,6 @@ function ChatContent() {
         {/* Fluvi is now embedded in ChatBubble and FluviFeedbackPanel */}
 
         <CulturalNote note={culturalNote} />
-        {providerLabel === "simulated" ? (
-          <SafetyBanner message="Live AI is unavailable, so Fluentia is using its built-in coaching fallback." onDismiss={() => setProviderLabel(null)} />
-        ) : null}
         {safety ? <SafetyBanner message={cooldownRemaining ? `${safety} ${cooldownRemaining}s remaining.` : safety} onDismiss={() => setSafety(null)} /> : null}
         <div aria-live="polite" aria-atomic="false" className="sr-only">
           {announceText}

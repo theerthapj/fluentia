@@ -79,17 +79,14 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ safe: true, aiMessage, feedback, provider: kind });
   } catch {
-    if (kind === "simulated") {
-      return NextResponse.json({ safe: false, category: "provider", warning: "The conversation provider is temporarily unavailable." }, { status: 503 });
-    }
-
-    const fallback = await (await import("@/lib/ai/simulated")).simulatedProvider.analyzeTurn(parsed.data);
-    const aiMessage = {
-      id: uid("ai"),
-      role: "ai" as const,
-      content: fallback.aiReply,
-      createdAt: new Date().toISOString(),
-    };
-    return NextResponse.json({ safe: true, aiMessage, feedback: fallback, provider: "simulated" });
+    return NextResponse.json(
+      {
+        safe: false,
+        category: "provider",
+        warning: "OpenAI is temporarily unavailable. Please check your API key, billing, and model settings.",
+        provider: kind,
+      },
+      { status: 502 },
+    );
   }
 }
