@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 import { STORAGE_KEY, WARNINGS_KEY } from "@/lib/constants";
+import { getAppStateStorageKey } from "@/lib/assessment-state";
 import type {
   AppPreferences,
   AppState,
@@ -25,8 +26,11 @@ const defaultPreferences: AppPreferences = {
 };
 
 const initialState: AppState = {
+  userId: null,
   level: null,
   assessmentCompleted: false,
+  assessmentCompletedAt: null,
+  assessmentSource: null,
   assessmentScores: null,
   selectedMode: null,
   selectedScenario: null,
@@ -68,11 +72,23 @@ function isSession(value: unknown): value is SessionRecord {
   return typeof value.id === "string" && typeof value.scenarioTitle === "string" && Array.isArray(value.messages);
 }
 
+function isLevel(value: unknown): value is Level {
+  return value === "beginner" || value === "intermediate" || value === "advanced";
+}
+
 function trimMessages(messages: Message[]) {
   return messages.slice(-MAX_CONVERSATION_MESSAGES);
 }
 
-function normalizeStoredState(value: unknown): AppState {
+function createInitialState(userId: string | null = null): AppState {
+  return {
+    ...initialState,
+    userId,
+    preferences: { ...defaultPreferences },
+  };
+}
+
+function normalizeStoredState(value: unknown, userId: string | null = null): AppState {
   const source = isRecord(value) && "version" in value && isRecord((value as PersistedAppState).state)
     ? (value as PersistedAppState).state
     : isRecord(value)
@@ -84,11 +100,27 @@ function normalizeStoredState(value: unknown): AppState {
         ...defaultPreferences,
         ...source.preferences,
       }
-    : defaultPreferences;
+      : defaultPreferences;
+  const savedLevel = isLevel(source.level) ? source.level : null;
+  const assessmentCompleted = source.assessmentCompleted === true || Boolean(savedLevel);
+  const assessmentCompletedAt = typeof source.assessmentCompletedAt === "string" ? source.assessmentCompletedAt : null;
+  const assessmentSource =
+    source.assessmentSource === "assessment" || source.assessmentSource === "manual"
+      ? source.assessmentSource
+      : assessmentCompleted
+        ? source.assessmentScores
+          ? "assessment"
+          : "manual"
+        : null;
 
   return {
-    ...initialState,
+    ...createInitialState(userId),
     ...source,
+    userId,
+    level: savedLevel,
+    assessmentCompleted,
+    assessmentCompletedAt,
+    assessmentSource,
     conversationHistory: Array.isArray(source.conversationHistory) ? trimMessages(source.conversationHistory.filter(isMessage)) : [],
     sessions: Array.isArray(source.sessions) ? source.sessions.filter(isSession).slice(0, MAX_SESSIONS) : [],
     preferences: {
@@ -132,42 +164,42 @@ interface AppStateContextValue {
 
 const AppStateContext = createContext<AppStateContextValue | null>(null);
 
-export function AppStateProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AppState>(initialState);
-  const [hydrated, setHydrated] = useState(false);
+export function AppStateProvider({ children, userId = null }: { children: React.ReactNode; userId?: string | null }) {
+  const storageKey = useMemo(() => getAppStateStorageKey(userId), [userId]);
+  const [state, setState] = useState<AppState>(() => createInitialState(userId));
+  const [hydratedStorageKey, setHydratedStorageKey] = useState<string | null>(null);
+  const hydrated = hydratedStorageKey === storageKey;
 
   const persistState = useCallback((nextState: AppState) => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(toPersistedState(nextState)));
+      window.localStorage.setItem(storageKey, JSON.stringify(toPersistedState(nextState)));
     } catch (error) {
       console.warn("Unable to persist Fluentia state.", error);
     }
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     let cancelled = false;
-    let nextState: AppState | null = null;
+    let nextState: AppState = createInitialState(userId);
     try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
+      const stored = window.localStorage.getItem(storageKey) ?? (!userId ? window.localStorage.getItem(STORAGE_KEY) : null);
       if (stored) {
-        nextState = normalizeStoredState(JSON.parse(stored));
+        nextState = normalizeStoredState(JSON.parse(stored), userId);
       }
     } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(storageKey);
     }
 
     window.setTimeout(() => {
       if (cancelled) return;
-      if (nextState) {
-        flushSync(() => setState(nextState));
-      }
-      setHydrated(true);
+      flushSync(() => setState(nextState));
+      setHydratedStorageKey(storageKey);
     }, 0);
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [storageKey, userId]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -207,11 +239,21 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     () => ({
       state,
       hydrated,
-      setAssessment: (level, scores) => patch({ level, assessmentScores: scores, assessmentCompleted: true }),
+      setAssessment: (level, scores) =>
+        patch({
+          level,
+          assessmentScores: scores,
+          assessmentCompleted: true,
+          assessmentCompletedAt: new Date().toISOString(),
+          assessmentSource: "assessment",
+        }),
       setPreferredLevel: (level) =>
         patch({
           level,
+          assessmentScores: null,
           assessmentCompleted: true,
+          assessmentCompletedAt: new Date().toISOString(),
+          assessmentSource: "manual",
           selectedScenario: null,
           selectedExerciseId: null,
         }),
@@ -243,13 +285,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setPlaybackSpeed: (playbackSpeed) => updatePreferences({ playbackSpeed }),
       setPreferredInputMode: (preferredInputMode) => updatePreferences({ preferredInputMode }),
       resetDemo: () => {
-        window.localStorage.removeItem(STORAGE_KEY);
+        window.localStorage.removeItem(storageKey);
+        if (!userId) window.localStorage.removeItem(STORAGE_KEY);
         window.localStorage.removeItem(WARNINGS_KEY);
-        persistState(initialState);
-        setState(initialState);
+        const nextState = createInitialState(userId);
+        persistState(nextState);
+        setState(nextState);
       },
     }),
-    [hydrated, patch, persistState, state, updatePreferences],
+    [hydrated, patch, persistState, state, storageKey, updatePreferences, userId],
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

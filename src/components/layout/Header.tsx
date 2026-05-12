@@ -6,6 +6,7 @@ import { ArrowLeft, Gauge, MessageSquare, SlidersHorizontal } from "lucide-react
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { hasCompletedAssessment } from "@/lib/assessment-state";
 import { cn } from "@/lib/utils";
 import type { PlaybackSpeed } from "@/types";
 
@@ -30,6 +31,7 @@ export function Header() {
   const router = useRouter();
   const { state, updatePreferences } = useAppState();
   const [mobileControlsOpen, setMobileControlsOpen] = useState(false);
+  const homeHref = hasCompletedAssessment(state) ? "/dashboard" : "/home";
 
   // Hide header on landing page
   if (pathname === "/") return null;
@@ -49,7 +51,7 @@ export function Header() {
   };
 
   const showBackButton = pathname !== "/home" && pathname !== "/dashboard" && pathname !== "/progress";
-  const backTarget = getBackTarget(pathname);
+  const backTarget = getBackTarget(pathname) === "/home" ? homeHref : getBackTarget(pathname);
   const nextPlaybackSpeed = speedOrder[(speedOrder.indexOf(state.preferences.playbackSpeed) + 1) % speedOrder.length];
   const toggleListening = () => {
     updatePreferences({ listeningEnabled: !state.preferences.listeningEnabled });
@@ -70,7 +72,7 @@ export function Header() {
         </div>
 
         <Link
-          href="/home"
+          href={homeHref}
           aria-label="Fluentia home"
           className="gradient-text whitespace-nowrap text-2xl font-black tracking-normal transition-transform hover:scale-105 sm:text-3xl lg:text-4xl"
         >

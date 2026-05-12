@@ -1,8 +1,11 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { Button } from "@/components/shared/Button";
+import { hasCompletedAssessment } from "@/lib/assessment-state";
 import { cn } from "@/lib/utils";
 import type { Level } from "@/types";
 import { useFluvi } from "@/context/FluviContext";
@@ -30,13 +33,15 @@ const levelOptions: Array<{
 ];
 
 export function LevelPreferenceSelector({ idPrefix = "level-preference" }: { idPrefix?: string }) {
+  const router = useRouter();
   const { state, setPreferredLevel } = useAppState();
   const { dispatch } = useFluvi();
   const selectedLevel = state.level ?? "beginner";
-  const assessmentLevel = state.assessmentScores ? state.level : null;
+  const assessmentReady = hasCompletedAssessment(state);
+  const assessmentLevel = state.assessmentSource === "assessment" ? state.level : null;
 
   const chooseLevel = (level: Level) => {
-    if (level === state.level && state.assessmentCompleted) return;
+    if (level === state.level && assessmentReady) return;
     setPreferredLevel(level);
     dispatch({ type: "SET_LEVEL", payload: level });
     toast.success(`Learning level set to ${level}.`);
@@ -92,6 +97,16 @@ export function LevelPreferenceSelector({ idPrefix = "level-preference" }: { idP
           );
         })}
       </div>
+      {assessmentReady ? (
+        <div className="flex flex-col gap-2 rounded-lg border border-border bg-surface/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm leading-6 text-text-secondary">
+            Want a fresh recommendation? Retake the assessment whenever your speaking level changes.
+          </p>
+          <Button id={`${idPrefix}-retake-assessment`} type="button" variant="secondary" onClick={() => router.push("/assessment?retake=1")}>
+            Retake Assessment
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

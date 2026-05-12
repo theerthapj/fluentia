@@ -59,7 +59,7 @@ npm run test:e2e
 
 ## Local Data Model
 
-This prototype stores assessment results, preferences, conversation state, sessions, and moderation warning state in browser `localStorage`. The persisted state is versioned and bounded for local use, but production accounts should move durable progress, server-side cooldowns, and analytics into a backend store.
+This prototype stores assessment results, selected level, preferences, conversation state, sessions, and moderation warning state in browser `localStorage`. The app restores saved level/progress on reopen and only starts a new assessment when the learner explicitly chooses to retake it. The persisted state is versioned and bounded for local use, but production accounts should move durable progress, server-side cooldowns, and analytics into a backend store.
 
 Use **Reset Demo** from the sidebar to clear local app state and moderation warnings.
 

@@ -24,6 +24,36 @@ type FluentiaAnimatedChatProps = {
   onUnsafeInput?: (message: string) => void;
 };
 
+type SpeechRecognitionResultItem = {
+  isFinal: boolean;
+  0: { transcript: string };
+};
+
+type SpeechRecognitionEventLike = {
+  resultIndex: number;
+  results: {
+    length: number;
+    item?: (index: number) => SpeechRecognitionResultItem;
+    [index: number]: SpeechRecognitionResultItem;
+  };
+};
+
+type SpeechRecognitionLike = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+
+type SpeechRecognitionWindow = Window & {
+  SpeechRecognition?: new () => SpeechRecognitionLike;
+  webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+};
+
 const learningCommands = [
   { icon: Languages, label: "Explain Grammar", prefix: "/explain", desc: "Break down the last sentence." },
   { icon: Sparkles, label: "Improve Flow", prefix: "/improve", desc: "Ask for a more natural version." },
@@ -59,6 +89,7 @@ export function FluentiaAnimatedChat({
   const [activeSuggestion, setActiveSuggestion] = useState(0);
   const [voiceStatus, setVoiceStatus] = useState<"idle" | "recording" | "analyzing">("idle");
   const recorderRef = useRef<MediaRecorder | null>(null);
+  const speechRecognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timeoutRef = useRef<number | null>(null);
   const amplitudeTimerRef = useRef<number | null>(null);
@@ -222,6 +253,11 @@ export function FluentiaAnimatedChat({
 
   const stopRecording = () => {
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    if (speechRecognitionRef.current) {
+      speechRecognitionRef.current.stop();
+      return;
+    }
+
     const recorder = recorderRef.current;
     if (recorder && recorder.state !== "inactive") {
       recorder.stop();
@@ -232,11 +268,46 @@ export function FluentiaAnimatedChat({
     toast.error("Whisper transcription is unavailable right now. Please type your response.");
   };
 
+  const startSpeechRecognition = (SpeechRecognition: new () => SpeechRecognitionLike) => {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+    speechRecognitionRef.current = recognition;
+    setVoiceStatus("recording");
+    recognition.onresult = (event) => {
+      const transcripts: string[] = [];
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results.item?.(index) ?? event.results[index];
+        if (result?.[0]?.transcript) transcripts.push(result[0].transcript);
+      }
+      if (transcripts.length) {
+        setInputValue(mergeVoiceText(voiceBaseValueRef.current, transcripts.join(" ")));
+      }
+    };
+    recognition.onerror = () => {
+      speechRecognitionRef.current = null;
+      setVoiceStatus("idle");
+      toast.error("Voice transcription is unavailable right now. Please type your response.");
+    };
+    recognition.onend = () => {
+      speechRecognitionRef.current = null;
+      setVoiceStatus("idle");
+    };
+    recognition.start();
+    timeoutRef.current = window.setTimeout(stopRecording, 30_000);
+  };
+
   const startRecording = async () => {
     voiceBaseValueRef.current = value;
 
     if (!navigator.mediaDevices?.getUserMedia) {
-      toast.error("This browser does not support microphone recording for Whisper. Please type your response.");
+      const SpeechRecognition = (window as SpeechRecognitionWindow).SpeechRecognition ?? (window as SpeechRecognitionWindow).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        startSpeechRecognition(SpeechRecognition);
+        return;
+      }
+      toast.error("This browser does not support voice capture. Please type your response.");
       return;
     }
     try {

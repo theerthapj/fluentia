@@ -7,6 +7,7 @@ import { AmbientBackground } from "@/components/home/AmbientBackground";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { hasCompletedAssessment } from "@/lib/assessment-state";
 import FluentiaTextCycle from "@/components/ui/animated-text-cycle";
 
 const fadeUp = {
@@ -16,7 +17,7 @@ const fadeUp = {
 
 export function LandingPageClient() {
   const { state, hydrated } = useAppState();
-  const startHref = hydrated && state.assessmentCompleted ? "/dashboard" : "/assessment";
+  const startHref = hydrated && hasCompletedAssessment(state) ? "/dashboard" : "/assessment";
 
   return (
     <main className="bg-bg-primary text-text-primary">

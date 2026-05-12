@@ -9,6 +9,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { LevelPreferenceSelector } from "@/components/settings/LevelPreferenceSelector";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { hasCompletedAssessment } from "@/lib/assessment-state";
 import { relativeTime } from "@/lib/utils";
 
 export function ProgressClient() {
@@ -34,7 +35,7 @@ export function ProgressClient() {
   const uniqueScenarios = new Set(sessions.map((session) => session.scenarioTitle)).size;
   const lastPracticed = sessions[0]?.completedAt;
 
-  if (!state.assessmentCompleted) {
+  if (!hasCompletedAssessment(state)) {
     return (
       <main className="mesh-gradient min-h-screen px-5 py-8">
         <div className="mx-auto max-w-3xl">

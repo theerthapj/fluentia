@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode, RefAttributes } from "react";
 
 vi.mock("framer-motion", async () => {
   const React = await import("react");
@@ -23,8 +23,8 @@ vi.mock("framer-motion", async () => {
       ({ children, ...props }, ref) => {
         const domProps = Object.fromEntries(
           Object.entries(props).filter(([key]) => !motionPropNames.has(key)),
-        );
-        return React.createElement(tag, { ...domProps, ref }, children);
+        ) as HTMLAttributes<HTMLElement>;
+        return React.createElement(tag, { ...domProps, ref } as HTMLAttributes<HTMLElement> & RefAttributes<HTMLElement>, children as ReactNode);
       },
     );
     MotionElement.displayName = `MockMotion.${tag}`;

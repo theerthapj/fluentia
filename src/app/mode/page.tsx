@@ -8,6 +8,7 @@ import { ArrowRight, Briefcase, Coffee } from "lucide-react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { hasCompletedAssessment } from "@/lib/assessment-state";
 import type { Mode } from "@/types";
 
 const practiceOptions = [
@@ -33,7 +34,7 @@ export default function ModePage() {
     );
   }
 
-  if (!state.assessmentCompleted) {
+  if (!hasCompletedAssessment(state)) {
     return (
       <main className="mesh-gradient min-h-screen px-5 py-10">
         <div className="mx-auto max-w-3xl">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { hasCompletedAssessment } from "@/lib/assessment-state";
 import { cn } from "@/lib/utils";
 
 const steps = [
@@ -18,6 +19,7 @@ export type FlowStep = (typeof steps)[number]["label"];
 export function Breadcrumb({ current }: { current: FlowStep }) {
   const currentIndex = steps.findIndex((step) => step.label === current);
   const { state } = useAppState();
+  const assessmentReady = hasCompletedAssessment(state);
 
   return (
     <nav aria-label="Practice flow" className="mb-6 overflow-x-auto">
@@ -27,8 +29,8 @@ export function Breadcrumb({ current }: { current: FlowStep }) {
           const active = index === currentIndex;
           const enabled =
             step.label === "Assessment" ||
-            (step.label === "Choose Mode" && state.assessmentCompleted) ||
-            (step.label === "Pick Scenario" && state.assessmentCompleted) ||
+            (step.label === "Choose Mode" && assessmentReady) ||
+            (step.label === "Pick Scenario" && assessmentReady) ||
             (step.label === "Chat" && Boolean(state.selectedScenario || state.activeConversationKind !== "scenario")) ||
             (step.label === "Feedback" && Boolean(state.lastFeedback));
 

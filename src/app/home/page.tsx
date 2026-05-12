@@ -9,6 +9,7 @@ import { LevelBadge } from "@/components/assessment/LevelBadge";
 import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAppState } from "@/components/providers/AppStateProvider";
+import { hasCompletedAssessment } from "@/lib/assessment-state";
 import { getSuggestedScenarioIds, getScenario, getPronunciationExercise } from "@/lib/constants";
 import { relativeTime } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ export default function HomePage() {
 
   if (!hydrated) return <HomeSkeleton />;
 
+  const assessmentReady = hasCompletedAssessment(state);
   const level = state.level ?? "beginner";
   const recommendedScenario = getScenario(getSuggestedScenarioIds(level)[0]);
   const latestSession = state.sessions[0];
@@ -54,7 +56,7 @@ export default function HomePage() {
     <main className="mesh-gradient relative min-h-screen overflow-hidden px-5 py-10">
       <AmbientBackground />
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-80px)] max-w-5xl flex-col justify-center">
-        {!state.assessmentCompleted ? <OnboardingBanner /> : null}
+        {!assessmentReady ? <OnboardingBanner /> : null}
         <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}>
           <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
             <GlassCard className="p-7 sm:p-10">
@@ -64,8 +66,8 @@ export default function HomePage() {
                 Practice real conversations with a supportive AI coach that helps you improve fluency, tone, confidence, and vocabulary with formal, casual, Brain Boost, and free-chat tracks.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button id="home-start-speaking" size="lg" className="w-full sm:w-auto" onClick={() => router.push(state.assessmentCompleted ? "/mode" : "/assessment")}>
-                  Start Speaking
+                <Button id="home-start-speaking" size="lg" className="w-full sm:w-auto" onClick={() => router.push(assessmentReady ? "/dashboard" : "/assessment")}>
+                  {assessmentReady ? "Go to Dashboard" : "Start Speaking"}
                 </Button>
                 <Button id="home-open-free-chat" size="lg" variant="secondary" className="w-full sm:w-auto" onClick={() => router.push("/free-chat")}>
                   Free Chat
@@ -73,7 +75,7 @@ export default function HomePage() {
               </div>
             </GlassCard>
           </motion.div>
-          {state.assessmentCompleted ? (
+          {assessmentReady ? (
             <motion.div
               variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
               className="mt-6 grid gap-4 md:grid-cols-3"

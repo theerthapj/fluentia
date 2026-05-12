@@ -1,8 +1,14 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppStateProvider, useAppState } from "@/components/providers/AppStateProvider";
 import { LevelPreferenceSelector } from "@/components/settings/LevelPreferenceSelector";
 import { FluviProvider } from "@/context/FluviContext";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
 
 function StateProbe() {
   const { state } = useAppState();

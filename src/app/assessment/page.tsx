@@ -11,6 +11,7 @@ import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { ProgressStepper } from "@/components/shared/ProgressStepper";
 import { FluviCharacter } from "@/components/fluvi/FluviCharacter";
+import { hasCompletedAssessment } from "@/lib/assessment-state";
 import { assessmentQuestions, levelCopy, scoreAssessment } from "@/lib/constants";
 import { checkModeration } from "@/lib/moderation/checker";
 import { validateTextInput } from "@/lib/validation";
@@ -61,12 +62,14 @@ function clearProgress() {
 export default function AssessmentPage() {
   const router = useRouter();
   const params = useSearchParams();
-  const { setAssessment } = useAppState();
+  const { state, hydrated, setAssessment } = useAppState();
+  const retakeRequested = params.get("retake") === "1";
 
   const restored = useMemo(() => {
     if (typeof window === "undefined") return null;
+    if (retakeRequested) return null;
     return loadProgress();
-  }, []);
+  }, [retakeRequested]);
   const initialQuestion = assessmentQuestions[restored?.step ?? 0] ?? assessmentQuestions[0];
   const initialAnswer = restored?.answers.find((answer) => answer.questionId === initialQuestion.id);
 
@@ -81,6 +84,15 @@ export default function AssessmentPage() {
 
   const question = assessmentQuestions[step];
   const bannerMessage = params.get("message");
+
+  useEffect(() => {
+    if (retakeRequested) clearProgress();
+  }, [retakeRequested]);
+
+  useEffect(() => {
+    if (!hydrated || retakeRequested || result) return;
+    if (hasCompletedAssessment(state)) router.replace("/dashboard");
+  }, [hydrated, result, retakeRequested, router, state]);
 
   const syncDraftForStep = useCallback((nextStep: number, nextAnswers: AssessmentAnswer[]) => {
     const nextQuestion = assessmentQuestions[nextStep] ?? assessmentQuestions[0];
@@ -175,6 +187,31 @@ export default function AssessmentPage() {
     setDirection(1);
     setModerationWarning(null);
   }, [syncDraftForStep]);
+
+  if (!hydrated) {
+    return (
+      <main className="mesh-gradient min-h-screen px-5 py-10">
+        <div className="mx-auto max-w-2xl">
+          <GlassCard className="mt-8 p-6 sm:p-8">
+            <div className="h-8 w-2/3 rounded-2xl bg-white/10" />
+            <div className="mt-6 h-4 w-full rounded-full bg-white/10" />
+            <div className="mt-3 h-4 w-4/5 rounded-full bg-white/10" />
+          </GlassCard>
+        </div>
+      </main>
+    );
+  }
+
+  if (hasCompletedAssessment(state) && !retakeRequested && !result) {
+    return (
+      <main className="mesh-gradient grid min-h-screen place-items-center px-5 py-10">
+        <GlassCard className="max-w-xl p-7 text-center sm:p-10">
+          <h1 className="text-3xl font-bold">Assessment already saved</h1>
+          <p className="mt-4 text-text-secondary">Taking you back to your dashboard.</p>
+        </GlassCard>
+      </main>
+    );
+  }
 
   if (result) {
     return (

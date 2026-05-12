@@ -9,6 +9,7 @@ export type ConversationKind = "scenario" | "free-chat" | "pronunciation";
 export type PlaybackSpeed = "slow" | "normal" | "fast";
 export type PreferredInputMode = "text" | "voice";
 export type PronunciationExerciseType = "tongue-twister" | "minimal-pair" | "fluency-line";
+export type AssessmentSource = "assessment" | "manual";
 
 export interface Message {
   id: string;
@@ -138,8 +139,11 @@ export interface ConversationResponse {
 }
 
 export interface AppState {
+  userId: string | null;
   level: Level | null;
   assessmentCompleted: boolean;
+  assessmentCompletedAt: string | null;
+  assessmentSource: AssessmentSource | null;
   assessmentScores: AssessmentScores | null;
   selectedMode: Mode | null;
   selectedScenario: Scenario | null;

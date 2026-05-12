@@ -37,7 +37,7 @@ function startServer() {
     ["./node_modules/next/dist/bin/next", "dev", "--port", String(port), "--hostname", host],
     {
       cwd: rootDir,
-      env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
+      env: { ...process.env, FLUENTIA_AI_PROVIDER: "simulated", NEXT_TELEMETRY_DISABLED: "1" },
       stdio: ["ignore", "inherit", "inherit"],
       windowsHide: true,
     },
@@ -109,7 +109,7 @@ async function runPlaywright() {
   const args = ["./node_modules/@playwright/test/cli.js", "test", ...process.argv.slice(2)];
   const child = spawn(process.execPath, args, {
     cwd: rootDir,
-    env: { ...process.env, PLAYWRIGHT_SKIP_WEB_SERVER: "1" },
+    env: { ...process.env, FLUENTIA_AI_PROVIDER: "simulated", PLAYWRIGHT_SKIP_WEB_SERVER: "1" },
     stdio: "inherit",
     windowsHide: true,
   });
