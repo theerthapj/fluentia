@@ -1,9 +1,9 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { STORAGE_KEY, WARNINGS_KEY } from "@/lib/constants";
-import { getAppStateStorageKey } from "@/lib/assessment-state";
+import { getAppStateStorageKey, getAssessmentProgressStorageKey } from "@/lib/assessment-state";
 import type {
   AppPreferences,
   AppState,
@@ -171,8 +171,10 @@ const AppStateContext = createContext<AppStateContextValue | null>(null);
 
 export function AppStateProvider({ children, userId = null }: { children: React.ReactNode; userId?: string | null }) {
   const storageKey = useMemo(() => getAppStateStorageKey(userId), [userId]);
+  const assessmentProgressKey = useMemo(() => getAssessmentProgressStorageKey(userId), [userId]);
   const [state, setState] = useState<AppState>(() => createInitialState(userId));
   const [hydratedStorageKey, setHydratedStorageKey] = useState<string | null>(null);
+  const skipNextLocalPersistRef = useRef(false);
   const hydrated = hydratedStorageKey === storageKey;
   const remoteSyncEnabled = shouldUseRemoteSync(userId);
 
@@ -241,6 +243,10 @@ export function AppStateProvider({ children, userId = null }: { children: React.
 
   useEffect(() => {
     if (!hydrated) return;
+    if (skipNextLocalPersistRef.current) {
+      skipNextLocalPersistRef.current = false;
+      return;
+    }
     persistState(state);
   }, [hydrated, persistState, state]);
 
@@ -324,14 +330,16 @@ export function AppStateProvider({ children, userId = null }: { children: React.
       setPreferredInputMode: (preferredInputMode) => updatePreferences({ preferredInputMode }),
       resetDemo: () => {
         window.localStorage.removeItem(storageKey);
+        window.localStorage.removeItem(assessmentProgressKey);
         if (!userId) window.localStorage.removeItem(STORAGE_KEY);
         window.localStorage.removeItem(WARNINGS_KEY);
         const nextState = createInitialState(userId);
-        persistState(nextState);
+        skipNextLocalPersistRef.current = true;
+        persistRemoteState(nextState);
         setState(nextState);
       },
     }),
-    [hydrated, patch, persistState, state, storageKey, updatePreferences, userId],
+    [assessmentProgressKey, hydrated, patch, persistRemoteState, persistState, state, storageKey, updatePreferences, userId],
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
