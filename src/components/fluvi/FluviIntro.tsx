@@ -1,123 +1,255 @@
 'use client';
 
-// STEP 8: FluviIntro.tsx — One-time signature reveal + typewriter intro
-// Gated by hasSeenIntro in FluviContext. Uses AnimatePresence for unmount animation.
-
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import { FluviCharacter } from './FluviCharacter';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFluvi } from '@/context/FluviContext';
+import { FluviCharacter } from './FluviCharacter';
 
-const INTRO_TEXT = "Hi, I'm Fluvi 🦚. I'm here to help you speak English with confidence. Let's learn together!";
+const FLUVI_STORAGE_KEY = 'fluvi_state';
+const INTRO_TEXT =
+  "Hi, I'm Fluvi 🦚. I'm here to help you speak English with confidence. Let's learn together!";
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function FluviIntroGate({ onVisibilityChange }: { onVisibilityChange?: (visible: boolean) => void }) {
   const { state, dispatch } = useFluvi();
+  const prefersReducedMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
   const [charIndex, setCharIndex] = useState(0);
+  const [compactReveal, setCompactReveal] = useState(false);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const revealVisible = visible && !state.hasSeenIntro;
+  const characterSize = compactReveal ? 112 : 230;
 
-  // Only show if the user hasn't seen the intro yet
+  const handleDismiss = useCallback(() => {
+    setVisible(false);
+    dispatch({ type: 'COMPLETE_INTRO' });
+    dispatch({ type: 'RESET_TO_IDLE' });
+  }, [dispatch]);
+
   useEffect(() => {
-    if (state.hasSeenIntro) return;
+    const timer = window.setTimeout(
+      () => {
+        if (state.hasSeenIntro) {
+          setVisible(false);
+          return;
+        }
 
-    try {
-      const saved = window.localStorage.getItem('fluvi_state');
-      const parsed = saved ? JSON.parse(saved) as { hasSeenIntro?: unknown } : null;
-      if (parsed?.hasSeenIntro === true) {
-        return;
-      }
-    } catch {}
+        try {
+          const saved = window.localStorage.getItem(FLUVI_STORAGE_KEY);
+          const parsed = saved ? (JSON.parse(saved) as { hasSeenIntro?: unknown }) : null;
+          if (parsed?.hasSeenIntro === true && state.introReplayKey === 0) return;
+        } catch {}
 
-    const timer = window.setTimeout(() => setVisible(true), 0);
+        setTextVisible(false);
+        setCharIndex(0);
+        setVisible(true);
+      },
+      state.hasSeenIntro ? 0 : state.introReplayKey > 0 ? 80 : 420,
+    );
     return () => window.clearTimeout(timer);
-  }, [state.hasSeenIntro]);
+  }, [state.hasSeenIntro, state.introReplayKey]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 640px), (max-height: 720px)');
+    const updateCompactReveal = () => setCompactReveal(media.matches);
+
+    updateCompactReveal();
+    media.addEventListener('change', updateCompactReveal);
+    return () => media.removeEventListener('change', updateCompactReveal);
+  }, []);
 
   useEffect(() => {
     onVisibilityChange?.(visible && !state.hasSeenIntro);
     return () => onVisibilityChange?.(false);
   }, [onVisibilityChange, state.hasSeenIntro, visible]);
 
-  // Text appears after the character reveal so the first-run moment stays brisk.
+  useEffect(() => {
+    if (!visible) return;
+    const timer = window.setTimeout(() => setTextVisible(true), prefersReducedMotion ? 80 : 700);
+    return () => window.clearTimeout(timer);
+  }, [prefersReducedMotion, visible]);
+
   useEffect(() => {
     if (!textVisible) return;
-    const t = setTimeout(() => setCharIndex(INTRO_TEXT.length), 300);
-    return () => clearTimeout(t);
-  }, [textVisible]);
+    if (prefersReducedMotion) {
+      const timer = window.setTimeout(() => setCharIndex(INTRO_TEXT.length), 0);
+      return () => window.clearTimeout(timer);
+    }
 
-  function handleDismiss() {
-    setVisible(false);
-    dispatch({ type: 'COMPLETE_INTRO' });
-    // Brief speaking animation then back to idle
-    dispatch({ type: 'START_SPEAKING' });
-    setTimeout(() => dispatch({ type: 'RESET_TO_IDLE' }), 2000);
-  }
+    const startedAt = window.performance.now();
+    const duration = 2600;
+    let frame = 0;
+
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const nextIndex = Math.max(1, Math.round(INTRO_TEXT.length * progress));
+      setCharIndex(nextIndex);
+
+      if (progress < 1) {
+        frame = window.requestAnimationFrame(tick);
+      }
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [prefersReducedMotion, textVisible]);
+
+  useEffect(() => {
+    if (!revealVisible) return;
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const frame = window.requestAnimationFrame(() => dialogRef.current?.focus({ preventScroll: true }));
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      previousFocusRef.current?.focus({ preventScroll: true });
+      previousFocusRef.current = null;
+    };
+  }, [revealVisible, state.introReplayKey]);
+
+  useEffect(() => {
+    if (!revealVisible) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && charIndex >= INTRO_TEXT.length) {
+        handleDismiss();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+        (element) => element.offsetParent !== null,
+      );
+
+      if (!focusable.length) {
+        event.preventDefault();
+        dialog.focus({ preventScroll: true });
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey && (activeElement === first || activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [charIndex, handleDismiss, revealVisible]);
 
   return (
     <AnimatePresence>
-      {visible && !state.hasSeenIntro && (
+      {revealVisible && (
         <motion.div
+          ref={dialogRef}
+          key={`fluvi-intro-${state.introReplayKey}`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="fluvi-intro-title"
+          aria-describedby={textVisible ? 'fluvi-intro-message' : undefined}
+          data-testid="fluvi-intro-dialog"
+          tabIndex={-1}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } }}
-          className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden"
+          exit={{ opacity: 0, transition: { duration: 0.35, ease: 'easeIn' } }}
+          className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden px-5 py-8 outline-none"
           style={{
-            background: 'radial-gradient(circle at 50% 42%, rgba(20,184,166,0.18), rgba(2,6,23,0.97) 54%, rgba(0,0,0,0.99))',
-            backdropFilter: 'blur(18px)',
+            background:
+              'radial-gradient(circle at 50% 38%, rgba(20,184,166,0.24), rgba(15,23,42,0.74) 45%, rgba(2,6,23,0.9) 100%)',
+            backdropFilter: 'blur(10px)',
           }}
         >
+          <h2 id="fluvi-intro-title" className="sr-only">
+            Meet Fluvi
+          </h2>
+
+          {[0, 1, 2].map((index) => (
+            <motion.div
+              key={index}
+              aria-hidden="true"
+              className="absolute rounded-full border border-teal-200/20"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={
+                prefersReducedMotion
+                  ? { opacity: 0.16, scale: 1.1 }
+                  : { opacity: [0, 0.38, 0], scale: [0.55, 1.45, 2.25] }
+              }
+              transition={{
+                duration: 3.6,
+                delay: index * 0.5,
+                repeat: prefersReducedMotion ? 0 : Infinity,
+                ease: 'easeOut',
+              }}
+              style={{
+                width: 'min(70vw, 520px)',
+                height: 'min(70vw, 520px)',
+                boxShadow: '0 0 80px rgba(20,184,166,0.16)',
+              }}
+            />
+          ))}
+
           <motion.div
             aria-hidden="true"
             className="absolute inset-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.7, 0.35] }}
-            transition={{ duration: 2.6, ease: 'easeOut' }}
+            initial={{ opacity: 0, x: '-18%' }}
+            animate={prefersReducedMotion ? { opacity: 0.18, x: '0%' } : { opacity: [0, 0.55, 0.18], x: ['-18%', '18%', '0%'] }}
+            transition={{ duration: 3.4, ease: 'easeOut' }}
             style={{
               background:
-                'linear-gradient(115deg, transparent 0%, rgba(94,234,212,0.08) 42%, rgba(255,255,255,0.18) 49%, rgba(94,234,212,0.08) 56%, transparent 100%)',
+                'linear-gradient(115deg, transparent 0%, rgba(94,234,212,0.07) 42%, rgba(255,255,255,0.16) 50%, rgba(59,130,246,0.08) 58%, transparent 100%)',
             }}
           />
-          <div className="relative flex flex-col items-center gap-8 max-w-sm px-6 text-center">
 
-            {/* Teal glow halo behind character */}
+          <div className="relative flex w-full min-w-0 max-w-xl flex-col items-center gap-5 text-center sm:gap-7">
             <motion.div
-              initial={{ opacity: 0, scale: 0.4 }}
-              animate={{ opacity: [0, 0.34, 0.2], scale: [0.7, 2.4, 2.1] }}
+              aria-hidden="true"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: prefersReducedMotion ? 0.18 : [0, 0.34, 0.22], scale: prefersReducedMotion ? 1.5 : [0.7, 2.45, 2.15] }}
               transition={{ duration: 2.8, ease: 'easeOut' }}
-              className="absolute rounded-full pointer-events-none"
+              className="absolute top-8 rounded-full pointer-events-none"
               style={{
-                width: 180,
-                height: 180,
-                background: 'radial-gradient(circle, #14B8A6, transparent 70%)',
+                width: 190,
+                height: 190,
+                background: 'radial-gradient(circle, rgba(20,184,166,0.86), rgba(59,130,246,0.22) 42%, transparent 72%)',
               }}
             />
 
-            {/* Signature reveal: feathers open slowly with a spring */}
             <motion.div
-              initial={{ scale: 0.45, opacity: 0, y: 24, filter: 'blur(10px)' }}
+              initial={{ scale: 0.5, opacity: 0, y: 28, filter: 'blur(10px)' }}
               animate={{ scale: 1, opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ duration: 2.35, ease: [0.16, 1, 0.3, 1] }}
-              onAnimationComplete={() => setTextVisible(true)}
+              transition={{ duration: prefersReducedMotion ? 0.01 : 2.2, ease: [0.16, 1, 0.3, 1] }}
+              className="relative z-0"
             >
-              <FluviCharacter size={220} showLabel={false} introReveal />
+              <FluviCharacter size={characterSize} showLabel={false} introReveal />
             </motion.div>
 
-            {/* Typewriter intro text — appears after character is fully revealed */}
             <AnimatePresence>
               {textVisible && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                  className="space-y-4"
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.45, ease: 'easeOut' }}
+                  className="relative z-10 w-full min-w-0 max-w-[34rem] px-2"
+                  style={{ textShadow: '0 2px 20px rgba(2,6,23,0.95), 0 0 34px rgba(20,184,166,0.36)' }}
                 >
-                  <p
-                    className="text-xl leading-relaxed"
-                    style={{ color: '#F1F5F9', fontFamily: 'Syne, sans-serif' }}
-                  >
+                  <p id="fluvi-intro-message" className="mx-auto max-w-[22rem] text-balance text-lg font-semibold leading-relaxed text-slate-50 sm:max-w-[34rem] sm:text-2xl">
                     {INTRO_TEXT.slice(0, charIndex)}
                     {charIndex < INTRO_TEXT.length && (
                       <motion.span
+                        aria-hidden="true"
                         animate={{ opacity: [1, 0] }}
                         transition={{ duration: 0.5, repeat: Infinity }}
                       >
@@ -126,26 +258,23 @@ export function FluviIntroGate({ onVisibilityChange }: { onVisibilityChange?: (v
                     )}
                   </p>
 
-                  {/* "Let's Start" button — appears only after typewriter finishes */}
-                  {charIndex >= INTRO_TEXT.length && (
-                    <motion.button
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5, ease: 'easeOut' }}
-                      onClick={handleDismiss}
-                      className="px-8 py-3 font-semibold"
-                      style={{
-                        background: 'linear-gradient(135deg, #14B8A6, #0D9488)',
-                        borderRadius: '12px',
-                        boxShadow: '0 8px 32px rgba(20,184,166,0.4)',
-                        color: '#fff',
-                      }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      Let&apos;s Start! 🚀
-                    </motion.button>
-                  )}
+                  <AnimatePresence>
+                    {charIndex >= INTRO_TEXT.length && (
+                      <motion.button
+                        type="button"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ delay: prefersReducedMotion ? 0 : 0.22, ease: 'easeOut' }}
+                        onClick={handleDismiss}
+                        className="mt-7 rounded-full bg-accent-primary px-7 py-3 font-bold text-bg-primary shadow-lg shadow-teal-500/25 transition hover:bg-teal-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-950"
+                        whileHover={prefersReducedMotion ? undefined : { scale: 1.03 }}
+                        whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
+                      >
+                        Let&apos;s learn together
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               )}
             </AnimatePresence>
