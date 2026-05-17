@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 const items = [
   { href: "/", label: "Home", Icon: Home, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
-  { href: "/mode", label: "Practice", Icon: MessageSquare, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
+  { href: "/mode", label: "Skill Studio", Icon: MessageSquare, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { href: "/brain-boost", label: "Brain Boost", Icon: Brain, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { href: "/free-chat", label: "Free Chat", Icon: Waves, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
   { href: "/progress", label: "Progress", Icon: BarChart3, from: "var(--accent-secondary)", to: "var(--accent-primary)" },

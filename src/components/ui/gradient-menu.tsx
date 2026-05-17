@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   { title: "Home", href: "/", icon: <Home />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { title: "Dashboard", href: "/dashboard", icon: <LayoutDashboard />, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
-  { title: "Speak", href: "/mode", icon: <MessageSquare />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
+  { title: "Studio", href: "/mode", icon: <MessageSquare />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { title: "Boost", href: "/brain-boost", icon: <Brain />, from: "var(--accent-primary)", to: "var(--accent-secondary)" },
   { title: "Chat", href: "/free-chat", icon: <Waves />, from: "var(--accent-secondary)", to: "var(--accent-primary)" },
   { title: "Progress", href: "/progress", icon: <BarChart3 />, from: "var(--accent-secondary)", to: "var(--accent-primary)" },

@@ -40,7 +40,7 @@ export function Header() {
     if (pathname.startsWith("/dashboard")) return "Dashboard";
     if (pathname.startsWith("/progress")) return "Progress";
     if (pathname.startsWith("/brain-boost")) return "Brain Boost Zone";
-    if (pathname.startsWith("/mode")) return "Practice Mode";
+    if (pathname.startsWith("/mode")) return "Skill Studio";
     if (pathname.startsWith("/scenarios")) return "Choose Scenario";
     if (pathname.startsWith("/chat")) return "Coaching Session";
     if (pathname.startsWith("/feedback")) return "Session Feedback";

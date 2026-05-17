@@ -78,7 +78,7 @@ export function DashboardClient() {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button id="dashboard-start-session" size="lg" onClick={() => router.push("/mode")}>
-                  Start New Session
+                  Open Skill Studio
                 </Button>
                 <Button id="dashboard-free-chat" size="lg" variant="secondary" onClick={() => router.push("/free-chat")}>
                   Open Free Chat

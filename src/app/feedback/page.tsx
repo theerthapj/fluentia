@@ -69,7 +69,7 @@ export default function FeedbackPage() {
         <GlassCard className="max-w-md p-7 text-center">
           <h1 className="text-3xl font-bold">No feedback yet</h1>
           <p className="mt-3 text-text-secondary">Complete a practice response first.</p>
-          <Button id="feedback-no-data-scenarios" className="mt-6" onClick={() => router.push("/mode")}>Choose Practice</Button>
+          <Button id="feedback-no-data-scenarios" className="mt-6" onClick={() => router.push("/mode")}>Open Skill Studio</Button>
         </GlassCard>
       </main>
     );
@@ -166,7 +166,7 @@ export default function FeedbackPage() {
           <p className="text-lg text-text-secondary mt-4 max-w-2xl">{feedback.encouragementMessage}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button id="feedback-try-another" onClick={() => router.push(retryHref)}>Try Another Response</Button>
-            <Button id="feedback-new-scenario" variant="secondary" onClick={() => router.push("/mode")}>New Practice</Button>
+            <Button id="feedback-new-scenario" variant="secondary" onClick={() => router.push("/mode")}>Open Skill Studio</Button>
             <Button id="feedback-home" variant="tertiary" onClick={() => router.push("/home")}>Home</Button>
           </div>
         </GlassCard>
