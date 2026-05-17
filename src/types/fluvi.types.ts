@@ -43,6 +43,7 @@ export interface FluviState {
   consecutiveCorrect: number;
   consecutiveErrors: number;
   hasSeenIntro: boolean;
+  introReplayKey: number;
   userLevel: UserLevel;
   theme: FluviTheme;
   energy: number; // 0-1, increases as learner performance improves
@@ -64,10 +65,12 @@ export interface FluviAction {
     | 'STOP_THINKING'
     | 'SET_VOICE_AMPLITUDE'
     | 'COMPLETE_INTRO'
+    | 'REPLAY_INTRO'
     | 'HYDRATE_PERSISTED'
     | 'SET_LEVEL'
     | 'SET_ENERGY'
-    | 'RESET_TO_IDLE';
+    | 'RESET_TO_IDLE'
+    | 'RESET_ALL';
   payload?: unknown;
 }
 

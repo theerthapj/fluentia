@@ -16,7 +16,7 @@ import {
   WARNING_MESSAGES,
 } from '@/components/fluvi/FluviMessages';
 
-const FLUVI_STORAGE_KEY = 'fluvi_state';
+export const FLUVI_STORAGE_KEY = 'fluvi_state';
 
 const INITIAL_STATE: FluviState = {
   mode: 'idle',
@@ -27,6 +27,7 @@ const INITIAL_STATE: FluviState = {
   consecutiveCorrect: 0,
   consecutiveErrors: 0,
   hasSeenIntro: false,
+  introReplayKey: 0,
   userLevel: 'beginner',
   theme: getFluviTheme('beginner'),
   energy: 0,
@@ -115,6 +116,9 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
     case 'COMPLETE_INTRO':
       return { ...state, hasSeenIntro: true };
 
+    case 'REPLAY_INTRO':
+      return { ...state, hasSeenIntro: false, introReplayKey: state.introReplayKey + 1 };
+
     case 'HYDRATE_PERSISTED': {
       const payload = action.payload as Partial<Pick<FluviState, 'hasSeenIntro' | 'userLevel' | 'energy'>> | undefined;
       const level = payload?.userLevel ?? state.userLevel;
@@ -140,6 +144,9 @@ function fluviReducer(state: FluviState, action: FluviAction): FluviState {
 
     case 'RESET_TO_IDLE':
       return { ...state, mode: 'idle', reactionMessage: null };
+
+    case 'RESET_ALL':
+      return { ...INITIAL_STATE, introReplayKey: state.introReplayKey + 1 };
 
     default:
       return state;

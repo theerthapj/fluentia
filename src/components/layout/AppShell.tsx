@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -35,6 +35,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { state, hydrated } = useAppState();
   const [introActive, setIntroActive] = useState(false);
+  const skipLinkRef = useRef<HTMLAnchorElement | null>(null);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const mobileNavRef = useRef<HTMLDivElement | null>(null);
   const sidebarCollapsed = useSyncExternalStore(subscribeToSidebarCollapsed, getSidebarCollapsed, () => false);
   const routeRequiresAssessment = PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
   const locked = hydrated && routeRequiresAssessment && !hasCompletedAssessment(state);
@@ -46,6 +50,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     router.replace("/assessment?message=Complete%20your%20assessment%20first%20so%20Fluentia%20can%20personalize%20practice.");
   }, [locked, router]);
 
+  useEffect(() => {
+    const backgroundElements = [skipLinkRef.current, sidebarRef.current, contentRef.current, mobileNavRef.current];
+
+    for (const element of backgroundElements) {
+      if (!element) continue;
+      if (introActive) {
+        element.setAttribute("inert", "");
+      } else {
+        element.removeAttribute("inert");
+      }
+    }
+  }, [introActive]);
+
   const toggleSidebarCollapsed = () => {
     window.localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(!getSidebarCollapsed()));
     window.dispatchEvent(new Event(SIDEBAR_COLLAPSED_EVENT));
@@ -54,6 +71,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-bg-primary">
       <a
+        ref={skipLinkRef}
         href="#main-content"
         className="sr-only fixed left-4 top-4 z-[1000] rounded-full bg-accent-primary px-4 py-3 font-semibold text-bg-primary shadow-xl focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-white"
       >
@@ -62,17 +80,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <FluviAppBridge />
       <FluviIntroGate onVisibilityChange={setIntroActive} />
       <div
+        ref={sidebarRef}
         className={cn(
           "relative z-50 hidden shrink-0 transition-[width,opacity,transform] duration-500 lg:sticky lg:top-0 lg:block lg:h-screen",
           sidebarCollapsed ? "lg:w-20" : "lg:w-72",
-          introActive && "pointer-events-none opacity-0 -translate-x-4",
+          introActive && "pointer-events-none opacity-20 -translate-x-2",
         )}
       >
         <Sidebar collapsed={sidebarCollapsed} onToggleCollapsed={toggleSidebarCollapsed} />
       </div>
 
-      <div className="relative z-0 flex min-w-0 flex-1 flex-col">
-        <div className={cn("transition-opacity duration-500", introActive && "pointer-events-none opacity-0")}>
+      <div
+        ref={contentRef}
+        className={cn(
+          "relative z-0 flex min-w-0 flex-1 flex-col transition-opacity duration-500",
+          introActive && "pointer-events-none opacity-20",
+        )}
+      >
+        <div>
           <Header />
         </div>
         <main id="main-content" tabIndex={-1} className="relative isolate flex-1 pb-28 md:pb-32 lg:pb-8">
@@ -89,13 +114,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             )}
           </div>
         </main>
-        <div className={cn("transition-opacity duration-500", introActive && "pointer-events-none opacity-0")}>
+        <div>
           <Footer />
         </div>
       </div>
 
       {hideMobileDock ? null : (
-        <div className={cn("fixed bottom-3 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 transition-opacity duration-500 lg:hidden", introActive && "pointer-events-none opacity-0")}>
+        <div ref={mobileNavRef} className={cn("fixed bottom-3 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 transition-opacity duration-500 lg:hidden", introActive && "pointer-events-none opacity-0")}>
           <Sidebar mobileOnly />
         </div>
       )}

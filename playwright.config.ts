@@ -17,6 +17,11 @@ export default defineConfig({
   },
   webServer: skipWebServer ? undefined : {
     command: `node ./node_modules/next/dist/bin/next dev --port ${e2ePort} --hostname ${e2eHost}`,
+    env: {
+      ...process.env,
+      FLUENTIA_AI_PROVIDER: process.env.FLUENTIA_AI_PROVIDER ?? "simulated",
+      NEXT_TELEMETRY_DISABLED: "1",
+    },
     url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,

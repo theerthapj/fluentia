@@ -24,7 +24,6 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false, 
   const prefersReducedMotion = useReducedMotion();
   const [localBubble, setLocalBubble] = useState<string | null>(null);
   const [bubbleAlign, setBubbleAlign] = useState<'left' | 'center' | 'right'>('center');
-  const [introOpen, setIntroOpen] = useState(!introReveal);
 
   const headControls = useAnimation();
   const beakUpperControls = useAnimation();
@@ -43,12 +42,6 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false, 
 
   const activeBubble = localBubble ?? (size >= 72 ? reactionMessage : null);
   const shouldShowThinkingDots = mode === 'thinking' && !localBubble;
-
-  useEffect(() => {
-    if (!introReveal) return;
-    const timer = window.setTimeout(() => setIntroOpen(true), 120);
-    return () => window.clearTimeout(timer);
-  }, [introReveal]);
 
   const placeBubble = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -391,6 +384,37 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false, 
     void sparkleControls.start({ opacity: 0, transition: { duration: 0.6, ease: 'easeInOut' } });
   }, [mode, headControls, beakUpperControls, beakLowerControls, pupilControls, glowControls, featherControls, eyeControls, sparkleControls]);
 
+  // Signature intro: gentle speaking motion while the fan opens.
+  useEffect(() => {
+    if (!introReveal || prefersReducedMotion) return;
+
+    void headControls.start({
+      rotate: [0, -2, 2, -1, 0],
+      y: [0, -2, 1, 0],
+      transition: { duration: 3.4, ease: 'easeInOut' },
+    });
+    void beakUpperControls.start({
+      rotateX: [0, -7, 0, -5, 0, -6, 0],
+      transition: { duration: 3.2, ease: 'easeInOut' },
+    });
+    void beakLowerControls.start({
+      rotateX: [0, 9, 0, 6, 0, 8, 0],
+      transition: { duration: 3.2, ease: 'easeInOut' },
+    });
+    void glowControls.start({
+      opacity: [0.12, 0.38, 0.18, 0.34, 0],
+      scale: [0.9, 1.22, 1.04, 1.18, 1],
+      transition: { duration: 3.6, ease: 'easeOut' },
+    });
+  }, [
+    introReveal,
+    prefersReducedMotion,
+    headControls,
+    beakUpperControls,
+    beakLowerControls,
+    glowControls,
+  ]);
+
   const cssVars = getFluviCSSVars(theme);
   const bubblePosition = useMemo(() => {
     if (bubbleAlign === 'left') return { left: 0, transform: 'translateY(-100%)' };
@@ -401,7 +425,7 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false, 
   return (
     <div
       ref={rootRef}
-      tabIndex={0}
+      tabIndex={introReveal ? -1 : 0}
       aria-label="Say hello to Fluvi"
       onMouseEnter={introReveal ? undefined : showGreeting}
       onClick={introReveal ? undefined : showGreeting}
@@ -463,6 +487,7 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false, 
         style={{
           width: size,
           height: size,
+          overflow: 'visible',
           filter: `saturate(${theme.saturation}) brightness(${theme.brightness}) drop-shadow(0 0 ${8 + energy * 14}px var(--fluvi-glow))`,
         }}
       >
@@ -493,25 +518,50 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false, 
         >
           {/* Outer Ring of Feathers */}
           {Array.from({ length: 15 }, (_, i) => {
-            const angle = -105 + i * (210 / 14); // spread
-            const spread = introReveal ? (introOpen ? 1 : 0.04) : theme.featherSpread;
+            const angle = introReveal ? -78 + i * (156 / 14) : -105 + i * (210 / 14); // spread
+            const spread = introReveal ? 1 : theme.featherSpread;
             const actualAngle = angle * spread;
+            const introStartAngle = angle * 0.04;
+            const introStaticAngle = prefersReducedMotion ? actualAngle : introStartAngle;
             const featherLength = 95 - Math.abs(i - 7) * 3;
             return (
               <motion.g
                 key={`outer-${i}`}
                 id={`fluvi-feather-outer-${i + 1}`}
-                animate={featherControls}
+                animate={introReveal ? undefined : featherControls}
                 custom={i}
+                opacity={introReveal && !prefersReducedMotion ? 0.38 : 1}
+                transform={introReveal ? `rotate(${introStaticAngle} 100 150)` : undefined}
                 style={{
                   transformOrigin: '100px 150px',
-                  transform: `rotate(${actualAngle}deg)`,
-                  transition: introReveal
-                    ? `transform 2200ms cubic-bezier(0.16, 1, 0.3, 1) ${i * 42}ms, opacity 900ms ease ${i * 26}ms`
-                    : undefined,
-                  opacity: introReveal && !introOpen ? 0.38 : 1,
+                  transformBox: 'view-box',
+                  transform: introReveal ? undefined : `rotate(${actualAngle}deg)`,
                 }}
               >
+                {introReveal && !prefersReducedMotion ? (
+                  <>
+                    <animateTransform
+                      attributeName="transform"
+                      type="rotate"
+                      from={`${introStartAngle} 100 150`}
+                      to={`${actualAngle} 100 150`}
+                      dur="2.2s"
+                      begin={`${i * 0.042}s`}
+                      fill="freeze"
+                      calcMode="spline"
+                      keyTimes="0;1"
+                      keySplines="0.16 1 0.3 1"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      from="0.38"
+                      to="1"
+                      dur="0.9s"
+                      begin={`${i * 0.026}s`}
+                      fill="freeze"
+                    />
+                  </>
+                ) : null}
                 {/* Main green leaf */}
                 <path
                   d={`M 100 150 C ${100 - featherLength*0.3} ${150 - featherLength*0.4}, ${100 - featherLength*0.4} ${150 - featherLength*0.8}, 100 ${150 - featherLength} C ${100 + featherLength*0.4} ${150 - featherLength*0.8}, ${100 + featherLength*0.3} ${150 - featherLength*0.4}, 100 150`}
@@ -528,25 +578,50 @@ export function FluviCharacter({ size = 200, className = '', showLabel = false, 
 
           {/* Inner Ring of Feathers */}
           {Array.from({ length: 11 }, (_, i) => {
-            const angle = -80 + i * (160 / 10);
-            const spread = introReveal ? (introOpen ? 1 : 0.06) : theme.featherSpread;
+            const angle = introReveal ? -58 + i * (116 / 10) : -80 + i * (160 / 10);
+            const spread = introReveal ? 1 : theme.featherSpread;
             const actualAngle = angle * spread;
+            const introStartAngle = angle * 0.06;
+            const introStaticAngle = prefersReducedMotion ? actualAngle : introStartAngle;
             const featherLength = 65 - Math.abs(i - 5) * 2;
             return (
               <motion.g
                 key={`inner-${i}`}
                 id={`fluvi-feather-inner-${i + 1}`}
-                animate={featherControls}
+                animate={introReveal ? undefined : featherControls}
                 custom={i + 15} // offset custom for staggered animations
+                opacity={introReveal && !prefersReducedMotion ? 0.45 : 1}
+                transform={introReveal ? `rotate(${introStaticAngle} 100 150)` : undefined}
                 style={{
                   transformOrigin: '100px 150px',
-                  transform: `rotate(${actualAngle}deg)`,
-                  transition: introReveal
-                    ? `transform 1900ms cubic-bezier(0.16, 1, 0.3, 1) ${260 + i * 38}ms, opacity 900ms ease ${i * 24}ms`
-                    : undefined,
-                  opacity: introReveal && !introOpen ? 0.45 : 1,
+                  transformBox: 'view-box',
+                  transform: introReveal ? undefined : `rotate(${actualAngle}deg)`,
                 }}
               >
+                {introReveal && !prefersReducedMotion ? (
+                  <>
+                    <animateTransform
+                      attributeName="transform"
+                      type="rotate"
+                      from={`${introStartAngle} 100 150`}
+                      to={`${actualAngle} 100 150`}
+                      dur="1.9s"
+                      begin={`${0.26 + i * 0.038}s`}
+                      fill="freeze"
+                      calcMode="spline"
+                      keyTimes="0;1"
+                      keySplines="0.16 1 0.3 1"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      from="0.45"
+                      to="1"
+                      dur="0.9s"
+                      begin={`${i * 0.024}s`}
+                      fill="freeze"
+                    />
+                  </>
+                ) : null}
                 <path
                   d={`M 100 150 C ${100 - featherLength*0.4} ${150 - featherLength*0.4}, ${100 - featherLength*0.5} ${150 - featherLength*0.8}, 100 ${150 - featherLength} C ${100 + featherLength*0.5} ${150 - featherLength*0.8}, ${100 + featherLength*0.4} ${150 - featherLength*0.4}, 100 150`}
                   fill="#34D399"

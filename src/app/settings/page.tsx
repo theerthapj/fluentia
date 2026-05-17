@@ -1,11 +1,28 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { LevelPreferenceSelector } from "@/components/settings/LevelPreferenceSelector";
+import { Button } from "@/components/shared/Button";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { useFluvi } from "@/context/FluviContext";
+import { RotateCcw, Trash2, X } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
-  const { state, hydrated, updatePreferences } = useAppState();
+  const router = useRouter();
+  const { state, hydrated, updatePreferences, resetDemo } = useAppState();
+  const { dispatch } = useFluvi();
+  const [confirmResetOpen, setConfirmResetOpen] = useState(false);
+
+  const resetAllProgress = () => {
+    resetDemo();
+    dispatch({ type: "RESET_ALL" });
+    setConfirmResetOpen(false);
+    toast.success("Demo progress reset.");
+    router.push("/");
+  };
 
   if (!hydrated) {
     return (
@@ -85,12 +102,90 @@ export default function SettingsPage() {
         </GlassCard>
 
         <GlassCard className="p-6">
-          <h2 className="text-2xl font-semibold">App Data</h2>
-          <p className="mt-3 text-text-secondary">
-            Signed-in accounts sync assessment results, sessions, preferences, and moderation state to the account backend when Supabase is configured. Local browser storage remains available as a fast offline fallback for this device.
-          </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold">Fluvi Introduction</h2>
+              <p className="mt-3 text-text-secondary">
+                Replay Fluvi&apos;s welcome reveal whenever you want a fresh start.
+              </p>
+            </div>
+            <Button type="button" variant="secondary" onClick={() => dispatch({ type: "REPLAY_INTRO" })}>
+              <RotateCcw aria-hidden className="h-4 w-4" />
+              Replay intro
+            </Button>
+          </div>
+        </GlassCard>
+
+        <GlassCard className="p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold">App Data</h2>
+              <p className="mt-3 text-text-secondary">
+                Signed-in accounts sync assessment results, sessions, preferences, and moderation state to the account backend when Supabase is configured. Local browser storage remains available as a fast offline fallback for this device.
+              </p>
+              <p className="mt-3 text-sm text-text-secondary">
+                Resetting clears assessment results, selected level, conversations, progress, activity history, warnings, and saved assessment drafts on this device.
+              </p>
+            </div>
+            <Button
+              id="settings-reset-demo"
+              type="button"
+              variant="secondary"
+              className="shrink-0 border-error/40 text-error hover:border-error/70 hover:text-red-200"
+              onClick={() => setConfirmResetOpen(true)}
+            >
+              <Trash2 aria-hidden className="h-4 w-4" />
+              Reset Demo
+            </Button>
+          </div>
         </GlassCard>
       </div>
+
+      {confirmResetOpen ? (
+        <div
+          className="fixed inset-0 z-[200] grid place-items-center bg-black/70 px-5 backdrop-blur-sm"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setConfirmResetOpen(false);
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reset-demo-title"
+            aria-describedby="reset-demo-description"
+            className="w-full max-w-lg rounded-2xl border border-error/30 bg-bg-primary p-6 shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 id="reset-demo-title" className="text-2xl font-semibold text-text-primary">
+                  Reset all demo progress?
+                </h2>
+                <p id="reset-demo-description" className="mt-3 text-sm leading-6 text-text-secondary">
+                  This permanently clears saved assessment results, selected level, practice progress, conversation history, activity sessions, preferences, warnings, and assessment drafts. Fluentia will open as a fresh first-time experience.
+                </p>
+              </div>
+              <button
+                type="button"
+                aria-label="Cancel reset"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border text-text-secondary transition hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+                onClick={() => setConfirmResetOpen(false)}
+              >
+                <X aria-hidden className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <Button id="settings-reset-cancel" type="button" variant="tertiary" onClick={() => setConfirmResetOpen(false)}>
+                Keep my progress
+              </Button>
+              <Button id="settings-reset-confirm" type="button" className="bg-error text-white hover:bg-red-500" onClick={resetAllProgress}>
+                <Trash2 aria-hidden className="h-4 w-4" />
+                Reset everything
+              </Button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </main>
   );
 }

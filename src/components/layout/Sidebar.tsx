@@ -17,6 +17,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppState } from "@/components/providers/AppStateProvider";
 import { GradientMenu } from "@/components/ui/gradient-menu";
+import { useFluvi } from "@/context/FluviContext";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -39,6 +40,7 @@ export function Sidebar({ collapsed = false, mobileOnly = false, onToggleCollaps
   const pathname = usePathname();
   const router = useRouter();
   const { resetDemo } = useAppState();
+  const { dispatch } = useFluvi();
   const showDemoReset = process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_ENABLE_DEMO_RESET === "true";
 
   // On mobile, we only show the GradientMenu (floating dock)
@@ -135,9 +137,12 @@ export function Sidebar({ collapsed = false, mobileOnly = false, onToggleCollaps
           <button
             id="sidebar-reset-demo"
             onClick={() => {
+              const confirmed = window.confirm("Reset all demo progress and return Fluentia to its first-time state?");
+              if (!confirmed) return;
               resetDemo();
+              dispatch({ type: "RESET_ALL" });
               toast.success("Demo data reset.");
-              router.push("/home");
+              router.push("/");
             }}
             aria-label={collapsed ? "Reset demo" : undefined}
             title={collapsed ? "Reset demo" : undefined}

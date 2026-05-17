@@ -34,7 +34,7 @@ function FluviDebugPanelInner() {
     ['🎤 Speaking', startSpeaking],
     ['⏹ Stop', stopSpeaking],
     ['💭 Thinking', startThinking],
-    ['🔄 Reset Intro', () => dispatch({ type: 'COMPLETE_INTRO' })],
+    ['🔄 Replay Intro', () => dispatch({ type: 'REPLAY_INTRO' })],
   ];
 
   return (

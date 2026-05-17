@@ -1,11 +1,11 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { AppStateProvider, useAppState } from "@/components/providers/AppStateProvider";
-import { getAppStateStorageKey, GUEST_STORAGE_KEY } from "@/lib/assessment-state";
-import { STORAGE_KEY } from "@/lib/constants";
+import { getAppStateStorageKey, GUEST_ASSESSMENT_PROGRESS_KEY, GUEST_STORAGE_KEY } from "@/lib/assessment-state";
+import { STORAGE_KEY, WARNINGS_KEY } from "@/lib/constants";
 
 function PersistenceProbe() {
-  const { state, hydrated, setAssessment, setPreferredLevel } = useAppState();
+  const { state, hydrated, setAssessment, setPreferredLevel, resetDemo } = useAppState();
   return (
     <div>
       <div data-testid="hydrated">{String(hydrated)}</div>
@@ -31,6 +31,9 @@ function PersistenceProbe() {
         }
       >
         Set assessment
+      </button>
+      <button type="button" onClick={resetDemo}>
+        Reset demo
       </button>
     </div>
   );
@@ -124,5 +127,23 @@ describe("AppStateProvider persistence", () => {
 
     await waitFor(() => expect(screen.getByTestId("saved-level")).toHaveTextContent("none:false"));
     expect(screen.getByTestId("user-id")).toHaveTextContent("user-b");
+  });
+
+  it("clears saved app state, assessment drafts, and warnings when demo data is reset", async () => {
+    window.localStorage.setItem(GUEST_ASSESSMENT_PROGRESS_KEY, JSON.stringify({ step: 2, answers: [] }));
+    window.localStorage.setItem(WARNINGS_KEY, JSON.stringify({ warningCount: 2, cooldownUntil: Date.now() + 60_000 }));
+    renderProbe();
+
+    await waitFor(() => expect(screen.getByTestId("hydrated")).toHaveTextContent("true"));
+    fireEvent.click(screen.getByRole("button", { name: "Set assessment" }));
+    expect(screen.getByTestId("saved-level")).toHaveTextContent("advanced:true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Reset demo" }));
+
+    expect(screen.getByTestId("saved-level")).toHaveTextContent("none:false");
+    expect(screen.getByTestId("assessment-source")).toHaveTextContent("none");
+    expect(window.localStorage.getItem(GUEST_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(GUEST_ASSESSMENT_PROGRESS_KEY)).toBeNull();
+    expect(window.localStorage.getItem(WARNINGS_KEY)).toBeNull();
   });
 });
