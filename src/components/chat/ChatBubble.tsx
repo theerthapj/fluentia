@@ -16,7 +16,7 @@ export function ChatBubble({ message, loading }: { message: Message; loading?: b
   const { state: fluviState } = useFluvi();
 
   if (message.role === "system") {
-    return <div className="mx-auto max-w-md rounded-full bg-white/5 px-4 py-2 text-center text-xs text-text-secondary">{message.content}</div>;
+    return <div className="mx-auto max-w-md rounded-full bg-bg-secondary px-4 py-2 text-center text-xs text-text-secondary">{message.content}</div>;
   }
   return (
     <div className={cn("flex gap-3", message.role === "user" ? "justify-end" : "justify-start")}>
@@ -28,8 +28,8 @@ export function ChatBubble({ message, loading }: { message: Message; loading?: b
       <div
         className={cn(
           "max-w-[78%] rounded-2xl px-4 py-3 leading-7",
-          message.role === "user" && "border-l-4 border-accent-primary bg-accent-primary/12 text-teal-50",
-          message.role === "ai" && "bg-surface-elevated text-text-primary rounded-tl-sm",
+          message.role === "user" && "border-l-4 border-accent-primary bg-[#EAF4FF] text-[#1F3A5F]",
+          message.role === "ai" && "bg-surface-elevated text-text-primary rounded-tl-sm shadow-sm",
           loading && "shimmer min-h-14 w-72 text-text-secondary flex items-center",
         )}
       >

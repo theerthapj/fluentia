@@ -39,6 +39,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const routeRequiresAssessment = PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
   const locked = hydrated && routeRequiresAssessment && !hasCompletedAssessment(state);
   const guardingProtectedRoute = routeRequiresAssessment && (!hydrated || locked);
+  const hideMobileDock = pathname.startsWith("/mode");
 
   useEffect(() => {
     if (!locked) return;
@@ -93,9 +94,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <div className={cn("fixed bottom-3 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 transition-opacity duration-500 lg:hidden", introActive && "pointer-events-none opacity-0")}>
-        <Sidebar mobileOnly />
-      </div>
+      {hideMobileDock ? null : (
+        <div className={cn("fixed bottom-3 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 transition-opacity duration-500 lg:hidden", introActive && "pointer-events-none opacity-0")}>
+          <Sidebar mobileOnly />
+        </div>
+      )}
       {introActive ? null : <FloatingFluviCompanion />}
     </div>
   );

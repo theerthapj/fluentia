@@ -17,6 +17,9 @@ import type {
   PreferredInputMode,
   Scenario,
   SessionRecord,
+  SkillPracticeAttempt,
+  SkillPracticeMode,
+  SkillPracticeProgress,
 } from "@/types";
 
 const defaultPreferences: AppPreferences = {
@@ -24,6 +27,32 @@ const defaultPreferences: AppPreferences = {
   playbackSpeed: "normal",
   preferredInputMode: "text",
 };
+
+const skillPracticeModes: SkillPracticeMode[] = ["pronunciation", "vocabulary", "grammar", "sentence-formation"];
+
+function createSkillProgress(skill: SkillPracticeMode, adaptiveLevel: Level = "beginner"): SkillPracticeProgress {
+  return {
+    skill,
+    attempts: 0,
+    averageScore: 0,
+    bestScore: 0,
+    streak: 0,
+    adaptiveLevel,
+    weakAreas: [],
+    revisionQueue: [],
+    lastPracticedAt: null,
+  };
+}
+
+function createDefaultSkillProgress(level: Level = "beginner"): Record<SkillPracticeMode, SkillPracticeProgress> {
+  return skillPracticeModes.reduce(
+    (progress, skill) => {
+      progress[skill] = createSkillProgress(skill, level);
+      return progress;
+    },
+    {} as Record<SkillPracticeMode, SkillPracticeProgress>,
+  );
+}
 
 const initialState: AppState = {
   userId: null,
@@ -42,9 +71,10 @@ const initialState: AppState = {
   warningCount: 0,
   cooldownUntil: null,
   preferences: defaultPreferences,
+  skillProgress: createDefaultSkillProgress(),
 };
 
-const STORAGE_VERSION = 2;
+const STORAGE_VERSION = 3;
 const MAX_SESSIONS = 30;
 const MAX_CONVERSATION_MESSAGES = 80;
 const REMOTE_PROGRESS_ENDPOINT = "/api/progress";
@@ -77,6 +107,78 @@ function isLevel(value: unknown): value is Level {
   return value === "beginner" || value === "intermediate" || value === "advanced";
 }
 
+function isSkillPracticeMode(value: unknown): value is SkillPracticeMode {
+  return value === "pronunciation" || value === "vocabulary" || value === "grammar" || value === "sentence-formation";
+}
+
+function clampScore(value: unknown) {
+  const score = typeof value === "number" && Number.isFinite(value) ? value : 0;
+  return Math.max(0, Math.min(100, score));
+}
+
+function normalizeStringList(value: unknown, limit: number) {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && Boolean(item.trim())).slice(0, limit) : [];
+}
+
+function normalizeSkillProgress(value: unknown, defaultLevel: Level): Record<SkillPracticeMode, SkillPracticeProgress> {
+  const source = isRecord(value) ? value : {};
+  return skillPracticeModes.reduce(
+    (progress, skill) => {
+      const stored = source[skill];
+      if (!isRecord(stored) || !isSkillPracticeMode(stored.skill)) {
+        progress[skill] = createSkillProgress(skill, defaultLevel);
+        return progress;
+      }
+
+      const attempts = typeof stored.attempts === "number" && Number.isFinite(stored.attempts) ? Math.max(0, Math.floor(stored.attempts)) : 0;
+      progress[skill] = {
+        skill,
+        attempts,
+        averageScore: clampScore(stored.averageScore),
+        bestScore: clampScore(stored.bestScore),
+        streak: typeof stored.streak === "number" && Number.isFinite(stored.streak) ? Math.max(0, Math.floor(stored.streak)) : 0,
+        adaptiveLevel: isLevel(stored.adaptiveLevel) ? stored.adaptiveLevel : defaultLevel,
+        weakAreas: normalizeStringList(stored.weakAreas, 6),
+        revisionQueue: normalizeStringList(stored.revisionQueue, 8),
+        lastPracticedAt: typeof stored.lastPracticedAt === "string" ? stored.lastPracticedAt : null,
+      };
+      return progress;
+    },
+    {} as Record<SkillPracticeMode, SkillPracticeProgress>,
+  );
+}
+
+function nextAdaptiveLevel(progress: SkillPracticeProgress, nextAverage: number, score: number): Level {
+  if (progress.attempts >= 2 && (nextAverage >= 84 || score >= 92)) return "advanced";
+  if (progress.attempts >= 1 && (nextAverage >= 66 || score >= 76)) return "intermediate";
+  if (score < 48) return "beginner";
+  return progress.adaptiveLevel;
+}
+
+function uniqueLimited(items: string[], limit: number) {
+  const seen = new Set<string>();
+  const output: string[] = [];
+  for (const item of items) {
+    const cleaned = item.trim();
+    if (!cleaned || seen.has(cleaned.toLowerCase())) continue;
+    seen.add(cleaned.toLowerCase());
+    output.push(cleaned);
+    if (output.length >= limit) break;
+  }
+  return output;
+}
+
+function alignEmptySkillProgressToLevel(progress: Record<SkillPracticeMode, SkillPracticeProgress>, level: Level) {
+  return skillPracticeModes.reduce(
+    (next, skill) => {
+      const current = progress[skill] ?? createSkillProgress(skill, level);
+      next[skill] = current.attempts ? current : { ...current, adaptiveLevel: level };
+      return next;
+    },
+    {} as Record<SkillPracticeMode, SkillPracticeProgress>,
+  );
+}
+
 function trimMessages(messages: Message[]) {
   return messages.slice(-MAX_CONVERSATION_MESSAGES);
 }
@@ -86,6 +188,7 @@ function createInitialState(userId: string | null = null): AppState {
     ...initialState,
     userId,
     preferences: { ...defaultPreferences },
+    skillProgress: createDefaultSkillProgress(),
   };
 }
 
@@ -129,6 +232,7 @@ function normalizeStoredState(value: unknown, userId: string | null = null): App
       playbackSpeed: preferences.playbackSpeed === "slow" || preferences.playbackSpeed === "fast" ? preferences.playbackSpeed : "normal",
       preferredInputMode: preferences.preferredInputMode === "voice" ? "voice" : "text",
     },
+    skillProgress: normalizeSkillProgress(source.skillProgress, savedLevel ?? "beginner"),
   };
 }
 
@@ -164,6 +268,7 @@ interface AppStateContextValue {
   updatePreferences: (next: Partial<AppPreferences>) => void;
   setPlaybackSpeed: (speed: PlaybackSpeed) => void;
   setPreferredInputMode: (mode: PreferredInputMode) => void;
+  updateSkillProgress: (skill: SkillPracticeMode, attempt: SkillPracticeAttempt) => void;
   resetDemo: () => void;
 }
 
@@ -284,6 +389,7 @@ export function AppStateProvider({ children, userId = null }: { children: React.
           assessmentCompleted: true,
           assessmentCompletedAt: new Date().toISOString(),
           assessmentSource: "assessment",
+          skillProgress: alignEmptySkillProgressToLevel(state.skillProgress, level),
         }),
       setPreferredLevel: (level) =>
         patch({
@@ -294,6 +400,7 @@ export function AppStateProvider({ children, userId = null }: { children: React.
           assessmentSource: "manual",
           selectedScenario: null,
           selectedExerciseId: null,
+          skillProgress: alignEmptySkillProgressToLevel(state.skillProgress, level),
         }),
       setMode: (selectedMode) => patch({ selectedMode }),
       setScenario: (selectedScenario) => patch({ selectedScenario }),
@@ -322,6 +429,34 @@ export function AppStateProvider({ children, userId = null }: { children: React.
       updatePreferences,
       setPlaybackSpeed: (playbackSpeed) => updatePreferences({ playbackSpeed }),
       setPreferredInputMode: (preferredInputMode) => updatePreferences({ preferredInputMode }),
+      updateSkillProgress: (skill, attempt) => {
+        setState((current) => {
+          const currentProgress = current.skillProgress[skill] ?? createSkillProgress(skill, current.level ?? "beginner");
+          const score = clampScore(attempt.score);
+          const attempts = currentProgress.attempts + 1;
+          const averageScore = ((currentProgress.averageScore * currentProgress.attempts) + score) / attempts;
+          const nextProgress: SkillPracticeProgress = {
+            ...currentProgress,
+            attempts,
+            averageScore,
+            bestScore: Math.max(currentProgress.bestScore, score),
+            streak: score >= 72 ? currentProgress.streak + 1 : 0,
+            adaptiveLevel: nextAdaptiveLevel(currentProgress, averageScore, score),
+            weakAreas: uniqueLimited([...attempt.weakAreas, ...currentProgress.weakAreas], 6),
+            revisionQueue: uniqueLimited([...attempt.revisionItems, ...attempt.weakAreas, ...currentProgress.revisionQueue], 8),
+            lastPracticedAt: new Date().toISOString(),
+          };
+          const nextState = {
+            ...current,
+            skillProgress: {
+              ...current.skillProgress,
+              [skill]: nextProgress,
+            },
+          };
+          persistState(nextState);
+          return nextState;
+        });
+      },
       resetDemo: () => {
         window.localStorage.removeItem(storageKey);
         if (!userId) window.localStorage.removeItem(STORAGE_KEY);

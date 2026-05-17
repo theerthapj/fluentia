@@ -22,7 +22,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
 
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body suppressHydrationWarning className="font-sans antialiased">
         <SmoothScrollProvider>
           <AppStateProvider userId={user?.id ?? null}>
@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             </FluviProvider>
           </AppStateProvider>
         </SmoothScrollProvider>
-        <Toaster theme="dark" richColors position="top-center" />
+        <Toaster theme="light" richColors position="top-center" />
       </body>
     </html>
   );

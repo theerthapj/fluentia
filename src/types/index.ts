@@ -10,6 +10,7 @@ export type PlaybackSpeed = "slow" | "normal" | "fast";
 export type PreferredInputMode = "text" | "voice";
 export type PronunciationExerciseType = "tongue-twister" | "minimal-pair" | "fluency-line";
 export type AssessmentSource = "assessment" | "manual";
+export type SkillPracticeMode = "pronunciation" | "vocabulary" | "grammar" | "sentence-formation";
 
 export interface Message {
   id: string;
@@ -118,6 +119,24 @@ export interface AppPreferences {
   preferredInputMode: PreferredInputMode;
 }
 
+export interface SkillPracticeProgress {
+  skill: SkillPracticeMode;
+  attempts: number;
+  averageScore: number;
+  bestScore: number;
+  streak: number;
+  adaptiveLevel: Level;
+  weakAreas: string[];
+  revisionQueue: string[];
+  lastPracticedAt: string | null;
+}
+
+export interface SkillPracticeAttempt {
+  score: number;
+  weakAreas: string[];
+  revisionItems: string[];
+}
+
 export interface ConversationRequest {
   message: string;
   kind: ConversationKind;
@@ -155,4 +174,5 @@ export interface AppState {
   warningCount: number;
   cooldownUntil: number | null;
   preferences: AppPreferences;
+  skillProgress: Record<SkillPracticeMode, SkillPracticeProgress>;
 }

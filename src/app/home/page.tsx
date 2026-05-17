@@ -63,7 +63,7 @@ export default function HomePage() {
               {state.level ? <LevelBadge level={state.level} /> : null}
               <h1 className="gradient-text mt-5 text-5xl font-bold leading-tight">Ready to Speak?</h1>
               <p className="mt-4 max-w-2xl text-lg leading-8 text-text-secondary">
-                Practice real conversations with a supportive AI coach that helps you improve fluency, tone, confidence, and vocabulary with formal, casual, Brain Boost, and free-chat tracks.
+                Build fluency with Skill Studio drills, conversation scenarios, Brain Boost, and free chat. Each path helps you improve confidence, tone, grammar, and vocabulary.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button id="home-start-speaking" size="lg" className="w-full sm:w-auto" onClick={() => router.push(assessmentReady ? "/dashboard" : "/assessment")}>
@@ -99,7 +99,7 @@ export default function HomePage() {
                 onClick={() => router.push("/brain-boost")}
                 className="glass-card min-h-44 rounded-2xl p-5 text-left transition hover:-translate-y-1 hover:border-accent-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
               >
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-accent-secondary/15 text-blue-300">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-accent-secondary/15 text-success">
                   <CalendarCheck2 className="h-5 w-5" aria-hidden />
                 </span>
                 <h2 className="mt-4 text-xl font-semibold">Daily 5-Minute Goal</h2>
@@ -113,9 +113,9 @@ export default function HomePage() {
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-success/15 text-success">
                   <MessageSquare className="h-5 w-5" aria-hidden />
                 </span>
-                <h2 className="mt-4 text-xl font-semibold">{latestSession ? "Last Session" : "First Session"}</h2>
+                <h2 className="mt-4 text-xl font-semibold">{latestSession ? "Last Session" : "Open Skill Studio"}</h2>
                 <p className="mt-2 text-sm leading-6 text-text-secondary">
-                  {latestSession ? `${latestSession.scenarioTitle} - ${relativeTime(latestSession.completedAt)}` : "Complete one practice round to unlock progress insights."}
+                  {latestSession ? `${latestSession.scenarioTitle} - ${relativeTime(latestSession.completedAt)}` : "Train one skill at a time and unlock progress insights."}
                 </p>
               </button>
             </motion.div>

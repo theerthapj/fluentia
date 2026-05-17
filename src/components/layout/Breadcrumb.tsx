@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const steps = [
   { label: "Assessment", href: "/assessment" },
-  { label: "Choose Mode", href: "/mode" },
+  { label: "Skill Studio", href: "/mode" },
   { label: "Pick Scenario", href: "/scenarios" },
   { label: "Chat", href: "/chat" },
   { label: "Feedback", href: "/feedback" },
@@ -23,13 +23,13 @@ export function Breadcrumb({ current }: { current: FlowStep }) {
 
   return (
     <nav aria-label="Practice flow" className="mb-6 overflow-x-auto">
-      <ol className="flex min-w-max items-center gap-2 rounded-full border border-border bg-surface/60 p-2">
+      <ol className="flex min-w-max items-center gap-2 rounded-full border border-border bg-white/80 p-2 shadow-sm">
         {steps.map((step, index) => {
           const complete = index < currentIndex;
           const active = index === currentIndex;
           const enabled =
             step.label === "Assessment" ||
-            (step.label === "Choose Mode" && assessmentReady) ||
+            (step.label === "Skill Studio" && assessmentReady) ||
             (step.label === "Pick Scenario" && assessmentReady) ||
             (step.label === "Chat" && Boolean(state.selectedScenario || state.activeConversationKind !== "scenario")) ||
             (step.label === "Feedback" && Boolean(state.lastFeedback));

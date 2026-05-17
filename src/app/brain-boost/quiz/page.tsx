@@ -93,7 +93,7 @@ function QuizContent() {
               <button
                 type="button"
                 onClick={() => router.push("/brain-boost")}
-                className="mt-6 rounded-full bg-accent-primary px-5 py-3 text-sm font-bold text-bg-primary transition hover:bg-teal-300"
+                className="mt-6 rounded-full bg-accent-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-[#357ABD]"
               >
                 Back to BrainBoost
               </button>

@@ -118,7 +118,7 @@ export function VoiceSimButton({
         disabled={disabled || status === "analyzing"}
         className={cn(
           "relative grid h-12 w-12 shrink-0 place-items-center rounded-full transition disabled:opacity-70",
-          status === "recording" ? "pulse-teal bg-error text-white" : "bg-accent-primary text-bg-primary hover:bg-teal-300",
+          status === "recording" ? "pulse-teal bg-error text-white" : "bg-accent-primary text-white hover:bg-[#357ABD]",
         )}
       >
         {status === "analyzing" ? <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" /> : status === "recording" ? <Square aria-hidden="true" className="h-5 w-5" /> : <Mic aria-hidden="true" className="h-5 w-5" />}

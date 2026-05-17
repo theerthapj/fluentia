@@ -12,6 +12,9 @@ export function FloatingFluviCompanion() {
   const prefersReducedMotion = useReducedMotion();
   const isChat = pathname?.startsWith("/chat");
   const isQuiz = pathname?.startsWith("/brain-boost/quiz");
+  const isSkillStudio = pathname?.startsWith("/mode");
+  if (isSkillStudio) return null;
+
   const compact = isChat || isQuiz || !LARGE_PAGES.has(pathname ?? "");
 
   return (

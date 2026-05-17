@@ -37,16 +37,16 @@ export function DashboardClient() {
     return (
       <main className="mesh-gradient min-h-screen px-5 py-8">
         <div className="mx-auto max-w-3xl">
-          <GlassCard className="border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-7 backdrop-blur-sm sm:p-10">
+          <GlassCard className="border border-accent-primary/25 bg-gradient-to-br from-[#EEF6FF] to-[#D4EDDA] p-7 backdrop-blur-sm sm:p-10">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Assessment Required</p>
-              <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">Start with a personalized level check.</h1>
+              <h1 className="mt-4 text-3xl font-bold text-text-primary sm:text-4xl">Start with a personalized level check.</h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg">
                 Take the quick assessment so Fluentia can place you accurately before practice opens.
               </p>
               <Link
                 href="/assessment"
-                className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent-primary px-6 py-4 font-semibold text-bg-primary transition-colors hover:bg-teal-300 sm:w-auto"
+                className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent-primary px-6 py-4 font-semibold text-white transition-colors hover:bg-[#357ABD] sm:w-auto"
               >
                 Start Assessment
                 <ArrowRight aria-hidden="true" className="h-5 w-5" />
@@ -78,7 +78,7 @@ export function DashboardClient() {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button id="dashboard-start-session" size="lg" onClick={() => router.push("/mode")}>
-                  Start New Session
+                  Open Skill Studio
                 </Button>
                 <Button id="dashboard-free-chat" size="lg" variant="secondary" onClick={() => router.push("/free-chat")}>
                   Open Free Chat

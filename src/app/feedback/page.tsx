@@ -69,7 +69,7 @@ export default function FeedbackPage() {
         <GlassCard className="max-w-md p-7 text-center">
           <h1 className="text-3xl font-bold">No feedback yet</h1>
           <p className="mt-3 text-text-secondary">Complete a practice response first.</p>
-          <Button id="feedback-no-data-scenarios" className="mt-6" onClick={() => router.push("/mode")}>Choose Practice</Button>
+          <Button id="feedback-no-data-scenarios" className="mt-6" onClick={() => router.push("/mode")}>Open Skill Studio</Button>
         </GlassCard>
       </main>
     );
@@ -110,7 +110,7 @@ export default function FeedbackPage() {
             <div className="mt-6"><ToneIndicator label={feedback.toneLabel} /></div>
           </GlassCard>
           <div className="grid gap-5">
-            <GlassCard className="p-6">
+            <GlassCard className="bg-[#D4EDDA]/85 p-6">
               <h2 className="text-2xl font-semibold">What You Did Well</h2>
               <ul className="mt-4 grid gap-3">
                 {feedback.strengths.map((item) => (
@@ -118,7 +118,7 @@ export default function FeedbackPage() {
                 ))}
               </ul>
             </GlassCard>
-            <GlassCard className="p-6">
+            <GlassCard className="bg-[#FFF3CD]/90 p-6">
               <h2 className="text-2xl font-semibold">Areas to Improve</h2>
               <ul className="mt-4 grid gap-3">
                 {feedback.improvements.map((item) => (
@@ -132,7 +132,7 @@ export default function FeedbackPage() {
           <GlassCard className="p-6">
             <h2 className="text-2xl font-semibold">Grammar Corrections</h2>
             {feedback.grammarCorrections.map((item) => (
-              <div key={item.original} className="mt-4 rounded-2xl bg-white/5 p-4">
+              <div key={item.original} className="mt-4 rounded-2xl border border-error/20 bg-[#F8D7DA] p-4">
                 <p className="text-error">{item.original}</p>
                 <p className="mt-2 text-success">{item.corrected}</p>
                 <p className="mt-2 text-sm text-text-secondary">{item.explanation}</p>
@@ -150,7 +150,7 @@ export default function FeedbackPage() {
           <h2 className="text-2xl font-semibold">Vocabulary Suggestions</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {feedback.vocabularySuggestions.map((item) => (
-              <div key={item.word} className="rounded-2xl bg-white/5 p-4">
+              <div key={item.word} className="rounded-2xl border border-warning/25 bg-[#FFF3CD] p-4">
                 <p><span className="text-text-secondary">{item.word}</span> to <strong>{item.alternative}</strong></p>
                 <p className="mt-2 text-sm text-text-secondary">{item.context}</p>
               </div>
@@ -166,7 +166,7 @@ export default function FeedbackPage() {
           <p className="text-lg text-text-secondary mt-4 max-w-2xl">{feedback.encouragementMessage}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button id="feedback-try-another" onClick={() => router.push(retryHref)}>Try Another Response</Button>
-            <Button id="feedback-new-scenario" variant="secondary" onClick={() => router.push("/mode")}>New Practice</Button>
+            <Button id="feedback-new-scenario" variant="secondary" onClick={() => router.push("/mode")}>Open Skill Studio</Button>
             <Button id="feedback-home" variant="tertiary" onClick={() => router.push("/home")}>Home</Button>
           </div>
         </GlassCard>

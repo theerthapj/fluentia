@@ -61,8 +61,8 @@ export function FluviIntroGate({ onVisibilityChange }: { onVisibilityChange?: (v
           exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeIn' } }}
           className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden"
           style={{
-            background: 'radial-gradient(circle at 50% 42%, rgba(20,184,166,0.18), rgba(2,6,23,0.97) 54%, rgba(0,0,0,0.99))',
-            backdropFilter: 'blur(18px)',
+            background: 'radial-gradient(circle at 50% 40%, rgba(160,196,255,0.5), rgba(238,246,255,0.96) 52%, rgba(247,250,252,0.99))',
+            backdropFilter: 'blur(16px)',
           }}
         >
           <motion.div
@@ -73,12 +73,12 @@ export function FluviIntroGate({ onVisibilityChange }: { onVisibilityChange?: (v
             transition={{ duration: 2.6, ease: 'easeOut' }}
             style={{
               background:
-                'linear-gradient(115deg, transparent 0%, rgba(94,234,212,0.08) 42%, rgba(255,255,255,0.18) 49%, rgba(94,234,212,0.08) 56%, transparent 100%)',
+                'linear-gradient(115deg, transparent 0%, rgba(74,144,226,0.08) 42%, rgba(255,255,255,0.75) 49%, rgba(52,199,89,0.08) 56%, transparent 100%)',
             }}
           />
           <div className="relative flex flex-col items-center gap-8 max-w-sm px-6 text-center">
 
-            {/* Teal glow halo behind character */}
+            {/* Soft glow halo behind character */}
             <motion.div
               initial={{ opacity: 0, scale: 0.4 }}
               animate={{ opacity: [0, 0.34, 0.2], scale: [0.7, 2.4, 2.1] }}
@@ -87,7 +87,7 @@ export function FluviIntroGate({ onVisibilityChange }: { onVisibilityChange?: (v
               style={{
                 width: 180,
                 height: 180,
-                background: 'radial-gradient(circle, #14B8A6, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(74,144,226,0.45), transparent 70%)',
               }}
             />
 
@@ -113,7 +113,7 @@ export function FluviIntroGate({ onVisibilityChange }: { onVisibilityChange?: (v
                 >
                   <p
                     className="text-xl leading-relaxed"
-                    style={{ color: '#F1F5F9', fontFamily: 'Syne, sans-serif' }}
+                    style={{ color: '#1F3A5F', fontFamily: 'Syne, sans-serif' }}
                   >
                     {INTRO_TEXT.slice(0, charIndex)}
                     {charIndex < INTRO_TEXT.length && (
@@ -135,9 +135,9 @@ export function FluviIntroGate({ onVisibilityChange }: { onVisibilityChange?: (v
                       onClick={handleDismiss}
                       className="px-8 py-3 font-semibold"
                       style={{
-                        background: 'linear-gradient(135deg, #14B8A6, #0D9488)',
+                        background: 'linear-gradient(135deg, #4A90E2, #357ABD)',
                         borderRadius: '12px',
-                        boxShadow: '0 8px 32px rgba(20,184,166,0.4)',
+                        boxShadow: '0 8px 32px rgba(74,144,226,0.28)',
                         color: '#fff',
                       }}
                       whileHover={{ scale: 1.05 }}

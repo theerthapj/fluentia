@@ -117,7 +117,7 @@ export function ScoreCard({ quizType, questions, answers, onPlayAgain, onBackToH
         </button>
         <button
           onClick={onPlayAgain}
-          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-accent-primary px-5 py-3 text-sm font-bold text-bg-primary transition hover:bg-teal-300"
+          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-accent-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-[#357ABD]"
         >
           <RotateCcw className="h-4 w-4" aria-hidden />
           Play Again

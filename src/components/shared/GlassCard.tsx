@@ -14,7 +14,7 @@ export function GlassCard({
 }) {
   return (
     <motion.div
-      whileHover={hover ? { y: -4, borderColor: "rgba(20,184,166,0.42)" } : undefined}
+      whileHover={hover ? { y: -4, borderColor: "rgba(74,144,226,0.45)" } : undefined}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
       className={cn("glass-card", className)}
     >

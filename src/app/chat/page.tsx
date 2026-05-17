@@ -271,7 +271,7 @@ function ChatContent() {
         </div>
       </section>
       <div className="fixed inset-x-0 bottom-24 z-30 lg:left-72 lg:bottom-0">
-        <div className="border-t border-border bg-bg-primary/90 px-4 py-4 backdrop-blur">
+        <div className="border-t border-border bg-white/90 px-4 py-4 shadow-[0_-10px_28px_rgba(74,144,226,0.1)] backdrop-blur">
           <FluentiaAnimatedChat
             scenarioTitle={title}
             onSendMessage={(text, options) => void send(text, Boolean(options?.requestWrapUp))}
