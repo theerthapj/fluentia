@@ -14,7 +14,7 @@ export function Footer() {
   if (pathname.startsWith("/chat")) return null;
 
   return (
-    <footer className="border-t border-border bg-bg-primary px-5 py-8 text-sm text-text-secondary">
+    <footer className="border-t border-border bg-white/80 px-5 py-8 text-sm text-text-secondary">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
         <p>&copy; 2026 AI Speaking Coach</p>
         <nav aria-label="Footer" className="flex items-center gap-4">

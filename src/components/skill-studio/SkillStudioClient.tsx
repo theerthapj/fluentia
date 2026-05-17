@@ -60,32 +60,32 @@ const skillCards: Array<{
     title: "Pronunciation",
     description: "Speak lines and refine clarity, stress, tone, and accuracy.",
     Icon: Mic,
-    gradient: "from-teal-400 to-sky-400",
-    ring: "border-teal-300/30 bg-teal-400/10",
+    gradient: "from-[#4A90E2] to-[#7DB7F0]",
+    ring: "border-[#4A90E2]/35 bg-[#4A90E2]/12",
   },
   {
     id: "vocabulary",
     title: "Vocabulary",
     description: "Learn richer words and upgrade plain sentences.",
     Icon: BookOpenText,
-    gradient: "from-emerald-300 to-lime-300",
-    ring: "border-emerald-300/30 bg-emerald-400/10",
+    gradient: "from-[#34C759] to-[#7AE08B]",
+    ring: "border-[#34C759]/35 bg-[#34C759]/12",
   },
   {
     id: "grammar",
     title: "Grammar",
     description: "Correct grammar, punctuation, spelling, and tone.",
     Icon: SpellCheck2,
-    gradient: "from-blue-400 to-indigo-300",
-    ring: "border-blue-300/30 bg-blue-400/10",
+    gradient: "from-[#F5A623] to-[#FFC15E]",
+    ring: "border-[#F5A623]/35 bg-[#F5A623]/14",
   },
   {
     id: "sentence-formation",
     title: "Sentence Formation",
     description: "Build clear sentences from your words or jumbled prompts.",
     Icon: PenLine,
-    gradient: "from-amber-300 to-rose-300",
-    ring: "border-amber-300/30 bg-amber-300/10",
+    gradient: "from-[#8E63E6] to-[#B59BFF]",
+    ring: "border-[#8E63E6]/35 bg-[#8E63E6]/12",
   },
 ];
 
@@ -161,14 +161,14 @@ function SkillModeButton({
       aria-pressed={active}
       className={cn(
         "group min-h-48 rounded-2xl border p-5 text-left shadow-xl transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70",
-        active ? `${mode.ring} border-white/25` : "border-border bg-white/[0.045] hover:border-white/20 hover:bg-white/[0.07]",
+        active ? `${mode.ring} shadow-[0_16px_34px_rgba(74,144,226,0.14)]` : "border-border bg-white hover:border-accent-primary/35 hover:bg-bg-secondary",
       )}
     >
       <div className="flex items-start justify-between gap-4">
         <span className={cn("grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br text-bg-primary", mode.gradient)}>
           <Icon aria-hidden className="h-6 w-6" />
         </span>
-        <span className="rounded-full border border-white/10 bg-bg-primary/40 px-3 py-1 text-xs font-semibold text-text-secondary">
+        <span className="rounded-full border border-border bg-bg-secondary px-3 py-1 text-xs font-semibold text-text-secondary">
           {attempts ? `${Math.round(average)} avg` : "New"}
         </span>
       </div>
@@ -194,7 +194,7 @@ function FluviGuide({
   revisionQueue: string[];
 }) {
   return (
-    <aside className="rounded-2xl border border-border bg-white/[0.045] p-5">
+    <aside className="rounded-2xl border border-border bg-white/90 p-5 shadow-[0_18px_45px_rgba(74,144,226,0.1)]">
       <div className="flex items-center gap-4">
         <FluviCharacter size={86} className="shrink-0" />
         <div>
@@ -206,7 +206,7 @@ function FluviGuide({
       </div>
 
       <div className="mt-5 grid gap-3">
-        <div className="rounded-xl border border-border bg-bg-primary/35 p-4">
+        <div className="rounded-xl border border-border bg-bg-secondary p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">Smart revision</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {(revisionQueue.length ? revisionQueue : weakAreas).slice(0, 5).map((item) => (
@@ -219,7 +219,7 @@ function FluviGuide({
             ) : null}
           </div>
         </div>
-        <div className="rounded-xl border border-border bg-bg-primary/35 p-4">
+        <div className="rounded-xl border border-border bg-bg-secondary p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">Adaptive learning</p>
           <p className="mt-2 text-sm leading-6 text-text-secondary">
             Scores above 70 build a streak. Higher averages raise the next activity level; weak scores keep the next task gentler.
@@ -240,7 +240,7 @@ function AnalysisShell({
   if (!analysis) return <EmptyHint mode={mode} />;
 
   return (
-    <div className="rounded-2xl border border-border bg-bg-primary/35 p-5">
+    <div className="rounded-2xl border border-[#A0C4FF] bg-[#FFF3CD] p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-semibold text-accent-primary">Live feedback</p>
@@ -293,8 +293,8 @@ function PronunciationPanel({
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
       <div className="space-y-5">
-        <div className="rounded-2xl border border-teal-300/20 bg-teal-400/10 p-5">
-          <p className="text-sm font-semibold text-teal-200">Speak the target line</p>
+        <div className="rounded-2xl border border-[#4A90E2]/25 bg-[#EAF4FF] p-5">
+          <p className="text-sm font-semibold text-[#357ABD]">Speak the target line</p>
           <p className="mt-3 text-xl font-semibold leading-8 text-text-primary">{analysis?.revisionItems?.length ? "Repeat once more with the highlighted words." : "Use the voice button or type your spoken transcript."}</p>
         </div>
         <textarea
@@ -302,7 +302,7 @@ function PronunciationPanel({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           rows={5}
-          className="min-h-36 w-full resize-none rounded-2xl border border-border bg-bg-primary/50 p-4 text-text-primary outline-none transition placeholder:text-text-secondary/45 focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20"
+          className="min-h-36 w-full resize-none rounded-2xl border border-[#A0C4FF] bg-[#F1F3F5] p-4 text-[#333333] outline-none transition placeholder:text-text-secondary/55 focus:border-accent-primary/70 focus:ring-2 focus:ring-accent-primary/20"
           placeholder="Your spoken transcript appears here, or type what you said..."
         />
         <div className="flex flex-wrap items-center gap-3">
@@ -374,8 +374,8 @@ function VocabularyPanel({
     <div className="grid gap-5 lg:grid-cols-[0.9fr_1fr]">
       <div className="space-y-5">
         {focusWord ? (
-          <div className="rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-5">
-            <p className="text-sm font-semibold text-emerald-200">Word focus</p>
+          <div className="rounded-2xl border border-[#34C759]/25 bg-[#E8F8EC] p-5">
+            <p className="text-sm font-semibold text-[#238A3D]">Word focus</p>
             <h3 className="mt-2 text-3xl font-black text-text-primary">{focusWord.word}</h3>
             <p className="mt-3 leading-7 text-text-secondary">{focusWord.meaning}</p>
             <div className="mt-4 grid gap-3">
@@ -391,7 +391,7 @@ function VocabularyPanel({
             <button
               type="button"
               onClick={() => onChange(focusWord.example)}
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/30 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-300/10"
+              className="mt-5 inline-flex items-center gap-2 rounded-full border border-[#34C759]/35 px-4 py-2 text-sm font-semibold text-[#238A3D] transition hover:bg-[#34C759]/10"
             >
               Use example
               <ArrowRight aria-hidden className="h-4 w-4" />
@@ -403,7 +403,7 @@ function VocabularyPanel({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           rows={6}
-          className="min-h-40 w-full resize-none rounded-2xl border border-border bg-bg-primary/50 p-4 text-text-primary outline-none transition placeholder:text-text-secondary/45 focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20"
+          className="min-h-40 w-full resize-none rounded-2xl border border-[#A0C4FF] bg-[#F1F3F5] p-4 text-[#333333] outline-none transition placeholder:text-text-secondary/55 focus:border-accent-primary/70 focus:ring-2 focus:ring-accent-primary/20"
           placeholder="Write a sentence you want to express better..."
         />
         <Button id="skill-vocabulary-analyze" onClick={onAnalyze} disabled={!value.trim()}>
@@ -455,8 +455,8 @@ function GrammarPanel({
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
       <div className="space-y-5">
-        <div className="rounded-2xl border border-blue-300/20 bg-blue-400/10 p-5">
-          <p className="text-sm font-semibold text-blue-200">Grammar repair</p>
+        <div className="rounded-2xl border border-[#F5A623]/30 bg-[#FFF3CD] p-5">
+          <p className="text-sm font-semibold text-[#B7791F]">Grammar repair</p>
           <p className="mt-2 leading-7 text-text-secondary">
             Paste one sentence. Fluvi will correct grammar, punctuation, spelling, and tone, then explain the rule in plain language.
           </p>
@@ -466,7 +466,7 @@ function GrammarPanel({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           rows={8}
-          className="min-h-52 w-full resize-none rounded-2xl border border-border bg-bg-primary/50 p-4 text-text-primary outline-none transition placeholder:text-text-secondary/45 focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20"
+          className="min-h-52 w-full resize-none rounded-2xl border border-[#A0C4FF] bg-[#F1F3F5] p-4 text-[#333333] outline-none transition placeholder:text-text-secondary/55 focus:border-accent-primary/70 focus:ring-2 focus:ring-accent-primary/20"
           placeholder="Example: she go to office everyday and dont speak confident"
         />
         <div className="flex flex-wrap gap-3">
@@ -527,11 +527,11 @@ function SentenceFormationPanel({
   return (
     <div className="grid gap-5 lg:grid-cols-[0.9fr_1fr]">
       <div className="space-y-5">
-        <div className="rounded-2xl border border-amber-300/25 bg-amber-300/10 p-5">
-          <p className="text-sm font-semibold text-amber-200">Jumbled words</p>
+        <div className="rounded-2xl border border-[#8E63E6]/30 bg-[#E6E6FA] p-5">
+          <p className="text-sm font-semibold text-[#5F3DB5]">Jumbled words</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {challengeWords.map((word, index) => (
-              <span key={`${word}-${index}`} className="rounded-full border border-amber-200/30 bg-bg-primary/35 px-3 py-1.5 text-sm font-semibold text-text-primary">
+              <span key={`${word}-${index}`} className="rounded-full border border-[#8E63E6]/25 bg-white/70 px-3 py-1.5 text-sm font-semibold text-text-primary">
                 {word}
               </span>
             ))}
@@ -552,7 +552,7 @@ function SentenceFormationPanel({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           rows={7}
-          className="min-h-48 w-full resize-none rounded-2xl border border-border bg-bg-primary/50 p-4 text-text-primary outline-none transition placeholder:text-text-secondary/45 focus:border-accent-primary/60 focus:ring-2 focus:ring-accent-primary/20"
+          className="min-h-48 w-full resize-none rounded-2xl border border-[#A0C4FF] bg-[#F1F3F5] p-4 text-[#333333] outline-none transition placeholder:text-text-secondary/55 focus:border-accent-primary/70 focus:ring-2 focus:ring-accent-primary/20"
           placeholder="Build the sentence here, or write your own rough sentence..."
         />
         <Button id="skill-sentence-analyze" onClick={onAnalyze} disabled={!value.trim()}>
@@ -721,7 +721,7 @@ export function SkillStudioClient() {
               Choose one English skill at a time, get immediate coaching, and track progress separately for pronunciation, vocabulary, grammar, and sentence formation.
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-white/[0.045] p-5">
+          <div className="rounded-2xl border border-border bg-white/90 p-5 shadow-[0_14px_34px_rgba(74,144,226,0.1)]">
             <p className="text-sm font-semibold text-text-primary">Skill progress</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {progressValues.map((progress) => (
@@ -749,20 +749,20 @@ export function SkillStudioClient() {
 
         <section className="mt-8 grid gap-6 xl:grid-cols-[1fr_340px]">
           <GlassCard className="overflow-hidden p-0">
-            <div className="border-b border-border bg-white/[0.035] p-5 sm:p-6">
+            <div className="border-b border-[#C9D8F0] bg-[#E6E6FA] p-5 sm:p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">{skillModeLabels[activeMode]}</p>
                   <h2 className="mt-2 text-2xl font-bold text-text-primary">Practice {skillModeLabels[activeMode].toLowerCase()} with focused feedback</h2>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full border border-border bg-bg-primary/40 px-3 py-1.5 text-xs font-semibold text-text-secondary">
+                  <span className="rounded-full border border-[#A0C4FF] bg-white/70 px-3 py-1.5 text-xs font-semibold text-text-secondary">
                     {levelLabels[activeLevel]} difficulty
                   </span>
-                  <span className="rounded-full border border-border bg-bg-primary/40 px-3 py-1.5 text-xs font-semibold text-text-secondary">
+                  <span className="rounded-full border border-[#A0C4FF] bg-white/70 px-3 py-1.5 text-xs font-semibold text-text-secondary">
                     {activeProgress?.attempts ?? 0} attempts
                   </span>
-                  <span className="rounded-full border border-border bg-bg-primary/40 px-3 py-1.5 text-xs font-semibold text-text-secondary">
+                  <span className="rounded-full border border-[#A0C4FF] bg-white/70 px-3 py-1.5 text-xs font-semibold text-text-secondary">
                     {activeProgress?.streak ?? 0} streak
                   </span>
                 </div>
@@ -772,7 +772,7 @@ export function SkillStudioClient() {
             <div className="p-5 sm:p-6">
               {activeMode === "pronunciation" ? (
                 <>
-                  <div className="mb-5 rounded-2xl border border-border bg-white/[0.035] p-4">
+                  <div className="mb-5 rounded-2xl border border-[#A0C4FF] bg-[#EEF6FF] p-4">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div>
                         <p className="text-sm font-semibold text-text-primary">{pronunciationExercise.title}</p>
@@ -850,7 +850,7 @@ export function SkillStudioClient() {
           />
         </section>
 
-        <section className="mt-8 rounded-2xl border border-border bg-white/[0.045] p-5 sm:p-6">
+        <section className="mt-8 rounded-2xl border border-border bg-white/90 p-5 shadow-[0_18px_45px_rgba(74,144,226,0.1)] sm:p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Conversation scenarios</p>
@@ -871,7 +871,7 @@ export function SkillStudioClient() {
                 key={id}
                 id={`mode-${id}`}
                 onClick={() => chooseConversation(id)}
-                className="rounded-2xl border border-border bg-bg-primary/35 p-5 text-left transition hover:border-accent-primary/40 hover:bg-accent-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70"
+                className="rounded-2xl border border-border bg-bg-secondary p-5 text-left transition hover:border-accent-primary/40 hover:bg-[#EAF4FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70"
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
               >

@@ -41,15 +41,15 @@ export function ProgressClient() {
     return (
       <main className="mesh-gradient min-h-screen px-5 py-8">
         <div className="mx-auto max-w-3xl">
-          <GlassCard className="border border-accent-primary/30 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-7 backdrop-blur-sm sm:p-10">
+          <GlassCard className="border border-accent-primary/25 bg-gradient-to-br from-[#EEF6FF] to-[#D4EDDA] p-7 backdrop-blur-sm sm:p-10">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-primary">Progress</p>
-            <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">Build your first progress snapshot.</h1>
+            <h1 className="mt-4 text-3xl font-bold text-text-primary sm:text-4xl">Build your first progress snapshot.</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg">
               Complete the assessment or choose a level, then finish practice sessions to see your scores and session history here.
             </p>
             <Link
               href="/assessment"
-              className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent-primary px-6 py-4 font-semibold text-bg-primary transition-colors hover:bg-teal-300 sm:w-auto"
+              className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent-primary px-6 py-4 font-semibold text-white transition-colors hover:bg-[#357ABD] sm:w-auto"
             >
               Start Assessment
               <ArrowRight aria-hidden="true" className="h-5 w-5" />
@@ -79,7 +79,7 @@ export function ProgressClient() {
             </div>
             <Link
               href="/mode"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-white/5 px-6 py-4 font-semibold text-text-primary transition hover:border-accent-primary/50 hover:bg-accent-primary/10 sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-white px-6 py-4 font-semibold text-text-primary transition hover:border-accent-primary/50 hover:bg-[#EEF6FF] sm:w-auto"
             >
               Open Skill Studio
               <ArrowRight aria-hidden="true" className="h-5 w-5" />
@@ -103,7 +103,7 @@ export function ProgressClient() {
             </div>
             <Link
               href="/mode"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white/5 px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-accent-primary/50 hover:bg-accent-primary/10"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-accent-primary/50 hover:bg-[#EEF6FF]"
             >
               Train weak areas
               <ArrowRight aria-hidden="true" className="h-4 w-4" />
@@ -111,7 +111,7 @@ export function ProgressClient() {
           </div>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             {skillProgress.map((progress) => (
-              <div key={progress.skill} className="rounded-2xl border border-border bg-white/[0.035] p-4">
+              <div key={progress.skill} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold text-text-primary">{skillModeLabels[progress.skill]}</p>
@@ -123,7 +123,7 @@ export function ProgressClient() {
                     {progress.attempts} attempts
                   </span>
                 </div>
-                <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#E5EAF0]">
                   <div className="h-full rounded-full bg-gradient-to-r from-accent-primary to-accent-secondary" style={{ width: `${Math.max(4, Math.min(100, progress.averageScore))}%` }} />
                 </div>
                 <div className="mt-3 flex items-center justify-between text-sm">

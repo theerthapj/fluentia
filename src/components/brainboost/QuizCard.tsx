@@ -55,8 +55,8 @@ function OddWordCard({ question, onAnswer }: { question: OddWordQuestion; onAnsw
             className={cn(
               "rounded-2xl border-2 px-4 py-5 text-center text-lg font-bold transition-all duration-300",
               !revealed && "border-border bg-surface/60 text-text-primary hover:border-accent-primary hover:bg-accent-primary/10 cursor-pointer",
-              revealed && isCorrect && "border-success bg-success/15 text-success",
-              revealed && isSelected && !isCorrect && "border-error bg-error/15 text-error",
+              revealed && isCorrect && "border-success bg-[#D4EDDA] text-success",
+              revealed && isSelected && !isCorrect && "border-error bg-[#F8D7DA] text-error",
               revealed && !isSelected && !isCorrect && "border-border bg-surface/30 text-text-secondary",
             )}
           >
@@ -97,8 +97,8 @@ function SpellingCard({ question, onAnswer }: { question: SpellingQuestion; onAn
             className={cn(
               "rounded-2xl border-2 px-5 py-4 text-center font-mono text-lg font-semibold tracking-wide transition-all duration-300",
               !revealed && "border-border bg-surface/60 text-text-primary hover:border-accent-secondary hover:bg-accent-secondary/10 cursor-pointer",
-              revealed && isCorrect && "border-success bg-success/15 text-success",
-              revealed && isSelected && !isCorrect && "border-error bg-error/15 text-error",
+              revealed && isCorrect && "border-success bg-[#D4EDDA] text-success",
+              revealed && isSelected && !isCorrect && "border-error bg-[#F8D7DA] text-error",
               revealed && !isSelected && !isCorrect && "border-border bg-surface/30 text-text-secondary",
             )}
           >
@@ -172,8 +172,8 @@ function IdiomCard({ question, onAnswer }: { question: IdiomQuestion; onAnswer: 
               className={cn(
                 "rounded-full border px-3 py-1 text-sm font-semibold transition",
                 !revealed && "border-accent-primary bg-accent-primary/20 text-accent-primary hover:bg-error/20 hover:border-error hover:text-error cursor-pointer",
-                revealed && isCorrect && "border-success bg-success/15 text-success",
-                revealed && !isCorrect && "border-error bg-error/15 text-error",
+              revealed && isCorrect && "border-success bg-[#D4EDDA] text-success",
+              revealed && !isCorrect && "border-error bg-[#F8D7DA] text-error",
               )}
             >
               {word}
@@ -214,7 +214,7 @@ function IdiomCard({ question, onAnswer }: { question: IdiomQuestion; onAnswer: 
           <button
             onClick={checkAnswer}
             disabled={placed.length !== question.correct.length}
-            className="flex-1 rounded-full bg-accent-primary px-4 py-2 text-sm font-bold text-bg-primary transition hover:bg-teal-300 disabled:opacity-40"
+            className="flex-1 rounded-full bg-accent-primary px-4 py-2 text-sm font-bold text-white transition hover:bg-[#357ABD] disabled:opacity-40"
           >
             Check Answer
           </button>
@@ -260,10 +260,10 @@ export function QuizCard({ question, questionNumber, total, onAnswer }: QuizCard
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 1.2, opacity: 0 }}
             className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-3xl"
-            style={{ background: feedback.correct ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.10)" }}
+            style={{ background: feedback.correct ? "#D4EDDA" : "#F8D7DA" }}
           >
             <span className="text-6xl">{feedback.emoji}</span>
-            <p className={cn("mt-2 text-xl font-bold", feedback.correct ? "text-success" : "text-warning")}>
+            <p className={cn("mt-2 text-xl font-bold", feedback.correct ? "text-success" : "text-error")}>
               {feedback.correct ? "Correct!" : feedback.message ?? "Not quite!"}
             </p>
             {feedback.correctPhrase ? (

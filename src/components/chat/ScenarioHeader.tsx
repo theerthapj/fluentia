@@ -22,7 +22,7 @@ export function ScenarioHeader({
   const backTarget = kind === "scenario" ? "/scenarios" : kind === "pronunciation" ? "/mode" : "/free-chat";
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-bg-primary/86 px-4 py-4 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-border bg-white/90 px-4 py-4 shadow-sm backdrop-blur">
       <div className="mx-auto flex max-w-4xl items-center gap-3">
         <button
           id="chat-back-button"

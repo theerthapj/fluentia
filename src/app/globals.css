@@ -3,22 +3,32 @@
 
 :root {
   --header-height: 64px;
-  --bg-primary: #0F172A;
-  --bg-secondary: #111827;
-  --surface: #172033;
-  --surface-elevated: #1E293B;
-  --bg-primary: #0F172A;
-  --bg-secondary: #111827;
-  --surface: #172033;
-  --surface-elevated: #1E293B;
-  --accent-primary: #14B8A6;
-  --accent-secondary: #3B82F6;
-  --success: #22C55E;
-  --warning: #F59E0B;
-  --error: #EF4444;
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --border: rgba(255,255,255,0.08);
+  --bg-primary: #F7FAFC;
+  --background: #F7FAFC;
+  --bg-secondary: #EEF6FF;
+  --surface: #FFFFFF;
+  --surface-elevated: #F8FBFF;
+  --accent-primary: #4A90E2;
+  --accent-primary-hover: #357ABD;
+  --accent-secondary: #34C759;
+  --accent-secondary-hover: #269E46;
+  --success: #238A3D;
+  --warning: #B7791F;
+  --error: #C53030;
+  --text-primary: #1F3A5F;
+  --text-secondary: #4B5563;
+  --text-body: #333333;
+  --border: rgba(31, 58, 95, 0.14);
+  --question-bg: #E6E6FA;
+  --answer-bg: #F1F3F5;
+  --answer-border: #A0C4FF;
+  --feedback-correct-bg: #D4EDDA;
+  --feedback-incorrect-bg: #F8D7DA;
+  --feedback-suggestion-bg: #FFF3CD;
+  --skill-pronunciation: #4A90E2;
+  --skill-vocabulary: #34C759;
+  --skill-grammar: #F5A623;
+  --skill-sentence: #8E63E6;
   --brand: 27 96% 61%;
   --brand-foreground: 31 97% 72%;
 }
@@ -63,8 +73,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at 20% 10%, rgba(20, 184, 166, 0.16), transparent 30%),
-    radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.14), transparent 34%),
+    radial-gradient(circle at 18% 8%, rgba(74, 144, 226, 0.16), transparent 32%),
+    radial-gradient(circle at 82% 18%, rgba(52, 199, 89, 0.12), transparent 34%),
+    linear-gradient(180deg, #EEF6FF 0%, #F7FAFC 46%, #FFFFFF 100%),
     var(--bg-primary);
   color: var(--text-primary);
 }
@@ -82,7 +93,7 @@ a {
 }
 
 ::selection {
-  background: rgba(20, 184, 166, 0.32);
+  background: rgba(160, 196, 255, 0.55);
 }
 
 ::-webkit-scrollbar {
@@ -95,27 +106,27 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(20, 184, 166, 0.28);
+  background: rgba(74, 144, 226, 0.35);
   border-radius: 999px;
   transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(20, 184, 166, 0.55);
+  background: rgba(53, 122, 189, 0.6);
 }
 
 .glass-card {
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  background: rgba(23, 32, 51, 0.7);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.86);
   background-clip: padding-box;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(31, 58, 95, 0.12);
   border-radius: 16px;
-  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: 0 22px 55px rgba(74, 144, 226, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #14B8A6, #3B82F6);
+  background: linear-gradient(135deg, #1F3A5F, #4A90E2 56%, #34C759);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -123,9 +134,9 @@ a {
 
 .mesh-gradient {
   background:
-    radial-gradient(circle at 18% 18%, rgba(20, 184, 166, 0.28), transparent 34%),
-    radial-gradient(circle at 82% 28%, rgba(59, 130, 246, 0.24), transparent 36%),
-    radial-gradient(circle at 50% 90%, rgba(20, 184, 166, 0.14), transparent 28%),
+    radial-gradient(circle at 18% 18%, rgba(74, 144, 226, 0.16), transparent 34%),
+    radial-gradient(circle at 82% 28%, rgba(52, 199, 89, 0.12), transparent 36%),
+    radial-gradient(circle at 48% 88%, rgba(230, 230, 250, 0.66), transparent 32%),
     var(--bg-primary);
 }
 
@@ -169,7 +180,7 @@ a {
 
 .shimmer::after {
   animation: shimmer 1.6s linear infinite;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  background: linear-gradient(90deg, transparent, rgba(160, 196, 255, 0.26), transparent);
   content: "";
   inset: 0;
   position: absolute;
@@ -178,11 +189,11 @@ a {
 
 @keyframes pulse-teal {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.45);
+    box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 0 14px rgba(20, 184, 166, 0);
+    box-shadow: 0 0 0 14px rgba(74, 144, 226, 0);
     transform: scale(1.04);
   }
 }

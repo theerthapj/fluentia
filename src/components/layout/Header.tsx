@@ -63,10 +63,10 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 h-20 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 h-20 border-b border-[#357ABD]/25 bg-accent-primary text-white shadow-[0_14px_34px_rgba(74,144,226,0.22)]">
       <nav aria-label="Global Header" className="grid h-full min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 sm:px-6 lg:px-8">
         <div className="min-w-0">
-          <span className="hidden truncate text-xs font-bold uppercase tracking-[0.2em] text-text-secondary md:block">
+          <span className="hidden truncate text-xs font-bold uppercase tracking-[0.2em] text-white/80 md:block">
             {getTitle()}
           </span>
         </div>
@@ -74,7 +74,7 @@ export function Header() {
         <Link
           href="/"
           aria-label="Go to Fluentia home page"
-          className="gradient-text whitespace-nowrap text-2xl font-black tracking-normal transition-transform hover:scale-105 sm:text-3xl lg:text-4xl"
+          className="whitespace-nowrap text-2xl font-black tracking-normal text-white transition-transform hover:scale-105 sm:text-3xl lg:text-4xl"
         >
           Fluentia
         </Link>
@@ -87,18 +87,18 @@ export function Header() {
               aria-label="Open practice controls"
               aria-expanded={mobileControlsOpen}
               onClick={() => setMobileControlsOpen((current) => !current)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/5 text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary md:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white transition-all hover:bg-[#357ABD] md:hidden"
             >
               <SlidersHorizontal className="h-5 w-5" aria-hidden />
             </button>
             {mobileControlsOpen ? (
-              <div className="absolute right-0 top-12 z-50 w-64 rounded-2xl border border-border bg-bg-primary/95 p-3 shadow-2xl backdrop-blur-xl md:hidden">
+              <div className="absolute right-0 top-12 z-50 w-64 rounded-2xl border border-border bg-white/95 p-3 text-text-primary shadow-2xl backdrop-blur-xl md:hidden">
                 <button
                   id="header-mobile-listening-toggle"
                   type="button"
                   onClick={toggleListening}
                   aria-pressed={state.preferences.listeningEnabled}
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm font-semibold text-text-secondary transition hover:bg-white/5 hover:text-white"
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm font-semibold text-text-secondary transition hover:bg-bg-secondary hover:text-text-primary"
                 >
                   <span>Listening</span>
                   <span className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export function Header() {
                   id="header-mobile-playback-speed"
                   type="button"
                   onClick={cyclePlaybackSpeed}
-                  className="mt-1 flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm font-semibold text-text-secondary transition hover:bg-white/5 hover:text-white"
+                  className="mt-1 flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm font-semibold text-text-secondary transition hover:bg-bg-secondary hover:text-text-primary"
                 >
                   <span>Playback speed</span>
                   <span className="flex items-center gap-2 text-accent-primary">
@@ -121,14 +121,14 @@ export function Header() {
               </div>
             ) : null}
             {/* Status Indicators in a horizontal row */}
-            <div className="hidden items-center gap-2 rounded-full border border-border bg-white/5 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-text-secondary md:flex">
+            <div className="hidden items-center gap-2 rounded-full border border-white/25 bg-white/15 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/85 md:flex">
               <button
                 id="header-listening-toggle"
                 type="button"
                 onClick={toggleListening}
                 aria-pressed={state.preferences.listeningEnabled}
                 title={state.preferences.listeningEnabled ? "Turn listening off" : "Turn listening on"}
-                className="flex items-center gap-2 rounded-full px-2 py-1.5 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70"
+                className="flex items-center gap-2 rounded-full px-2 py-1.5 transition hover:bg-[#357ABD] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
               >
                 <span className={cn("h-1.5 w-1.5 rounded-full shadow-[0_0_8px]", state.preferences.listeningEnabled ? "bg-success shadow-success/50" : "bg-error shadow-error/50")} />
                 <span className="hidden sm:inline">Listening: {state.preferences.listeningEnabled ? "On" : "Off"}</span>
@@ -140,7 +140,7 @@ export function Header() {
                 type="button"
                 onClick={cyclePlaybackSpeed}
                 title={`Switch playback speed to ${nextPlaybackSpeed}`}
-                className="flex items-center gap-2 rounded-full px-2 py-1.5 text-accent-primary transition hover:bg-accent-primary/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70"
+                className="flex items-center gap-2 rounded-full px-2 py-1.5 text-white transition hover:bg-[#357ABD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
               >
                 <Gauge className="h-3.5 w-3.5" />
                 <span>{state.preferences.playbackSpeed}</span>
@@ -153,7 +153,7 @@ export function Header() {
               onClick={() => router.push("/")}
               aria-label="Go to Home"
               title="Home"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/5 text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary/70"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/15 text-white transition-all hover:bg-[#357ABD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
             >
               <Home className="h-5 w-5" aria-hidden />
             </button>
@@ -166,7 +166,7 @@ export function Header() {
               id="header-open-free-chat"
               aria-label="Open Free Chat"
               title="Open Free Chat"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/5 text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/15 text-white transition-all hover:bg-[#357ABD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
             >
               <MessageSquare className="h-5 w-5" />
             </button>
@@ -177,7 +177,7 @@ export function Header() {
               id="global-back-button"
               onClick={() => router.push(backTarget)}
               aria-label={`Back to ${backTarget.replace("/", "") || "home"}`}
-              className="group flex items-center gap-2 rounded-full border border-border bg-white/5 px-3 py-2.5 text-sm font-semibold text-text-secondary transition-all hover:border-accent-primary/50 hover:bg-accent-primary/10 hover:text-text-primary sm:px-5"
+              className="group flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#357ABD] sm:px-5"
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" aria-hidden />
               <span className="hidden sm:inline">Back</span>

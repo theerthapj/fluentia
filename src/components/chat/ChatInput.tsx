@@ -23,7 +23,7 @@ export function ChatInput({
   preferredInputMode: PreferredInputMode;
 }) {
   return (
-    <div className="border-t border-border bg-bg-primary/90 p-4 backdrop-blur">
+    <div className="border-t border-border bg-white/90 p-4 backdrop-blur">
       <div className={`mx-auto flex max-w-4xl items-center gap-3 ${preferredInputMode === "voice" ? "sm:flex-row-reverse" : ""}`}>
         <input
           id="chat-input"
@@ -38,7 +38,7 @@ export function ChatInput({
             }
           }}
           placeholder={disabled ? "Input paused briefly..." : "Type your response..."}
-          className="min-h-12 flex-1 rounded-full border border-border bg-surface px-5 text-text-primary outline-none transition placeholder:text-text-secondary/60 focus:border-accent-primary"
+          className="min-h-12 flex-1 rounded-full border border-[#A0C4FF] bg-[#F1F3F5] px-5 text-[#333333] outline-none transition placeholder:text-text-secondary/60 focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
         />
         <VoiceSimButton id="chat-voice-button" onCapture={onVoice} disabled={disabled || loading} />
         <Button id="chat-send-button" aria-label="Send response" loading={loading} disabled={disabled || !value.trim()} onClick={onSend} className="h-12 w-12 px-0">

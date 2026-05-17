@@ -408,7 +408,7 @@ export function FluentiaAnimatedChat({
               type="button"
               disabled={inputDisabled}
               onClick={() => sendQuickPrompt("Please wrap up this session and give me final feedback.", { requestWrapUp: true })}
-              className="shrink-0 rounded-full border border-accent-primary/40 bg-accent-primary/10 px-3 py-2 text-xs font-semibold text-accent-primary transition hover:bg-accent-primary hover:text-bg-primary disabled:opacity-50"
+              className="shrink-0 rounded-full border border-accent-primary/40 bg-accent-primary/10 px-3 py-2 text-xs font-semibold text-accent-primary transition hover:bg-accent-primary hover:text-white disabled:opacity-50"
             >
               End session
             </button>
@@ -511,7 +511,7 @@ export function FluentiaAnimatedChat({
               type="button"
               onClick={() => handleSendMessage()}
               disabled={inputDisabled || !value.trim()}
-              className="flex items-center gap-2 rounded-full bg-accent-primary px-5 py-2 text-sm font-bold text-bg-primary transition hover:bg-teal-300 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-full bg-accent-primary px-5 py-2 text-sm font-bold text-white transition hover:bg-[#357ABD] disabled:opacity-50"
             >
               <span>Send</span>
               {loading ? <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Zap aria-hidden="true" className="h-4 w-4 fill-current" />}

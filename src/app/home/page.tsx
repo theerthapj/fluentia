@@ -99,7 +99,7 @@ export default function HomePage() {
                 onClick={() => router.push("/brain-boost")}
                 className="glass-card min-h-44 rounded-2xl p-5 text-left transition hover:-translate-y-1 hover:border-accent-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
               >
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-accent-secondary/15 text-blue-300">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-accent-secondary/15 text-success">
                   <CalendarCheck2 className="h-5 w-5" aria-hidden />
                 </span>
                 <h2 className="mt-4 text-xl font-semibold">Daily 5-Minute Goal</h2>

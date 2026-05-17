@@ -23,7 +23,7 @@ export function Breadcrumb({ current }: { current: FlowStep }) {
 
   return (
     <nav aria-label="Practice flow" className="mb-6 overflow-x-auto">
-      <ol className="flex min-w-max items-center gap-2 rounded-full border border-border bg-surface/60 p-2">
+      <ol className="flex min-w-max items-center gap-2 rounded-full border border-border bg-white/80 p-2 shadow-sm">
         {steps.map((step, index) => {
           const complete = index < currentIndex;
           const active = index === currentIndex;

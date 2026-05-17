@@ -110,7 +110,7 @@ export default function FeedbackPage() {
             <div className="mt-6"><ToneIndicator label={feedback.toneLabel} /></div>
           </GlassCard>
           <div className="grid gap-5">
-            <GlassCard className="p-6">
+            <GlassCard className="bg-[#D4EDDA]/85 p-6">
               <h2 className="text-2xl font-semibold">What You Did Well</h2>
               <ul className="mt-4 grid gap-3">
                 {feedback.strengths.map((item) => (
@@ -118,7 +118,7 @@ export default function FeedbackPage() {
                 ))}
               </ul>
             </GlassCard>
-            <GlassCard className="p-6">
+            <GlassCard className="bg-[#FFF3CD]/90 p-6">
               <h2 className="text-2xl font-semibold">Areas to Improve</h2>
               <ul className="mt-4 grid gap-3">
                 {feedback.improvements.map((item) => (
@@ -132,7 +132,7 @@ export default function FeedbackPage() {
           <GlassCard className="p-6">
             <h2 className="text-2xl font-semibold">Grammar Corrections</h2>
             {feedback.grammarCorrections.map((item) => (
-              <div key={item.original} className="mt-4 rounded-2xl bg-white/5 p-4">
+              <div key={item.original} className="mt-4 rounded-2xl border border-error/20 bg-[#F8D7DA] p-4">
                 <p className="text-error">{item.original}</p>
                 <p className="mt-2 text-success">{item.corrected}</p>
                 <p className="mt-2 text-sm text-text-secondary">{item.explanation}</p>
@@ -150,7 +150,7 @@ export default function FeedbackPage() {
           <h2 className="text-2xl font-semibold">Vocabulary Suggestions</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {feedback.vocabularySuggestions.map((item) => (
-              <div key={item.word} className="rounded-2xl bg-white/5 p-4">
+              <div key={item.word} className="rounded-2xl border border-warning/25 bg-[#FFF3CD] p-4">
                 <p><span className="text-text-secondary">{item.word}</span> to <strong>{item.alternative}</strong></p>
                 <p className="mt-2 text-sm text-text-secondary">{item.context}</p>
               </div>

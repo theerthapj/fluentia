@@ -251,7 +251,7 @@ export default function AssessmentPage() {
             exit={{ opacity: 0, x: direction * -24 }}
             transition={{ duration: 0.25 }}
           >
-            <GlassCard className="mt-8 p-6 sm:p-8">
+            <GlassCard className="mt-8 border-[#C9D8F0] bg-[#E6E6FA]/80 p-6 sm:p-8">
               <div className="mb-6 flex items-center gap-4">
                 <div className="shrink-0">
                   <FluviCharacter size={72} />
@@ -274,8 +274,8 @@ export default function AssessmentPage() {
                         onClick={() => setSelectedOption(option)}
                         className={`rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
                           selectedOption === option
-                            ? "border-accent-primary bg-accent-primary/10 ring-1 ring-accent-primary"
-                            : "border-border bg-surface hover:border-accent-primary"
+                            ? "border-accent-primary bg-[#EEF6FF] ring-1 ring-accent-primary"
+                            : "border-[#A0C4FF] bg-[#F1F3F5] hover:border-accent-primary hover:bg-white"
                         }`}
                       >
                         {option}
@@ -300,7 +300,7 @@ export default function AssessmentPage() {
                 </fieldset>
               ) : (
                 <div className="mt-6">
-                  <div className="rounded-2xl border border-border bg-surface/50 p-4 text-sm text-text-secondary">
+                  <div className="rounded-2xl border border-[#A0C4FF] bg-[#FFF3CD] p-4 text-sm text-[#333333]">
                     Write 1-3 clear sentences. We look for enough detail, at least 5 words, and one complete thought.
                   </div>
                   <textarea
@@ -311,7 +311,7 @@ export default function AssessmentPage() {
                       setModerationWarning(null);
                     }}
                     rows={6}
-                    className="mt-4 w-full rounded-2xl border border-border bg-surface p-4 text-text-primary outline-none transition focus:border-accent-primary"
+                    className="mt-4 w-full rounded-2xl border border-[#A0C4FF] bg-[#F1F3F5] p-4 text-[#333333] outline-none transition focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
                     placeholder="Write your answer here..."
                   />
                   <div className="mt-3 grid gap-2 text-sm text-text-secondary sm:grid-cols-3">
@@ -320,7 +320,7 @@ export default function AssessmentPage() {
                     <span className={textValidation.checklist.hasSentenceShape ? "text-success" : ""}>Complete sentence</span>
                   </div>
                   {textValue.trim().length > 0 && !textValidation.valid ? (
-                    <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-amber-400">
+                    <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-warning">
                       {textValidation.reason}
                     </motion.p>
                   ) : null}
